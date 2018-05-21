@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+
+  test.pixmen.cz:
+    container_name: test.pixmen.cz
+    restart: always
+    build:
+      context: .
+    links:
+      - mailer
+    external_links:
+      - database
+    expose:
+      - 80
+      - 443
+    volumes:
+      - ../web:/var/www/html       
+      - ./database/:/docker-entrypoint-initdb.d
+    environment:
+      VIRTUAL_HOST: test.pixmen.cz
+      VIRTUAL_NETWORK: nginx-proxy
+      LETSENCRYPT_HOST: test.pixmen.cz
+      LETSENCRYPT_EMAIL: info@test.pixmen.cz
+      MYSQL_HOST: database
+      MYSQL_ROOT_PASSWORD: b4RO2OT!}e
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: b11CO9py7ge
+
+  mailer:
+    image: nicescale/sendmail
+    ports:
+      - "25"
+    environment:
+      MAIL_DOMAIN: local.cz
+      DP_USER: info@local.cz
+      DP_PASS: b4RO2OT!}e
+
+networks:
+  default:
+    external:
+      name: nginx-proxy
