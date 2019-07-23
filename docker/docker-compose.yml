@@ -2,31 +2,37 @@ version: "3"
 
 services:
 
-  test.pixmen.cz:
-    container_name: test.pixmen.cz
+  cms2.pixatori.com:
+    container_name: cms2.pixatori.com
     restart: always
     build:
       context: .
     links:
       - mailer
+      - redis1
     external_links:
       - database
     expose:
       - 80
       - 443
+      - 6379
     volumes:
-      - ../web:/var/www/html       
+      - ../web:/var/www
+      - ../web/www:/var/www/html
+      - ../web/log/apache:/var/log/apache2
       - ./database/:/docker-entrypoint-initdb.d
+    hostname:
+      local.cz
     environment:
-      VIRTUAL_HOST: test.pixmen.cz
+      VIRTUAL_HOST: cms2pixatori.local.cz
       VIRTUAL_NETWORK: nginx-proxy
-      LETSENCRYPT_HOST: test.pixmen.cz
-      LETSENCRYPT_EMAIL: info@test.pixmen.cz
+      LETSENCRYPT_HOST: local.cz
+      LETSENCRYPT_EMAIL: info@local.cz
       MYSQL_HOST: database
       MYSQL_ROOT_PASSWORD: b4RO2OT!}e
-      MYSQL_DATABASE: test
-      MYSQL_USER: test
-      MYSQL_PASSWORD: b11CO9py7ge
+      MYSQL_DATABASE: cms2pixatori
+      MYSQL_USER: cms2pixatori
+      MYSQL_PASSWORD: aI#UzlQ49Jw91B
 
   mailer:
     image: nicescale/sendmail
@@ -36,6 +42,14 @@ services:
       MAIL_DOMAIN: local.cz
       DP_USER: info@local.cz
       DP_PASS: b4RO2OT!}e
+
+  redis1:
+    image: 'bitnami/redis:latest'
+    ports:
+      - '6380:6379'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
 
 networks:
   default:
