@@ -1,0 +1,132 @@
+<div n:block="detail" class="well well-lg" >
+
+	<h2 class="text-primary">log {$item->inserted|date:"j. n. Y h:m:s"}</h2>
+
+	<div class="row">
+		<div class="col-md-6">
+			<table class="table">
+				<thead>
+				<tr>
+					<th>Id</th>
+					<th>Context</th>
+				</tr>
+				</thead>
+
+				<tbody>
+				<tr>
+
+					<td>
+
+						{*{dump $this->global}*}
+						{dump $item}
+
+
+						{formContainer items_detail_form-$item->id}
+							{*{input id, value => $item->id}*}
+							{*{input firstName, value => $item->firstName}*}
+
+							<div class="form-group">
+								{label firstName}
+								{input firstName class => "form-control"}
+							</div>
+
+							<div class="form-group">
+								{label lastName}
+								{input lastName class => "form-control"}
+							</div>
+
+
+							<div class="form-group">
+								{label mail class => "control-label"}
+								{input mail class => "form-control"}
+							</div>
+
+
+							{*{input lastName, value => $item->firstName}*}
+
+
+							{*{var $list = $presenter->getCheckboxDeviceList($item->devices)}*}
+							{*{dump $list}*}
+
+							<div class="row">
+								<div class="col-md-6">
+									{input devices}
+
+								</div>
+								<div class="col-md-6">
+									{input devicesGroups}
+								</div>
+
+							</div>
+
+
+
+							{*{dump $item->devices}*}
+							{*{dump $_form[devices]}*}
+
+
+{*
+							<div n:foreach="$item->devices as $key => $label">
+								<input n:name="devices:$key">
+								<label n:name="devices:$key"><span>{$label}</span></label>
+							</div>
+*}
+
+
+
+							{input save}
+						{/formContainer}
+
+
+
+					</td>
+
+
+				</tr>
+
+
+
+				{*<tr n:foreach="$item->context as $id => $context">*}
+					{*<td>{$id}</td>*}
+					{*<td>{$context}</td>*}
+				{*</tr>*}
+				</tbody>
+				{*
+						<tfoot>
+						<tr>
+							<td colspan="2"></td>
+						</tr>
+						</tfoot>
+				*}
+			</table>
+
+		</div>
+
+		<div class="col-md-6">
+			<table class="table">
+				<thead>
+				<tr>
+					<th>Id</th>
+					<th>Extra</th>
+				</tr>
+				</thead>
+
+				<tbody>
+				{*<tr n:foreach="$item->extra as $id => $extra">*}
+					{*<td>{$id}</td>*}
+					{*<td>{$extra}</td>*}
+				{*</tr>*}
+				</tbody>
+				{*
+							<tfoot>
+							<tr>
+								<td colspan="2"></td>
+							</tr>
+							</tfoot>
+				*}
+			</table>
+
+		</div>
+	</div>
+
+</div>

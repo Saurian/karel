@@ -1,0 +1,34 @@
+{
+	"name": "kdyby/nette-session-panel",
+	"description": "Nette DebugBar panel, that allows you inspect your sessions.",
+	"keywords": ["nette", "session", "panel"],
+	"license": ["BSD-3", "GPLv2", "GPLv3"],
+	"homepage": "http://kdyby.org",
+	"authors": [
+		{
+			"name": "Filip Procházka",
+			"homepage": "http://filip-prochazka.com/"
+		},
+		{
+			"name": "Pavel Železný",
+			"homepage": "http://pavelzelezny.cz/"
+		},
+		{
+			"name": "Jáchym Toušek",
+			"homepage": "http://enumag.cz/",
+			"email": "enumag@gmail.com"
+		}
+	],
+	"require": {
+		"php": ">=5.4.0",
+		"nette/di": "~2.4",
+		"nette/http": "~2.4",
+		"nette/utils": "~2.4",
+		"tracy/tracy": "~2.4"
+	},
+	"autoload": {
+		"psr-0": {
+			"Kdyby\\SessionPanel": "src"
+		}
+	}
+}

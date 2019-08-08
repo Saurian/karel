@@ -1,0 +1,5 @@
+!.gitignore
+/bootstrap.php
+/phpunit-config.xml
+/log/*
+/files/*

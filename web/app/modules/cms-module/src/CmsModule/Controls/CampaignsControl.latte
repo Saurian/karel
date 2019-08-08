@@ -1,0 +1,527 @@
+<div class="row">
+	<!-- .col -->
+	<div class="col-md-7 col-sm-12 col-xs-12">
+		<div n:snippet="campaigns" class="clearfix" style="position: relative; display: block;">
+			<div class="myadmin-dd-empty dd" id="nestable2" style="padding-bottom: 50px;">
+				{snippetArea items}
+				<ol n:if="$rows" class="dd-list">
+					<li n:foreach="$rows as $row" class="dd-item dd3-item" data-id="{$row->id}" n:snippet="item-{$row->getId()}">
+
+{*
+
+						{ifset $debug1}
+							<h2 class="text-center">{$debug1}</h2>
+						{/ifset}
+
+*}
+						{*<a class="btn btn-default ajax" n:href="obnova!">Obnova</a>*}
+
+						{*{control campaignsControl-$row->id}*}
+
+
+
+						{form campaignsControl-$row->id}
+
+							{if !isset($toggle_detail) || true}
+								<div class="dd-item-backgroundWrap"></div>
+								<div class="dd-handle QQ_dd3-handle {$row->tag}"></div>
+								<div class="activ-controler">
+									<label n:name="active">
+										<span>Aktivní:</span>
+										<input n:name="active">
+									</label>
+								</div>
+								<div class="dd3-content box-list">
+									<a class="ajax item-detail-link" n:href="detail! $row->id" data-toggle-detail="{$row->id}" data-toggle-detail-grid="campaignGrid" data-ajax-off="datargid.item_detail,history"></a>
+
+									<div n:if="$form->hasErrors()" class="alert alert-danger alert-dismissible">
+										<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+										<p n:foreach="$form->errors as $error"><strong>Warning!</strong> {$error}</p>
+									</div>
+
+
+									<div class="box-list__preview js-preview">
+										<h2>{$row->name}</h2>
+
+										{capture $from}{$row->realizedFrom|date:'j. n. Y'}{/capture}
+										{capture $to}{$row->realizedTo|date:'j. n. Y'}{/capture}
+
+										<p>{_messages.plan_from, [from => $from, to => $to]}</p>
+										<div class="bot-line">
+											<ul class="clearfix">
+												{*<li><a class="btn btn-info btn-xs ajax item-detail-link" n:href="detail! $row->id" data-toggle-detail="{$row->id}"*}
+													   {*data-toggle-detail-grid="campaignGrid" data-ajax-off="datargid.item_detail">detail</a>*}
+												{*</li>*}
+												<li><i n:class="$row->template && $row->template->media->isEmpty() ? 'fa fa-times' : 'fa fa-check'"></i> {_media}</li>
+											</ul>
+										</div>
+									</div>
+
+									<div class="row-item-detail item-detail-{$row->getId()}" n:snippet="item-{$row->getId()}-detail">
+									{*<div class="row-item-detail item-detail-{$row->getId()}">*}
+
+										{*{ifset #detail}*}
+											<div class="item-detail-content">
+
+
+												<div class="box-list__settings js-settings">
+													<div n:if="$form->hasErrors()" class="alert alert-success alert-dismissible">
+														<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+														<p n:foreach="$form->errors as $error"><strong>Warning!</strong> {$error}</p>
+													</div>
+
+
+													{*{ifset $debug}{$debug}{/ifset}*}
+
+
+													{input sendSubmit}
+													<div class="box-list__settings__one">
+														{label name}
+														{input name}
+													</div>
+													<div class="box-list__settings__one">
+														{label realizedFrom}
+														{input realizedFrom}
+
+														{*
+														<div class="row">
+															<div class="col-md-6">
+																{label realizedFrom}
+																{input realizedFrom}
+															</div>
+															<div class="col-md-6">
+																{label realizedTo}
+																{input realizedTo}
+															</div>
+														</div>
+														*}
+													</div>
+													<div class="box-list__settings__one">
+														<div class="box-list__settings__one__devices__head clearfix">
+															{label devices}
+															<ul>
+																<li><input type="radio" name="typzarizeni" checked="checked" class="js-zarizeniControl" id="ff-zarizeni-{$row->id}" data-target-id="{$row->id}"><label for="ff-zarizeni-{$row->id}">Zařízení</label></li>
+																<li><input type="radio" name="typzarizeni" class="js-skupinyControl"  id="ff-skupiny-{$row->id}" data-target-id="{$row->id}"><label for="ff-skupiny-{$row->id}">Skupiny</label></li>
+															</ul>
+														</div>
+														<div class="box-list__settings__one__devices">
+															<div class="box-list__settings__one__devices__inner clearfix js-skupiny nooo" data-source="js-skupiny-{$row->id}">
+																<div n:foreach="$form[devicesGroups]->items as $key => $label">
+																	<input n:name="devicesGroups:$key">
+																	<label n:name="devicesGroups:$key"><span>{$label}</span></label>
+																</div>
+															</div>
+															<div class="box-list__settings__one__devices__inner clearfix js-zarizeni" data-source="js-zarizeni-{$row->id}">
+																<div n:foreach="$form[devices]->items as $key => $label">
+																	<input n:name="devices:$key">
+																	<label n:name="devices:$key"><span>{$label}</span></label>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="box-list__settings__one">
+														{label tag}
+														<div class="box-list__settings__one__colors clearfix">
+															{foreach $form['tag']->items as $key => $label}
+																<div class="input-control">
+																	<input n:name="tag:$key">
+																	<label n:name="tag:$key" class="{$label}">{*{$label}*}</label>
+																</div>
+															{/foreach}
+														</div>
+													</div>
+
+
+													<div class="box-list__settings__one">
+														<div class="box-list__settings__one__templateSelectHead clearfix">
+															{label template}
+															<span class="js-addNewTemplatePopup">Přidat novou šablonu</span>
+														</div>
+														{input template}
+														{*{input changeTemplateSubmit}*}
+													</div>
+
+
+
+													<div class="box-list__settings__one" n:snippet="item-{$row->getId()}-template">
+														<strong>Data pro šablonu</strong>
+
+														<div n:if="$row->mediaData" class="owl-carousel js-media owl-theme box-list__settings__one__media">
+
+															{*{dump $row->template->media}*}
+															{*{dump $form['mediaData']->getComponents()}*}
+
+															<div n:foreach="$form['mediaData']->getComponents() as $mediaData" class="item">
+																{formContainer $mediaData}
+																	{ifset $mediaData['file']}
+																		{ifset $mediaData['file']->control->attrs['data-fileName']}
+																		{input file data-default-file=> $basePath . '/media/' . $row->id .'/' .  $mediaData['file']->control->attrs['data-fileName']}
+																		{else}
+																		{input file}
+																		{/ifset}
+																	{/ifset}
+																	{ifset $mediaData['url']}
+																		<div class="box-list__settings__one__media__link">
+																			<i class="fa fa-external-link"></i>
+																			<span>Přidejte link</span>
+																			{input url}
+																		</div>
+																	{/ifset}
+																	{ifset $mediaData['sound']}
+																	<div class="timeBox">
+																		<span class="help">zvuk:</span>
+																		{input sound}
+																	</div>
+																	{/ifset}
+																	{ifset $mediaData['time']}
+{*
+																		<div class="timeselect">
+																			<span class="label">čas:</span>
+																			{input time}
+																			{input timeType}
+																		</div>
+*}
+																		<div class="timeBox">
+																			<span class="help">čas:</span>
+																			{input time}
+																			{input timeType}
+																		</div>
+																	{/ifset}
+																{/formContainer}
+															</div>
+														</div>
+
+														<div n:if="!$row->template || ($row->template && $row->template->media->isEmpty())" class="box-list__settings__one__media">
+															<div class="alert alert-danger alert-dismissible">
+																<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+																<h3 class="text-info">Šablona není nastavena</h3>
+																<strong>Doporučení:</strong> Vyberte prosím správně nastavenou šablonu, nebo vytvořte novou.
+															</div>
+														</div>
+													</div>
+												</div>
+												{*{include #detail, form => $form}*}
+
+
+												{*{include #detailmain, item => $item, row => $row}*}
+												{*{control detailForm-$row->id}*}
+											</div>
+
+										{*{/ifset}*}
+
+									</div>
+
+
+								</div>
+							{/if}
+
+						{/form}
+					</li>
+				</ol>
+				{/snippetArea}
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- /.col -->
+	<div class="col-md-5 col-sm-12 col-xs-12 hidden-xs">
+		<div n:snippet="filter" class="row">
+			<!-- .col -->
+			<div class="col-sm-4">
+				<a n:href="setFilter!" class="ajax white-box text-center bg-inverse dlazdice" data-dismiss="filter">
+					<strong class="text-white  counter-filter counter">{$allCampaignCount}</strong>
+
+					<p class="text-white"><strong>{_allCampaigns}</strong></p>
+				</a>
+			</div>
+			<!-- /.col -->
+			<!-- .col -->
+			<div class="col-sm-4">
+				<a n:href="setFilter! active => true" class="ajax white-box text-center bg-megna dlazdice" data-dismiss="filter">
+					<strong class="text-white counter-filter counter">{$activeCampaignCount}</strong>
+					<p class="text-white">{_activeItems}</p>
+				</a>
+			</div>
+			<!-- /.col -->
+			<!-- .col -->
+			<div class="col-sm-4">
+				<a n:href="setFilter! active => false" class="ajax white-box text-center bg-danger dlazdice" data-dismiss="filter">
+					<strong class="counter counter-filter text-white">{$nonActiveCampaignCount}</strong>
+					<p class="text-white">{_nonActiveItems}</p>
+				</a>
+			</div>
+			<!-- /.col -->
+		</div>
+	</div>
+</div>
+
+{include ajaxToggle}
+
+{define ajaxToggle}
+	<script>
+        $(function () {
+            $('body').on('change', 'input[name="active"]', function (e) {
+                var id = $(this).closest('form').data('id');
+
+                if (id) {
+                    $.nette.ajax({
+                        url: {link toggleActive!},
+                        type: 'GET',
+                        data: { {$control->getParameterId('uid')}: id, {$control->getParameterId('checked')}: this.checked}
+                    });
+
+                } else {
+                    console.log("form data-id not found!");
+                }
+            });
+
+
+            $('body').on('change', '[data-name="CampaignForm"] select[name="template"]', function (e) {
+
+                // console.log(changeTemplateSignal);
+                var id = $(this).closest('form').data('id');
+
+				console.log(this);
+				console.log($(this).val());
+
+                $.nette.ajax({
+                    url: {link changeTemplate!},
+                    type: 'GET',
+                    data: { {$control->getParameterId('id')}: id, {$control->getParameterId('tid')}: $(this).val() }
+	            });
+
+
+
+//                var btn = $(this).next('input[name="changeTemplateSubmit"]');
+//                console.log(btn);
+//
+//                if (btn.length) {
+//                    btn.click();
+//                }
+
+
+                return;
+                $.nette.ajax({
+                    url: form.attr("action"),
+                    method: "POST",
+                    data: form.serialize()
+                });
+
+
+
+                console.log(e);
+                console.log($(this).val());
+
+            });
+
+
+        });
+	</script>
+
+
+
+
+
+{/define}
+
+
+
+{define detail}
+	<div class="box-list__settings js-settings">
+		<div n:if="$form->hasErrors()" class="alert alert-success alert-dismissible">
+			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			<p n:foreach="$form->errors as $error"><strong>Warning!</strong> {$error}</p>
+		</div>
+
+		{input sendSubmit}
+		<div class="box-list__settings__one">
+			{label name}
+			{input name}
+		</div>
+		<div class="box-list__settings__one">
+			{*{label realizedFrom}*}
+			{*{input realizedFrom}*}
+		</div>
+		<div class="box-list__settings__one">
+			<div class="box-list__settings__one__devices__head clearfix">
+				<strong>Zařízení</strong>
+				<ul>
+					<li><input type="radio" name="typzarizeni" checked="checked" class="js-zarizeniControl" id="ff-zarizeni-1"><label for="ff-zarizeni-1">Zařízení</label></li>
+					<li><input type="radio" name="typzarizeni" class="js-skupinyControl"  id="ff-skupiny-1"><label for="ff-skupiny-1">Skupiny</label></li>
+				</ul>
+			</div>
+			<div class="box-list__settings__one__devices">
+				<div class="box-list__settings__one__devices__inner clearfix js-skupiny nooo">
+					<div>
+						<input type="checkbox" id="pobocka-8">
+						<label for="pobocka-8"><span>Čechy</span></label>
+					</div>
+					<div>
+						<input type="checkbox" id="pobocka-9">
+						<label for="pobocka-9"><span>Morava</span></label>
+					</div>
+				</div>
+				<div class="box-list__settings__one__devices__inner clearfix js-zarizeni">
+					<div>
+						<input type="checkbox" id="pobocka-1">
+						<label for="pobocka-1"><span>Holešovice - vchod</span></label>
+					</div>
+					<div>
+						<input type="checkbox" id="pobocka-2">
+						<label for="pobocka-2"><span>Ústí - uzeniny</span></label>
+					</div>
+					<div>
+						<input type="checkbox" checked="checked" id="pobocka-3">
+						<label for="pobocka-3"><span>Chodov</span></label>
+					</div>
+					<div>
+						<input type="checkbox" id="pobocka-4">
+						<label for="pobocka-4"><span>Ruzyně - terminál 1</span></label>
+					</div>
+					<div>
+						<input type="checkbox" checked="checked" id="pobocka-5">
+						<label for="pobocka-5"><span>Ruzyně - terminál 2</span></label>
+					</div>
+					<div>
+						<input type="checkbox" checked="checked" id="pobocka-6">
+						<label for="pobocka-6"><span>Ruzyně - terminál 3</span></label>
+					</div>
+					<div>
+						<input type="checkbox" id="pobocka-7">
+						<label for="pobocka-7"><span>Poděbrady</span></label>
+					</div>
+					<div>
+						<input type="checkbox" id="pobocka-10">
+						<label for="pobocka-10"><span>Chodov</span></label>
+					</div>
+					<div>
+						<input type="checkbox" id="pobocka-11">
+						<label for="pobocka-11"><span>Ruzyně - terminál 1</span></label>
+					</div>
+					<div>
+						<input type="checkbox" id="pobocka-12">
+						<label for="pobocka-12"><span>Ruzyně - terminál 2</span></label>
+					</div>
+					<div>
+						<input type="checkbox" id="pobocka-13">
+						<label for="pobocka-13"><span>Ruzyně - terminál 3</span></label>
+					</div>
+					<div>
+						<input type="checkbox" id="pobocka-14">
+						<label for="pobocka-14"><span>Poděbrady</span></label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="box-list__settings__one">
+			{label tag}
+			<div class="box-list__settings__one__colors clearfix">
+			{foreach $form['tag']->items as $key => $label}
+				<div class="input-control">
+					<input n:name="tag:$key">
+					<label n:name="tag:$key" class="{$label}">{*{$label}*}</label>
+				</div>
+			{/foreach}
+			</div>
+		</div>
+
+
+		<div class="box-list__settings__one">
+			<div class="box-list__settings__one__templateSelectHead clearfix">
+				{label template}
+				<span class="js-addNewTemplatePopup">Přidat novou šablonu</span>
+			</div>
+			{input template}
+		</div>
+
+
+
+		<div class="box-list__settings__one">
+			<strong>Data pro šablonu</strong>
+			<div class="owl-carousel js-media owl-theme box-list__settings__one__media">
+				<div class="item">
+					<input type="file" id="input-file-now" class="dropify" />
+					<div class="timeselect">
+						<span>čas:</span>
+						<input type="text" class="form-control">
+						<select class="form-control">
+							<option>s</option>
+							<option>min</option>
+						</select>
+					</div>
+				</div>
+				<div class="item">
+					<div class="box-list__settings__one__media__link">
+						<i class="fa fa-external-link"></i>
+						<span>Přijdete link</span>
+					</div>
+					<div class="timeselect">
+						<span>čas:</span>
+						<input type="text" class="form-control">
+						<select class="form-control">
+							<option>s</option>
+							<option>min</option>
+						</select>
+					</div>
+				</div>
+				<div class="item">
+					<input type="file" id="input-file-now" class="dropify" />
+					<div class="timeselect">
+						<span>čas:</span>
+						<input type="text" class="form-control">
+						<select class="form-control">
+							<option>s</option>
+							<option>min</option>
+						</select>
+					</div>
+				</div>
+				<div class="item">
+					<input type="file" id="input-file-now" class="dropify" />
+					<div class="timeselect">
+						<span>čas:</span>
+						<input type="text" class="form-control">
+						<select class="form-control">
+							<option>s</option>
+							<option>min</option>
+						</select>
+					</div>
+				</div>
+				<div class="item">
+					<input type="file" id="input-file-now" class="dropify" />
+					<div class="timeselect">
+						<span>čas:</span>
+						<input type="text" class="form-control">
+						<select class="form-control">
+							<option>s</option>
+							<option>min</option>
+						</select>
+					</div>
+				</div>
+				<div class="item">
+					<input type="file" id="input-file-now" class="dropify" />
+					<div class="timeselect">
+						<span>čas:</span>
+						<input type="text" class="form-control">
+						<select class="form-control">
+							<option>s</option>
+							<option>min</option>
+						</select>
+					</div>
+				</div>
+				<div class="item">
+					<input type="file" id="input-file-now" class="dropify" />
+					<div class="timeselect">
+						<span>čas:</span>
+						<input type="text" class="form-control">
+						<select class="form-control">
+							<option>s</option>
+							<option>min</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{/define}

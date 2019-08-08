@@ -1,0 +1,234 @@
+<?php
+/**
+ * This file is part of karl-von-bahnhof.
+ * Copyright (c) 2018
+ *
+ * @file    DeviceFacade.php
+ * @author  Pavel Paulík <pavel.paulik@support.etnetera.cz>
+ */
+
+namespace CmsModule\Facades;
+
+
+use CmsModule\Entities\DeviceEntity;
+use CmsModule\Entities\DeviceGroupEntity;
+use CmsModule\Forms\DeviceForm;
+use CmsModule\Repositories\DeviceGroupRepository;
+use CmsModule\Repositories\DeviceRepository;
+use CmsModule\Repositories\UserRepository;
+use Kdyby\Doctrine\EntityManager;
+use Kdyby\Doctrine\EntityRepository;
+use Nette\Http\Session;
+use Nette\Security\User;
+use Nette\SmartObject;
+
+/**
+ * Class DeviceFacade
+ *
+ * @package CmsModule\Facades
+ * @method onActivate(DeviceEntity $deviceEntity)
+ * @method onGroupActivate(DeviceGroupEntity $deviceEntity)
+ */
+class DeviceFacade
+{
+    use SmartObject;
+
+    use PositionableTrait;
+
+    /** @var DeviceRepository */
+    private $deviceRepository;
+
+    /** @var DeviceGroupRepository */
+    private $deviceGroupRepository;
+
+    /** @var UserRepository */
+    private $userRepository;
+
+    /** @var EntityManager */
+    private $em;
+
+    /** @var Session */
+    private $session;
+
+    /** @var Callback[] */
+    public $onActivate = [];
+
+    /** @var Callback[] */
+    public $onGroupActivate = [];
+
+    private $allowedDevices;
+
+    private $allowedDevicesGroups;
+
+
+    /**
+     * DeviceFacade constructor.
+     *
+     * @param DeviceRepository      $deviceRepository
+     * @param DeviceGroupRepository $deviceGroupRepository
+     * @param UserRepository        $userRepository
+     */
+    public function __construct(DeviceRepository $deviceRepository, DeviceGroupRepository $deviceGroupRepository, UserRepository $userRepository, Session $session)
+    {
+        $this->deviceRepository      = $deviceRepository;
+        $this->deviceGroupRepository = $deviceGroupRepository;
+        $this->userRepository        = $userRepository;
+        $this->session               = $session;
+        $this->em                    = $deviceRepository->getEntityManager();
+    }
+
+
+    /**
+     * @deprecated use deviceRepository->getUserAllowedQuery instead
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    public function getAllowedDevices(User $user)
+    {
+        if (null === $this->allowedDevices) {
+            $allowedDevices = $user->isAllowed(DeviceForm::class, 'editAllDevices')
+                ? $this->deviceRepository->findAll()
+                : $this->userRepository->getAssignedDevices($user);
+
+            $this->allowedDevices = $this->entityPairsRows($allowedDevices);
+        }
+
+        return $this->allowedDevices;
+    }
+
+
+    public function getAllowedDevicesGroups(User $user)
+    {
+        if (null === $this->allowedDevicesGroups) {
+            $allowedDevicesGroups = $user->isAllowed(DeviceForm::class, 'editAllDevices')
+                ? $this->deviceGroupRepository->findAll()
+                : $this->userRepository->getAssignedDevicesGroups($user);
+
+            $this->allowedDevicesGroups = $this->entityPairsRows($allowedDevicesGroups);
+        }
+
+        return $this->allowedDevicesGroups;
+    }
+
+
+
+
+
+
+    private function entityPairsRows($rows)
+    {
+        $_rows = [];
+        foreach ($rows as $row) {
+            $_rows[$row->id] = $row;
+        }
+
+        return $_rows;
+    }
+
+
+    public function setActive(DeviceEntity $deviceEntity, $active)
+    {
+        $deviceEntity->setActive($active);
+        $this->em->persist($deviceEntity);
+
+        $this->onActivate($deviceEntity);
+        $this->em->flush();
+    }
+
+
+    public function setGroupActive(DeviceGroupEntity $deviceGroupEntity, $active)
+    {
+        $deviceGroupEntity->setActive($active);
+        $this->em->persist($deviceGroupEntity);
+
+        $this->onGroupActivate($deviceGroupEntity);
+        $this->em->flush();
+    }
+
+
+    /**
+     * @return DeviceRepository
+     */
+    public function getDeviceRepository()
+    {
+        return $this->deviceRepository;
+    }
+
+    /**
+     * @return DeviceGroupRepository
+     */
+    public function getDeviceGroupRepository()
+    {
+        return $this->deviceGroupRepository;
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->em;
+    }
+
+
+    /**
+     * @return EntityRepository
+     */
+    public function getRepository()
+    {
+        return $this->deviceRepository;
+    }
+
+
+
+    private function getSection()
+    {
+        return $this->session->getSection('device');
+    }
+
+
+    public function setNewDevice()
+    {
+        $section = $this->getSection();
+        $section->newDevice = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNewDevice()
+    {
+        $section = $this->getSection();
+        return isset($section->newDevice);
+    }
+
+    public function cleanNewDevice()
+    {
+        $section = $this->getSection();
+        unset($section->newDevice);
+    }
+
+    public function setNewDeviceGroup()
+    {
+        $section = $this->getSection();
+        $section->newDeviceGroup = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNewDeviceGroup()
+    {
+        $section = $this->getSection();
+        return isset($section->newDeviceGroup);
+    }
+
+    public function cleanNewDeviceGroup()
+    {
+        $section = $this->getSection();
+        unset($section->newDeviceGroup);
+    }
+
+}

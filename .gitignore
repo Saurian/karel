@@ -1,0 +1,17 @@
+# Created by .ignore support plugin (hsz.mobi)
+/*.js
+/*.json
+/*.sh
+/*.phar
+/.bowerrc
+
+.idea/*
+docs/*
+node_modules/
+web/composer.lock
+web/log/*
+web/temp/*
+
+/web/www/media/
+!web/www/media/web.config
+!web/www/media/_storage_no_image/8f/no-images-placeholder.png

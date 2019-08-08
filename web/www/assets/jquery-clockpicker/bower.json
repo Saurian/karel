@@ -1,0 +1,40 @@
+{
+  "name": "jquery-clockpicker",
+  "authors": [
+    "Gustavo Real <kotdesigns@gmail.com>"
+  ],
+  "description": "Time picker based on android material for jQuery",
+  "main": [
+    "dist/jquery-clockpicker.js",
+    "dist/jquery-clockpicker.css"
+  ],
+  "keywords": [
+    "jquery",
+    "timepicker",
+    "clockpicker",
+    "time",
+    "material",
+    "clock"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src",
+    "examples",
+    "test",
+    "tests",
+    ".bowerrc",
+    ".gitignore",
+    "bower.json",
+    "gulpfile.js",
+    "package.json",
+    "README.md"
+  ],
+  "dependencies": {
+    "jquery": ">= 1.7"
+  },
+  "version": "0.0.7"
+}

@@ -1,0 +1,43 @@
+{
+  "name": "jquery-asGradient",
+  "version": "0.3.3",
+  "description": "A jquery plugin used to manipulate css image gradient.",
+  "main": "dist/jquery-asGradient.js",
+  "copyright": "amazingSurge",
+  "license": "LGPL-3.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "demo",
+    "gulp",
+    "CONTRIBUTING.md",
+    "manifest.json",
+    "karma.conf.js",
+    "config.js",
+    "package.json",
+    "gulpfile.babel.js",
+    "tests"
+  ],
+  "homepage": "https://github.com/amazingSurge/jquery-asGradient",
+  "authors": [
+    "amazingSurge <amazingSurge@gmail.com>"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "dependencies": {
+    "jquery": ">=2.2.0",
+    "jquery-asColor": "^0.3.3"
+  },
+  "_release": "0.3.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.3.3",
+    "commit": "dcd4ee859ec4a552ec80a763d67367565bba595f"
+  },
+  "_source": "https://github.com/amazingSurge/jquery-asGradient.git",
+  "_target": "^0.3.1",
+  "_originalSource": "jquery-asGradient"
+}

@@ -1,0 +1,93 @@
+{*{translator messages /}*}
+{*{extends $original_template}*}
+<div n:block="detail" class="well well-sm" style="background-color: #f6feff">
+	<h2 class="text-primary">{_messages.template.detail.title} `{$item->name}`</h2>
+	{if $item->campaigns->isEmpty()}
+		{include media}
+	{else}
+		<div class="row">
+			<div class="col-md-6">
+
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						{_media}
+						<div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="fa ti-minus"></i></a></div>
+					</div>
+					<div class="panel-wrapper panel-collapse collapse in">
+						<div class="panel-body p-0">
+							{include media}
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						{_campaigns}
+						<div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="fa ti-minus"></i></a></div>
+					</div>
+					<div class="panel-wrapper panel-collapse collapse in">
+						<div class="panel-body p-0">
+							{include campaigns}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
+</div>
+
+<table n:define="media" class="table">
+	<thead>
+	<tr>
+		<th>{_messages.template.detail.record_inserted}</th>
+		<th>{_messages.template.detail.medium_type}</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	<tr n:foreach="$item->media as $medium">
+		<td>{$medium->inserted|date:'j. n. Y H:i'}</td>
+		<td>{_messages.mediaType.$medium->type}</td>
+	</tr>
+	</tbody>
+	<tfoot>
+	<tr>
+		<td colspan="2">{_messages.template.mediaCount, $item->media->count()}</td>
+	</tr>
+	</tfoot>
+</table>
+
+
+<table n:define="campaigns" class="table">
+	<thead>
+	<tr>
+		<th>{_messages.template.detail.record_inserted}</th>
+		<th>{_campaign}</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	<tr n:foreach="$item->campaigns as $campaign">
+		<td class="">{$campaign->inserted|date:'j. n. Y H:i'}</td>
+		<td><a class="btn-link" href="{plink Campaign: campaign => $campaign->id }" data-ajax="false">{$campaign->name}</a></td>
+	</tr>
+	</tbody>
+	<tfoot>
+	<tr>
+		<td colspan="2">{_messages.template.campaignCount, $item->campaigns->count()}</td>
+	</tr>
+	</tfoot>
+</table>
+
+<script>
+    $('.panel-collapse').on('hide.bs.collapse', function () {
+        var source = $(this).closest('.panel').find('.fa');
+        $(source).removeClass('ti-minus').addClass('ti-plus');
+
+    }).on('show.bs.collapse', function () {
+        var source = $(this).closest('.panel').find('.fa');
+        $(source).removeClass('ti-plus').addClass('ti-minus');
+    })
+</script>

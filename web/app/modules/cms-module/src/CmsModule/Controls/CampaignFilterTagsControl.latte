@@ -1,0 +1,15 @@
+{snippet tags}
+	<div n:if="$filterDeviceNames || $filterDeviceGroupNames" class="btn-group">
+		<a n:foreach="$filterDeviceNames as $id => $filterDeviceName" n:href="removeFilterDevice! $id" class="ajax btn btn-primary">{$filterDeviceName} <i class="fa fa-close"></i></a>
+		<a n:foreach="$filterDeviceGroupNames as $id => $filterDeviceGroupName" n:href="removeFilterDeviceGroup! $id" class="ajax btn btn-info">{$filterDeviceGroupName} <i class="fa fa-close"></i></a>
+	</div>
+
+	{*  label display
+	<div n:if="$filterDeviceNames" class="btn-group btn-group-justified" style="margin-bottom: 2px;">
+		<span n:foreach="$filterDeviceNames as $id => $filterDeviceName" class="label label-primary">{$filterDeviceName} <a n:href="removeFilterDevice! $id" class="ajax text-white"><i class="fa fa-times" aria-hidden="true"></i></a></span>
+	</div>
+	<div n:if="$filterDeviceGroupNames" class="btn-group btn-group-justified">
+		<span n:foreach="$filterDeviceGroupNames as $id => $filterDeviceGroupName" class="label label-info">{$filterDeviceGroupName} <a n:href="removeFilterDeviceGroup! $id" class="ajax text-white"><i class="fa fa-times" aria-hidden="true"></i></a></span>
+	</div>
+	*}
+{/snippet}

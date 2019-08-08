@@ -1,0 +1,56 @@
+{*{translator front.homepage /}*}
+<div class="js-newTemplate box-newTemplate">
+	<div n:snippet="form" class="box-newTemplate__inner">
+
+		{*{snippet templateForm}*}
+		{*{snippetArea formq}*}
+		{form templateForm}
+
+			<a class="btn btn-danger waves-effect waves-light box-newTemplate__close js-newTemplateClose"><span>{_template.cancel_add}</span> <i class="fa fa-close m-l-5"></i></a>
+			<h2>{_template.create_a_new_media_template}</h2>
+
+			<div class="m-b-10">
+				{label name class => 'm-b-5'}
+				{input name}
+			</div>
+			<div class="box-newTemplate__adding clearfix">
+				<div class="box-newTemplate__wrap">
+
+					{*{snippet items}*}
+
+					<div n:foreach="$form['media']->getComponents() as $id => $medium" class="box-newTemplate__adding__one">
+						{*<div n:foreach="$entity->media as $index => $medium" class="box-newTemplate__adding__one">*}
+						{*{dump $medium}*}
+
+						{*<a n:href="removeMedium! $iterator->counter" class="ajax js-removeTemplateOne" style="color: #686868;">remove</a>*}
+
+						{formContainer $medium}
+						{*{formContainer media-_new_$index}*}
+							{input removeMediumSubmit}
+
+							{*<div n:foreach="$medium->type->items as $key => $label">*}
+								{*<input n:name="type:$key">*}
+								{*<label n:name="type:$key" class="{$label}">{$label}</label>*}
+							{*</div>*}
+							<div n:foreach="$medium['type']->items as $key => $label">
+								<input n:name="type:$key">
+								<label n:name="type:$key" class="{$label}">{$label}</label>
+							</div>
+						{/formContainer}
+					</div>
+
+					{*{/snippet}*}
+
+				</div>
+
+				<button n:name="addMediumSubmit">+</button>
+				{*<a n:href="addMedium!" class="ajax box-newTemplate__adding__new _js-addNewTemplateMedia" data-ajax-off="nprogress" style="color: #686868;">+</a>*}
+			</div>
+
+			{input sendTemplate}
+			{*<button class="btn btn-success waves-effect waves-light btn-lg  js-newTemplateSubmit"><span>Uložit a použít</span></button>*}
+		{/form}
+		{*{/snippet}*}
+		{*{/snippetArea}*}
+	</div>
+</div>

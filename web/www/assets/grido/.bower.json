@@ -1,0 +1,32 @@
+{
+  "name": "grido",
+  "main": [
+    "assets/js/grido.js",
+    "assets/sass/grido.scss"
+  ],
+  "ignore": [
+    "src",
+    "tests",
+    ".gitignore",
+    ".scrutinizer",
+    ".travis.yml",
+    "composer.json",
+    "pre-commit.sh",
+    "standards.xml"
+  ],
+  "dependencies": {
+    "jquery": ">= 1.7"
+  },
+  "homepage": "https://github.com/o5/grido",
+  "version": "3.0.0",
+  "_release": "3.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "3.0.0",
+    "commit": "7d9036bb9ef58b563d063c54ab295275ce363a38"
+  },
+  "_source": "https://github.com/o5/grido.git",
+  "_target": "^3.0.0",
+  "_originalSource": "grido",
+  "_direct": true
+}

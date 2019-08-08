@@ -1,0 +1,59 @@
+<div n:block="detail" class="well well-lg" >
+
+	<h2 class="text-primary">log {$item->inserted|date:"j. n. Y h:m:s"}</h2>
+
+	<div class="row">
+		<div class="col-md-6">
+			<table class="table">
+				<thead>
+				<tr>
+					<th>Id</th>
+					<th>Context</th>
+				</tr>
+				</thead>
+
+				<tbody>
+				<tr n:foreach="$item->context as $id => $context">
+					<td>{$id}</td>
+					<td>{$context}</td>
+				</tr>
+				</tbody>
+		{*
+				<tfoot>
+				<tr>
+					<td colspan="2"></td>
+				</tr>
+				</tfoot>
+		*}
+			</table>
+
+		</div>
+
+		<div class="col-md-6">
+			<table class="table">
+				<thead>
+				<tr>
+					<th>Id</th>
+					<th>Extra</th>
+				</tr>
+				</thead>
+
+				<tbody>
+				<tr n:foreach="$item->extra as $id => $extra">
+					<td>{$id}</td>
+					<td>{$extra}</td>
+				</tr>
+				</tbody>
+	{*
+				<tfoot>
+				<tr>
+					<td colspan="2"></td>
+				</tr>
+				</tfoot>
+	*}
+			</table>
+
+		</div>
+	</div>
+
+</div>

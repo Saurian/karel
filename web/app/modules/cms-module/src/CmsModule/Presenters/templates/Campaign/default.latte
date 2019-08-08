@@ -1,0 +1,601 @@
+{*{translator front.homepage /}*}
+{block title}{_campaignPage.title}{/block}
+{block content}
+	{* komponenta pro přidání šablon do kampaně *}
+	{control templateControl}
+
+	<div class="row bg-title">
+		<div class="col-sm-10 col-xs-12">
+			<h1 class="page-title">{_campaignPage.title}</h1>
+			<div n:snippet="campaignLink" class="box-filter">
+				<div class="btn-group">
+					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices > 0" href="javascript:void(0)" class="btn btn-md btn-success m-r-5" data-toggle="modal" data-backdrop="static" data-target=".addCampaignPopup">{_campaignPage.addCampaign}</a>
+					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices == 0" n:href="Device:" class="btn btn-md btn-success">{_campaignPage.addDeviceFirst}</a>
+					{control campaignsFilterControl}
+					<a n:if="$presenter->campaign" n:href="resetSelectCampaign!" data-ajax="false" class="btn btn-md btn-warning">{_campaignPage.filter_delete} <i class="fa fa-close"></i></a>
+				</div>
+			</div>
+
+			<div class="box-filter">
+				{control campaignFilterTagsControl}
+			</div>
+		</div>
+
+		<div class="col-sm-2 col-xs-12">
+			<ol class="breadcrumb">
+				<li><a n:href="Campaign:">{_campaignPage.title}</a></li>
+				<li class="active">{_campaignPage.navigation}</li>
+			</ol>
+		</div>
+	</div>
+
+	<div class="dd-item-backgroundWrap"></div>
+
+
+	<div class="row">
+		<!-- .col -->
+		<div class="col-md-7 col-sm-12 col-xs-12">
+
+			<div class="myadmin-dd-empty dd{if $user->isAllowed('Cms:Campaign', 'nestable')} nestable{/if}" n:snippet="campaigns" data-animate-before="QfadeOut" data-animate-after="QfadeIn"  style="padding-bottom: 50px;">
+				{snippetArea items}
+					<ol n:if="$campaigns" class="dd-list">
+						{foreach $campaigns as $campaign}
+							{var $row = $campaign['entity']}
+							{var $mediaCount = $campaign['mediaDataCount']}
+
+							<li class="dd-item dd3-item" data-id="{$row->id}">
+
+								{*<div class="dd-item-backgroundWrap"></div>*}
+
+								{form campaignsForm-$row->id}
+									<div class="activ-controler">
+										<label n:name="active">
+											<span>{_campaignPage.active}:</span>
+											<input n:name="active">
+										</label>
+									</div>
+								{/form}
+								{if !isset($toggle_detail) && !isset($change_template)}
+									<div n:snippet="item-{$row->getId()}" class="dd3-content box-list">
+										<a class="ajax item-detail-link" n:href="detail! $row->id" data-toggle-item-detail="{$row->id}" data-ajax-off="datargid.item_detail,history"></a>
+
+										<div class="box-list__preview js-preview">
+											<h2>{$row->name}</h2>
+
+											{capture $from}{$row->realizedFrom|date:'j. n. Y'}{/capture}
+											{capture $to}{$row->realizedTo|date:'j. n. Y'}{/capture}
+
+											<p>{_campaignPage.plan_from, [from => $from, to => $to]}</p>
+											<div class="bot-line">
+												<ul class="clearfix">
+													<li><i n:class="$mediaCount>0 ? 'fa fa-check' : 'fa fa-times'"></i> {_media}</li>
+												</ul>
+											</div>
+										</div>
+
+									</div>
+								{/if}
+
+								{snippet item-{$row->getId()}-handle}
+									<div class="dd-handle dd3-handle {$row->tag}"></div>
+								{/snippet}
+
+								<div n:snippet="item-{$row->id}-detail" class="item-detail-content item-detail-{$row->id}" data-animate-before="fadeOut" data-animate-after="fadeIn">
+									{if (isset($toggle_detail) && $toggle_detail == $row->id) || (isset($change_template) && $change_template == $row->id)}
+										{form campaignsDetailForm-$row->id}
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+												<h4 class="modal-title">{_campaignPage.editCampaign}</h4>
+											</div>
+
+											<div class="box-list__settings js-settings">
+
+												<label n:name="active" class="hidden">
+													<input n:name="active" class="hidden">
+												</label>
+
+												{if $user->isAllowed('CmsModule\Forms\CampaignForm', 'edit')}
+													{input sendSubmit}
+												{/if}
+
+												<div class="box-list__settings__one">
+													{label name}
+													{input name}
+												</div>
+												<div class="box-list__settings__one">
+													{label realizedFrom}
+													{input realizedFrom}
+												</div>
+
+
+												<div class="box-list__settings__one">
+													<div class="box-list__settings__one__devices__head clearfix">
+														{label devices}
+														<ul>
+															<li>
+																<input type="radio" name="typzarizeni" checked="checked" class="js-zarizeniControl" id="ff-zarizeni-{$row->id}" data-target-id="{$row->id}">
+																<label for="ff-zarizeni-{$row->id}">{_forms.campaignsDetailForm.devices}</label>
+															</li>
+															<li>
+																<input type="radio" name="typzarizeni" class="js-skupinyControl" id="ff-skupiny-{$row->id}" data-target-id="{$row->id}">
+																<label for="ff-skupiny-{$row->id}">{_forms.campaignsDetailForm.groups}</label>
+															</li>
+														</ul>
+													</div>
+													<div class="box-list__settings__one__devices">
+														<div class="clearfix box-list__settings__one__devices__inner clearfix js-skupiny nooo" data-source="js-skupiny-{$row->id}">
+															<div n:if="$form[devicesGroups]->items" n:foreach="$form[devicesGroups]->items as $key => $label" n:class="$iterator->isLast() ? _clear">
+																<input n:name="devicesGroups:$key">
+																<label n:name="devicesGroups:$key"><span>{$label}</span></label>
+															</div>
+															{if count($form[devicesGroups]->items) == 0}
+																<input n:name="devicesGroups" class="hidden">
+																<div>
+																	<label class="alert alert-danger disabled">
+																		<span class="text-danger">{_forms.deviceDetailForm.noAnyDeviceGroups}</span>
+																	</label>
+																</div>
+															{/if}
+															{* v detailu kampaně nebudeme zobrazovat odkaz na založení skupinu zařízení
+															<div>
+																<label class="alert alert-info m-b-0 bg-primary">
+																	<a n:href="modalDeviceGroupFormInDevicePage!" class="btn btn-info btn-md">{_campaignPage.newDeviceGroup}</a>
+																</label>
+															</div>
+															*}
+														</div>
+														<div class="clearfix box-list__settings__one__devices__inner clearfix js-zarizeni" data-source="js-zarizeni-{$row->id}">
+															<div n:if="$form[devices]->items" n:foreach="$form[devices]->items as $key => $label" n:class="$iterator->isLast() ? _clear">
+																<input n:name="devices:$key">
+																<label n:name="devices:$key"><span>{$label}</span></label>
+															</div>
+															{if count($form[devices]->items) == 0}
+																<input n:name="devices" class="hidden">
+																<div>
+																	<label class="alert alert-danger disabled">
+																		<span class="text-danger">{_forms.deviceDetailForm.noAnyDevices}</span>
+																	</label>
+																</div>
+															{/if}
+															{* v detailu kampaně nebudeme zobrazovat odkaz na založení zařízení
+																<label class="alert alert-info m-b-0 bg-primary">
+																	<a n:href="modalDeviceFormInDevicePage!" class="btn btn-info btn-md">{_campaignPage.newDevice}</a>
+																</label>
+															</div>
+															*}
+														</div>
+													</div>
+												</div>
+												<div class="box-list__settings__one">
+													{label tag}
+													<div class="box-list__settings__one__colors clearfix" data-last-value="{$form['tag']->value}">
+														{foreach $form['tag']->items as $key => $label}
+															<div class="input-control">
+																<input n:name="tag:$key">
+																<label n:name="tag:$key" class="{$label}">{*{$label}*}</label>
+															</div>
+														{/foreach}
+													</div>
+												</div>
+
+												<div class="box-list__settings__one">
+													{label keywords}
+													{input keywords}
+												</div>
+
+												<div class="box-list__settings__one">
+													<div class="box-list__settings__one__templateSelectHead clearfix">
+														{label template}
+														<span n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'edit')" class="js-addNewTemplatePopup" data-ajax="false">{_campaignPage.add_new_template}</span>
+													</div>
+													{input template}
+													{*{input changeTemplateSubmit}*}
+												</div>
+
+												<div class="box-list__settings__one">
+													<strong class="inline-block">{_campaignPage.template_data}</strong>
+
+													<div n:if="($row->template && !$row->template->media->isEmpty())" id="more-options" class="checkbox checkbox-purple pull-right">
+														<input n:name="keywordsToggle">
+														<label n:name="keywordsToggle">{_forms.campaignsDetailForm.keywordsToggle}</label>
+													</div>
+
+													<div n:if="$form->hasErrors()" class="alert alert-danger alert-dismissible">
+														<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+														<strong>Warning!</strong>
+														<p n:foreach="$form->errors as $error"> {$error}</p>
+													</div>
+
+
+													<div n:if="$row->mediaData" class="owl-carousel js-media owl-theme box-list__settings__one__media">
+
+														{*{dump $row->template->media}*}
+														{*{dump $form['mediaData']->getComponents()}*}
+
+														<div n:foreach="$form['mediaData']->getComponents() as $mediaData" class="item">
+															{formContainer $mediaData}
+																{ifset $mediaData['file']}
+																	{ifset $mediaData['file']->control->attrs['data-identifier']}
+																		{var $img = $this->imageStorage->fromIdentifier([$mediaData['file']->control->attrs['data-identifier'], '190x150', 'fit'])}
+																		{input file data-default-file=> $basePath . '/media/' . $img, data-message-type=> $mediaData['file']->control->attrs['data-messageType'] }
+
+																	{elseifset $mediaData['file']->control->attrs['data-fileName']}
+																		{input file data-default-file=> $basePath . '/media/' . $row->id .'/' .  $mediaData['file']->control->attrs['data-fileName'], data-message-type=> $mediaData['file']->control->attrs['data-messageType']}
+
+																	{else}
+																		{input file data-message-type=> $mediaData['file']->control->attrs['data-messageType']}
+																	{/ifset}
+																{/ifset}
+
+																{ifset $mediaData['url']}
+																	<div class="box-list__settings__one__media__link">
+																		<i class="fa fa-external-link"></i>
+																		<span>{_campaignPage.add_link}</span>
+																		{input url}
+																	</div>
+																{/ifset}
+
+																<div n:ifset="$mediaData['keywords']->options['id']" id="{$mediaData['keywords']->options['id']}">
+																	{label keywords /}
+																	{input keywords}
+																</div>
+
+																{ifset $mediaData['sound']}
+																	<div class="timeBox">
+																		<span class="help">{_campaignPage.sound}:</span>
+																		{input sound}
+																	</div>
+																{/ifset}
+																{ifset $mediaData['time']}
+																	{*
+																	<div class="timeselect">
+																		<span class="label">čas:</span>
+																		{input time}
+																		{input timeType}
+																	</div>
+																	*}
+																	<div class="timeBox">
+																		<span class="help">{_campaignPage.time}:</span>
+																		{input time}
+																		{input timeType}
+																	</div>
+
+
+																{/ifset}
+															{/formContainer}
+														</div>
+													</div>
+
+													<div n:if="!$row->template || ($row->template && $row->template->media->isEmpty())"
+															class="box-list__settings__one__media">
+														<div class="alert alert-danger alert-dismissible">
+															<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+															<h3 class="text-info">{_campaignPage.template_not_set}</h3>
+															<strong>{_campaignPage.recommendation}:</strong> {_campaignPage.select_template_ready}.
+														</div>
+													</div>
+
+													<div class="progress-group fade">
+														<span class="progress-text">{_campaignPage.server_uploading}</span>
+														<span class="progress-number"><b></b>...</span>
+														<div class="progress progress-striped active sm">
+															<div class="progress-bar progress-bar-red" style="width: 100%"></div>
+														</div>
+													</div>
+
+												</div>
+
+
+											</div>
+
+										{/form}
+
+									{/if}
+								</div>
+
+							</li>
+						{/foreach}
+					</ol>
+				{/snippetArea}
+			</div>
+		</div>
+
+		<!-- /.col -->
+		<div class="col-md-5 col-sm-12 col-xs-12 hidden-xs">
+			<div n:snippet="filter" class="row" data-animate-before="flipOutX" data-animate-after="flipInX">
+				<!-- .col -->
+				<div class="col-sm-4">
+					<a n:href="setFilter!" class="ajax white-box text-center bg-inverse dlazdice" data-ajax-off="history" data-dismiss="filter">
+						<strong class="text-white  counter-filter counter">{$allCampaignCount}</strong>
+
+						<p class="text-white"><strong>{_allCampaigns}</strong></p>
+					</a>
+				</div>
+				<!-- /.col -->
+				<!-- .col -->
+				<div class="col-sm-4">
+					<a n:href="setFilter! active => true" class="ajax white-box text-center bg-megna dlazdice" data-ajax-off="history" data-dismiss="filter">
+						<strong class="text-white counter-filter counter">{$activeCampaignCount}</strong>
+						<p class="text-white">{_activeItems}</p>
+					</a>
+				</div>
+				<!-- /.col -->
+				<!-- .col -->
+				<div class="col-sm-4">
+					<a n:href="setFilter! active => false" class="ajax white-box text-center bg-danger dlazdice" data-ajax-off="history" data-dismiss="filter">
+						<strong class="counter counter-filter text-white">{$nonActiveCampaignCount}</strong>
+						<p class="text-white">{_nonActiveItems}</p>
+					</a>
+				</div>
+				<!-- /.col -->
+			</div>
+		</div>
+
+
+	</div>
+
+	{snippetArea wrapperModal}
+		{include campaignFormModal}
+	{/snippetArea}
+
+{/block}
+
+<script n:block="extraScripts">
+    $(function() {
+
+		{ifset $newCampaignSelectDevice}
+		$('.modal.addCampaignPopup').modal('show');
+		{/ifset}
+
+		/*
+		 * toggle campaign active
+		 */
+        $('body').on('change', 'input[name="active"]', function () {
+
+            var id = $(this).closest('form').data('id');
+            var checked = this.checked;
+
+            $.nette.ajax({
+                url: {link toggleActive!},
+                type: 'GET',
+                data: { 'cid': id, 'checked': checked }
+            });
+
+
+			/*
+			 * select other template
+			 */
+        }).on('change', '[data-name="campaignDetailForm"] select[name="template"]', function (e) {
+
+            var form = $(this).closest('form');
+            var id = $(form).data('id');
+            var values = $(form).serializeArray();
+
+            $.nette.ajax({
+                url: {link changeTemplate!},
+                type: 'GET',
+                data: { 'cid': id, 'tid': $(this).val(), 'values': values }
+            });
+
+        }).on('addNewTemplate', function(e, eventInfo) {
+			return;
+            $.nette.ajax({
+                url: {link changeTemplate!},
+                type: 'GET',
+                data: { 'cid': eventInfo.cid, 'tid': eventInfo.tid }
+            });
+        }).on('change', 'input[name="tag"]', function() {
+			var header = $(this).closest('form').find('.modal-header');
+			var checked = this.checked;
+
+			if (checked) {
+				header.attr('class', 'modal-header ' + $(this).val());
+			} else {
+				header.attr('class', 'modal-header');
+			}
+			
+		});
+
+
+        $('.modal.addCampaignPopup').on('hidden.bs.modal', function () {
+
+        }).on('show.bs.modal', function () {
+            // fix firefox bug with select-box in popup
+            $.fn.modal.Constructor.prototype.enforceFocus = function () { };
+        });
+
+
+        /**
+         * media carousel form send by ajax
+         */
+        $.nette.ext('mediaCarousel', {
+			init: function () {
+
+            },
+
+            load: function() {
+
+                $( ".js-media:not(.owl-loaded)" ).each(function(index) {
+
+					var indexFile = 0;
+                    var files = $(this).find('[type="file"]');
+
+                    // Dropify
+                    var drEvent = $('.dropify').dropify({
+
+                        messages: {
+                            'default': function (q, e, r) {
+								return 'Nahrajte soubor <br>' + $(files[indexFile++]).data("message-type");
+                            },
+                            replace: 'Nahradit soubor',
+                            remove: 'Odstranit',
+                            error: 'Chyba'
+                        }
+                    });
+
+                    drEvent.on('dropify.beforeClear', function(event, object){
+						var filename = $(this).data('filename') ? $(this).data('filename') : 'nový soubor';
+                        return confirm("Opravdu chcete smazat \"" + filename + "\" ?");
+                    });
+
+                    drEvent.on('dropify.afterClear', function(event, object){
+                        var id = $(this).data('id');
+                        $.nette.ajax({
+                            url: {link removeMediumData!},
+                            type: 'GET',
+                            data: { 'mid': id }
+                        });
+
+                        // alert('File deleted');
+                    });
+
+					var $this = $(this);
+					
+					// Carousel
+					setTimeout(function() {
+						$this.owlCarousel({
+							margin:20,
+							nav:true,
+							autoplay:false,
+							touchDrag: true,
+							mouseDrag: false,
+							dots:false, 
+							navText: ["Předchozí","Další"],
+							responsive:{
+								0:{
+									items:1
+								},
+								520:{
+									items:2
+								},
+								700:{
+									items:3
+								},
+								990:{
+									items:2
+								},
+								1400:{
+									items:3
+								},
+								1680:{
+									items:4
+								}
+							}
+						});
+					}, 200);
+                });
+            }
+        });
+    });
+
+</script>
+
+{define campaignFormModal}
+	<div class="modal fade addCampaignPopup" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="false">
+		<div class="modal-dialog modal-lg">
+			<div n:snippet="campaignFormModal" class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title">{_campaignPage.addCampaign}</h4>
+				</div>
+
+				<div class="modal-body">
+					{form campaignForm}
+
+						<div class="box-list__settings__one">
+							{input sendSubmit}
+							<p>&nbsp;</p>
+						</div>
+						<div class="box-list__settings__one">
+							{label name}
+							{input name}
+						</div>
+						<div class="box-list__settings__one">
+							{label realizedFrom}
+							{input realizedFrom}
+						</div>
+
+						<div class="box-list__settings__one">
+							<div class="box-list__settings__one__devices__head clearfix">
+								{label devices}
+								<ul>
+									<li><input type="radio" name="typzarizeni" checked="checked" class="js-zarizeniControl" id="ff-zarizeni-new" data-target-id="new"><label for="ff-zarizeni-new">{_forms.campaignsDetailForm.devices}</label></li>
+									<li><input type="radio" name="typzarizeni" class="js-skupinyControl"  id="ff-skupiny-new" data-target-id="new"><label for="ff-skupiny-new">{_forms.campaignsDetailForm.groups}</label></li>
+								</ul>
+							</div>
+							<div class="box-list__settings__one__devices">
+								<div class="box-list__settings__one__devices__inner clearfix js-skupiny nooo" data-source="js-skupiny-new">
+									<div n:if="$form[devicesGroups]->items" n:foreach="$form[devicesGroups]->items as $key => $label">
+										<input n:name="devicesGroups:$key">
+										<label n:name="devicesGroups:$key"><span>{$label}</span></label>
+									</div>
+									{if count($form[devicesGroups]->items) == 0}
+										<input n:name="devicesGroups" class="hidden">
+										<div>
+											<label class="alert alert-danger disabled">
+												<span class="text-danger">{_forms.deviceDetailForm.noAnyDeviceGroups}</span>
+											</label>
+										</div>
+									{/if}
+									<div>
+										<label class="alert alert-info m-b-0 bg-primary">
+											<a n:href="modalDeviceGroupFormInDevicePage!" class="btn btn-info btn-md">{_campaignPage.newDeviceGroup}</a>
+										</label>
+									</div>
+								</div>
+								<div class="box-list__settings__one__devices__inner clearfix js-zarizeni" data-source="js-zarizeni-new">
+									<div n:if="$form[devices]->items" n:foreach="$form[devices]->items as $key => $label">
+										<input n:name="devices:$key">
+										<label n:name="devices:$key"><span>{$label}</span></label>
+									</div>
+									{if count($form[devices]->items) == 0}
+										<input n:name="devices" class="hidden">
+										<div>
+											<label class="alert alert-danger disabled">
+												<span class="text-danger">{_forms.deviceDetailForm.noAnyDevices}</span>
+											</label>
+										</div>
+									{/if}
+									<div>
+										<label class="alert alert-info m-b-0 bg-primary">
+											<a n:href="modalDeviceFormInDevicePage!" class="btn btn-info btn-md">{_campaignPage.newDevice}</a>
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="box-list__settings__one">
+							{label tag}
+							<div class="box-list__settings__one__colors clearfix">
+								{foreach $form['tag']->items as $key => $label}
+									<div class="input-control">
+										<input n:name="tag:$key">
+										<label n:name="tag:$key" class="{$label}">{*{$label}*}</label>
+									</div>
+								{/foreach}
+							</div>
+						</div>
+
+						<div class="box-list__settings__one">
+							{label keywords}
+							{input keywords}
+						</div>
+
+						<div class="box-list__settings__one">
+							<div class="box-list__settings__one__templateSelectHead clearfix">
+								{label template}
+								<span n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'edit')" class="js-addNewTemplatePopup">{_campaignPage.add_new_template}</span>
+							</div>
+							{input template}
+							{*{input changeTemplateSubmit}*}
+						</div>
+					{/form}
+					{*{control campaignForm}*}
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+{/define}

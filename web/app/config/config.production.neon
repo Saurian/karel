@@ -1,0 +1,25 @@
+parameters:
+	database:
+		user: karl
+		password: b11CO9py7ge
+		dbname: pixman_karl
+
+mail:
+	smtp: false
+	host: local.cz
+	username: info@local.cz
+	password: "b4RO2OT!}e"
+
+doctrine:
+	host: database
+	charset: UTF8
+	driver: pdo_mysql
+	user: %database.user%
+	password: %database.password%
+	dbname: %database.dbname%
+	autoGenerateProxyClasses: %debugMode%
+	proxyDir: "%tempDir%/proxies"
+	proxyNamespace: "proxy"
+	cacheClass: DoctrineModule\Cache
+	secondLevelCache:
+		 enabled: true

@@ -1,0 +1,33 @@
+<div n:block="detail" class="well well-lg" style="background-color: #f6feff;">
+	<table class="table table-bordered">
+		<thead>
+		<tr>
+			<th>Parametry</th>
+		</tr>
+		<tbody>
+		<tr>
+			<td>
+				{$presenter->getHtmlResult($item->params)|noescape}
+			</td>
+		</tr>
+		</tbody>
+
+		<thead>
+		<tr>
+			<th>Result</th>
+		</tr>
+		<tbody>
+		<tr>
+			<td>
+				{$presenter->getHtmlResult($item->result)|noescape}
+			</td>
+		</tr>
+		</tbody>
+
+		<tfoot>
+		<tr>
+			<td colspan="1"><p class="text-primary">(log #{$item->id}) {$item->inserted|date:"j. n. Y H:m"}</p></td>
+		</tr>
+		</tfoot>
+	</table>
+</div>

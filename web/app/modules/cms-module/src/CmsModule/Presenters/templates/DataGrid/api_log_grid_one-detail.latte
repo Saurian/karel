@@ -1,0 +1,149 @@
+<div n:block="detail" class="well well-lg" style="background-color: #f6feff">
+
+	{*<h2 class="text-primary">log {$item->inserted|date:"j. n. Y H:m"}</h2>*}
+
+	{ifset $item->result[0]}
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Parametry
+				<div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="fa ti-minus"></i></a></div>
+			</div>
+			<div class="panel-wrapper panel-collapse collapse in">
+				<div class="panel-body p-0">
+					<table>
+						<thead>
+						<tr>
+							<th n:foreach="$item->params as $key => $value">{$key}</th>
+						</tr>
+						<tbody>
+						<tr>
+							<td n:foreach="$item->params as $key => $value">{$value}</td>
+						</tr>
+						</tbody>
+
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Data
+				<div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="fa ti-minus"></i></a></div>
+			</div>
+			<div class="panel-wrapper panel-collapse collapse in">
+				<div class="panel-body p-0">
+					<table class="table m-b-10" n:foreach="$item->result as $values">
+						<thead>
+						<tr>
+							{foreach $values as $key => $value}
+								{breakIf $iterator->counter > 4}
+								<th{if count($values)<4} colspan="{5-count($values)}"{/if}>{$key}</th>
+							{/foreach}
+						</tr>
+						</thead>
+
+						<tbody>
+						<tr>
+							{foreach $values as $key => $value}
+								{breakIf $iterator->counter > 4}
+								<td>{$presenter->getHtmlResult($value)|noescape}</td>
+							{/foreach}
+						</tr>
+						</tbody>
+
+
+
+						<thead n:if="count($values) > 4">
+						<tr>
+							{foreach $values as $key => $value}
+								{continueIf $iterator->counter < 4}
+								{breakIf $iterator->counter > 7}
+								<th{if $iterator->last && count($values)<7} colspan="{8-count($values)}"{/if}>{$key}</th>
+							{/foreach}
+						</tr>
+						</thead>
+
+						<tbody n:if="count($values) > 4">
+						<tr>
+							{foreach $values as $key => $value}
+								{continueIf $iterator->counter < 4}
+								{breakIf $iterator->counter > 7}
+								<td{if $iterator->last && count($values)<7} colspan="{8-count($values)}"{/if}>{$presenter->getHtmlResult($value)|noescape}</td>
+							{/foreach}
+						</tr>
+						</tbody>
+
+
+						<thead n:if="count($values) > 7">
+						<tr>
+							{foreach $values as $key => $value}
+								{continueIf $iterator->counter < 8}
+								{breakIf $iterator->counter > 11}
+								<th{if $iterator->last && count($values)<11} colspan="{12-count($values)}"{/if}>{$key}</th>
+							{/foreach}
+						</tr>
+						</thead>
+
+						<tbody n:if="count($values) > 7">
+						<tr>
+							{foreach $values as $key => $value}
+								{continueIf $iterator->counter < 8}
+								{breakIf $iterator->counter > 11}
+								<td{if $iterator->last && count($values)<11} colspan="{12-count($values)}"{/if}>{$presenter->getHtmlResult($value)|noescape}</td>
+							{/foreach}
+						</tr>
+						</tbody>
+
+
+						<tfoot>
+						<tr>
+							<td colspan="4" class="text-primary"><span class="label label-info">#{$iterator->counter}</span></td>
+						</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	{else}
+		<table class="table m-b-10">
+			<thead>
+			<tr>
+				<th n:foreach="$item->params as $key => $value">{$key}</th>
+			</tr>
+			<tbody>
+			<tr>
+				<td n:foreach="$item->params as $key => $value">{$value}</td>
+			</tr>
+			</tbody>
+			<tfoot>
+			<tr>
+				<td colspan="{count($item->params)}">Parametry <small>`{$item->command}`</small></td>
+			</tr>
+			</tfoot>
+		</table>
+
+		<table class="table">
+			<thead>
+			<tr>
+				<th class="datagrid-fit-content">inserted</th>
+				<th n:foreach="$item->result as $key => $value">{$key}</th>
+			</tr>
+			</thead>
+
+			<tbody>
+			<tr>
+				<td class="datagrid-fit-content"><pre>{$item->inserted|date:"j. n. Y H:m"}</pre></td>
+				<td n:foreach="$item->result as $key => $value">{$presenter->getHtmlResult($value)|noescape}</td>
+			</tr>
+			</tbody>
+
+			<tfoot>
+			<tr>
+				<td colspan="{count($item->result) + 1}">Data</td>
+			</tr>
+			</tfoot>
+		</table>
+	{/ifset}
+</div>

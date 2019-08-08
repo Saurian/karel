@@ -1,0 +1,47 @@
+{block title}{_statisticsPage.title}{/block}
+{block content}
+
+<div class="row bg-title">
+	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+		<h1 class="page-title">Statistiky</h1>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-6 col-sm-6 col-xs-12">
+		<div class="white-box">
+			<h3 class="box-title"><a n:href="Users:">{_users}</a></h3>
+			<ul class="list-inline two-part">
+				<li><i class="icon-people text-info"></i></li>
+				<li class="text-right"><span class="counter">{$users}</span></li>
+			</ul>
+		</div>
+	</div>
+	<div class="col-lg-6 col-sm-6 col-xs-12">
+		<div class="white-box">
+			<h3 class="box-title"><a n:href="Campaign:">{_campaigns}</a></h3>
+			<ul class="list-inline two-part">
+				<li><i class="icon-folder text-purple"></i></li>
+				<li class="text-right"><span class="counter">{$campaigns}</span></li>
+			</ul>
+		</div>
+	</div>
+	<div class="col-lg-6 col-sm-6 col-xs-12">
+		<div class="white-box">
+			<h3 class="box-title"><a n:href="Device:">{_devices}</a></h3>
+			<ul class="list-inline two-part">
+				<li><i class="icon-folder-alt text-danger"></i></li>
+				<li class="text-right"><span class="counter">{$devices}</span></li>
+			</ul>
+		</div>
+	</div>
+	<div class="col-lg-6 col-sm-6 col-xs-12">
+		<div class="white-box">
+			<h3 class="box-title"><a n:href="Template:">{_templates}</a></h3>
+			<ul class="list-inline two-part">
+				<li><i class="ti-wallet text-success"></i></li>
+				<li class="text-right"><span class="counter">{$templates}</span></li>
+			</ul>
+		</div>
+	</div>
+</div>
+

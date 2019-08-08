@@ -1,0 +1,268 @@
+{extends $original_template}
+
+
+
+
+
+{*{foreach $columns as $key => $column}*}
+	{*{$key}*}
+	{*{dump $column}*}
+{*{/foreach}*}
+
+{*{dump $rows}*}
+
+	{*{foreach $rows as $item}*}
+		{*{foreach $columns as $key => $column}*}
+			{*{$column->render($item)}*}
+		{*{/foreach}*}
+	{*{/foreach}*}
+
+
+
+
+<div class="row" n:block="data" n:snippet="table">
+	<!-- .col -->
+	<div class="col-md-7 col-sm-12 col-xs-12">
+		<div class="clearfix" style="position: relative; display: block;">
+			<div class="myadmin-dd-empty dd" id="nestable2" style="padding-bottom: 50px;">
+				{snippetArea items}
+				<ol n:if="$rows" class="dd-list">
+					<li n:foreach="$rows as $row" class="dd-item dd3-item" data-id="{$row->getId()}" n:snippet="item-{$row->getId()}">
+						{var $item = $row->getItem()}
+
+
+						{if !isset($toggle_detail) || true}
+
+							{foreach $columns as $key => $column}
+								{php $column = $row->applyColumnCallback($key, clone $column)}
+							{/foreach}
+
+
+
+							<div class="dd-item-backgroundWrap"></div>
+							<div class="dd-handle dd3-handle tagColor2"></div>
+							<div class="activ-controler">
+								<span>Aktivní:</span>
+								<input type="checkbox" checked class="js-switch" data-size="small" />
+							</div>
+							<div class="dd3-content box-list">
+								{* link to detail *}
+								{$columns['detail']->render($row)}
+
+								{dump $items_detail}
+								{*{$items_detail->renderButton($row)|noescape}*}
+
+								{* link to detail *}
+
+								<div class="box-list__preview js-preview">
+
+									{*{dump $columns['name']->render($row)}*}
+
+									<h2>{$row->item->name} - sn{$row->item->id}</h2>
+									<p>Umístění: {$row->item->street} {$row->item->strno}, {$row->item->city} {$row->item->zip}
+									</p>
+								</div>
+
+
+								{**
+								 * Item detail
+								 *}
+								{if $items_detail && $items_detail->shouldBeRendered($row)}
+
+									{dump $items_detail->getForm()}
+									{*getItemDetailForm*}
+
+									{*{formContainer items_detail_form-$row->id}*}
+									{*{/formContainer}*}
+
+									{*{formContainer $items_detail->getForm()}*}
+									{*{/formContainer}*}
+
+
+
+									{*{$items_detail->getForm()}*}
+
+
+									<div class="row-item-detail item-detail-{$row->getId()}" n:snippet="item-{$row->getId()}-detail">
+										{if isset($toggle_detail) && $toggle_detail == $row->getId()}
+
+											{*{dump $toggle_detail}*}
+
+											{var $item_detail_params = ['item' => $item, '_form' => $filter] + $items_detail->getTemplateVariables()}
+
+											{if isset($filter['items_detail_form'])}
+												{var $item_detail_params['items_detail_form'] = $filter['items_detail_form']}
+											{/if}
+
+
+
+
+											{dump $item_detail_params}
+
+											{ifset #detail}
+												<div class="item-detail-content">
+													{*{include #detail, (expand) $item_detail_params}*}
+													{include #detailmain, item => $item, row => $row, (expand) $item_detail_params}
+
+													{dump $items_detail}
+
+
+
+
+
+												</div>
+											{/ifset}
+
+										{/if}
+									</div>
+
+
+								{/if}
+
+
+								{*{include detailmain}*}
+
+							</div>
+						{/if}
+
+
+
+
+
+						{**
+						 * Item detail
+						 *}
+
+
+						{*
+						 *
+						 *}
+
+
+					</li>
+				</ol>
+
+				{/snippetArea}
+			</div>
+		</div>
+	</div>
+	<!-- /.col -->
+
+
+
+
+	<div class="col-md-5 col-sm-12 col-xs-12 hidden-xs">
+		<div class="row">
+			<!-- .col -->
+			<div class="col-sm-4">
+				<a href="#" class="white-box text-center bg-inverse dlazdice">
+					<strong class="text-white  counter-filter counter">165</strong>
+
+					<p class="text-white"><strong>Všechny xxx</strong></p>
+				</a>
+			</div>
+			<!-- /.col -->
+			<!-- .col -->
+			<div class="col-sm-4">
+				<a href="#" class="white-box text-center bg-megna dlazdice">
+					<strong class="text-white counter-filter counter">43</strong>
+					<p class="text-white">Aktivní</p>
+				</a>
+			</div>
+			<!-- /.col -->
+			<!-- .col -->
+			<div class="col-sm-4">
+				<a href="#" class="white-box text-center bg-danger dlazdice">
+					<strong class="counter counter-filter text-white">122</strong>
+					<p class="text-white">Neaktivní</p>
+				</a>
+			</div>
+			<!-- /.col -->
+		</div>
+	</div>
+</div>
+
+
+
+{block detail}
+	<h3>Noto</h3>
+
+{/block}
+
+
+
+{define detailmain}
+	<div class="box-list__settings js-settings" >
+
+
+		{*{dump $items_detail_form}*}
+		{dump $this->global}
+
+{*
+
+		{formContainer items_detail_form-$row->id}
+			{input id, value => $row->id}
+			{input name, value => $row->name}
+			{input save}
+		{/formContainer}
+
+*}
+
+
+
+
+
+
+
+
+		<button class="btn btn-success waves-effect waves-light box-list__settings__close js-settingsClose"><span>Uložit úpravy</span></button>
+		<div class="box-list__settings__one">
+			<strong>Název</strong>
+			<input type="text" class="form-control" value="Nazev">
+		</div><div class="box-list__settings__one">
+			<strong>SN</strong>
+			<input type="text" class="form-control" value="SN">
+		</div>
+		<div class="box-list__settings__one">
+			<strong>Umístění</strong>
+			<input type="text" class="form-control" value="Most">
+		</div>
+		<div class="box-list__settings__one">
+			<div class="box-list__settings__one__templateSelectHead clearfix">
+				<strong>Skupina</strong>
+				<span data-toggle="modal" data-target=".addGroupPopup">Přidat novou skupinu</span>
+			</div>
+			<select class="form-control">
+				<option>Položka 1</option>
+				<option>Položka 2</option>
+			</select>
+		</div>
+		<div class="box-list__settings__one">
+			<div class="box-list__settings__one__templateSelectHead clearfix">
+				<strong>Výchozí kampaň</strong>
+				<div class="vpraov">
+					Smyčka: &nbsp; <input type="checkbox" checked class="js-switch m-l-5" data-size="small" />
+				</div>
+			</div>
+			<select class="form-control">
+				<option>Položka 1</option>
+				<option>Položka 2</option>
+			</select>
+		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="box-list__settings__one">
+					<strong>Kampaně - naplánovány</strong>
+					<button class="btn btn-info waves-effect waves-light"><span>Zobrazit</span></button>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="box-list__settings__one">
+					<strong>HeartBeat</strong>
+					<div class="heartbeat"></div><!-- dá se přidat classa red -->
+				</div>
+			</div>
+		</div>
+
+	</div>
+{/define}

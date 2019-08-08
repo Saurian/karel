@@ -1,0 +1,9 @@
+extensions:
+	- ErrorPresenterExtension
+	- PresenterMappingExtension
+	- RouterProviderExtension
+	- LatteMacrosProviderExtension
+	- TemplateHelpersProviderExtension
+	- TracyBarProviderExtension
+	- TracyBlueScreenProviderExtension
+	- Flame\Modules\DI\ModulesExtension

@@ -1,0 +1,18 @@
+{foreach $flashes as $flash}
+	{if $flash->type == 'gritter'}
+		<p>GRITTER</p>
+		<script>
+			(function ($, undefined) {
+				$.gritter.add({
+					title: {$flash->title},
+					text: {$flash->message},
+					image: "/assets/img/admin-ico.png",
+					sticky: false,
+					time: 8000
+				});
+
+			})(jQuery);
+		</script>
+	{/if}
+
+{/foreach}

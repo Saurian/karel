@@ -1,0 +1,179 @@
+{block title}{_deviceGroupPage.title}{/block}
+{block content}
+	<div class="row bg-title">
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+			<h1 class="page-title">{_deviceGroupPage.management}</h1>
+			<a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" href="javascript:void(0)" class="btn btn-md m-l-15 btn-success" data-toggle="modal" data-target=".addGroupPopup">{_deviceGroupPage.addDeviceGroup}</a>
+		</div>
+		<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
+			<ol class="breadcrumb">
+				<li><a n:href="DeviceGroup:">{_deviceGroupPage.title}</a></li>
+				<li class="active">{_deviceGroupPage.navigation}</li>
+			</ol>
+		</div>
+	</div>
+
+	<div class="dd-item-backgroundWrap"></div>
+
+	<div class="row">
+		<div class="col-md-7 col-sm-12 col-xs-12">
+			<div n:snippet="devices" class="myadmin-dd-empty dd{if $user->isAllowed('Cms:Device', 'nestable')} nestable{/if}" data-animate-before="fadeOut" data-animate-after="fadeIn" style="padding-bottom: 50px;">
+				{snippetArea items}
+					<ol n:if="$deviceGroups" class="dd-list">
+						{foreach $deviceGroups as $id => $deviceGroup}
+							<li class="dd-item dd3-item" data-id="{$deviceGroup->getId()}">
+
+								{*<div class="dd-item-backgroundWrap"></div>*}
+								<div class="dd-handle dd3-handle tagColor2"></div>
+
+								{form deviceGroupsForm-$deviceGroup->id}
+									<div class="activ-controler">
+										<label n:name="active">
+											<span>{_devicePage.active}:</span>
+											<input n:name="active">
+										</label>
+									</div>
+								{/form}
+
+								<div n:if="!isset($toggle_detail)" n:snippet="item-{$deviceGroup->getId()}" class="dd3-content box-list">
+									{* link to detail *}
+									<a class="ajax item-detail-link" n:href="detail! $deviceGroup->id" data-toggle-item-detail="{$deviceGroup->id}" data-ajax-off="datargid.item_detail"></a>
+									{* link to detail *}
+
+									<div class="box-list__preview js-preview">
+										<h2>{$deviceGroup->name}</h2>
+									</div>
+								</div>
+
+								<div n:snippet="item-{$deviceGroup->id}-detail" class="item-detail-content item-detail-{$deviceGroup->id}" data-animate-before="fadeOut" data-animate-after="fadeIn">
+									{if isset($toggle_detail) && $toggle_detail == $deviceGroup->id}
+
+										{form deviceGroupsDetailForm-$deviceGroup->id}
+
+											{if !isset($toggle_detail) || true}
+
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+													<h4 class="modal-title">{_deviceGroupPage.editDeviceGroup}</h4>
+												</div>
+
+												<label n:name="active" class="hidden">
+													<input n:name="active" class="hidden">
+												</label>
+
+
+												<div class="box-list__settings js-settings">
+
+													<div n:if="$form->hasErrors()" class="alert alert-success alert-dismissible">
+														<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+														<p n:foreach="$form->errors as $error"><strong>Warning!</strong> {$error}</p>
+													</div>
+
+													{if $user->isAllowed('CmsModule\Forms\DeviceForm', 'edit')}
+														{input sendSubmit}
+													{/if}
+
+													<div class="box-list__settings__one">
+														{label name}
+														{input name}
+													</div>
+
+												</div>
+
+											{/if}
+										{/form}
+									{/if}
+								</div>
+
+							</li>
+						{/foreach}
+					</ol>
+
+				{/snippetArea}
+			</div>
+		</div>
+		<!-- /.col -->
+
+
+		<div class="col-md-5 col-sm-12 col-xs-12 hidden-xs">
+			<div n:snippet="filter" class="row" data-animate-before="flipOutX" data-animate-after="flipInX">
+				<!-- .col -->
+				<div class="col-sm-4">
+					<a n:href="setFilter!" class="ajax white-box text-center bg-inverse dlazdice" data-ajax-off="history" data-dismiss="filter">
+						<strong class="text-white  counter-filter counter">{$allDeviceCount}</strong>
+
+						<p class="text-white"><strong>{_allDeviceGroups}</strong></p>
+					</a>
+				</div>
+				<!-- /.col -->
+				<!-- .col -->
+				<div class="col-sm-4">
+					<a n:href="setFilter! active => true" class="ajax white-box text-center bg-megna dlazdice" data-ajax-off="history" data-dismiss="filter">
+						<strong class="text-white counter-filter counter">{$activeDeviceCount}</strong>
+						<p class="text-white">{_activeItems}</p>
+					</a>
+				</div>
+				<!-- /.col -->
+				<!-- .col -->
+				<div class="col-sm-4">
+					<a n:href="setFilter! active => false" class="ajax white-box text-center bg-danger dlazdice" data-ajax-off="history" data-dismiss="filter">
+						<strong class="counter counter-filter text-white">{$nonActiveDeviceCount}</strong>
+						<p class="text-white">{_nonActiveItems}</p>
+					</a>
+				</div>
+				<!-- /.col -->
+			</div>
+		</div>
+	</div>
+
+	{snippetArea deviceGroupFormModal}{include deviceGroupFormModal}{/snippetArea}
+{/block}
+
+<script n:block="extraScripts">
+    $(function() {
+
+		{if $newDeviceGroup}
+        $('.modal.addGroupPopup').modal('show');
+		{/if}
+
+        /*
+		 * toggle campaign active
+		 */
+        $('body').on('change', 'input[name="active"]', function () {
+
+            var id = $(this).closest('form').data('id');
+            var checked = this.checked;
+
+            $.nette.ajax({
+                url: {link toggleActive!},
+                type: 'GET',
+                data: { 'did': id, 'checked': checked }
+            });
+
+        });
+
+    });
+
+</script>
+
+<div n:block="deviceGroupFormModal" class="modal fade addGroupPopup" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div n:snippet="deviceGroupForm" class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">{_devicePage.add_group}</h4>
+			</div>
+			{form deviceGroupForm}
+				<div class="modal-body p-t-0 p-b-0">
+					<div class="box-list__settings js-settings">
+						{input sendSubmit}
+						<div class="box-list__settings__one">
+							{label name}
+							{input name}
+						</div>
+					</div>
+				</div>
+			{/form}
+		</div>
+	</div>
+</div>

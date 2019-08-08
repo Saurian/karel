@@ -1,0 +1,144 @@
+{**
+ * @param string   $basePath web base path
+ * @param array    $flashes  flash messages
+ *}
+<!DOCTYPE html>
+<!DOCTYPE html>
+<!--[if lte IE 8 ]><html class="ie ie8 lte8 lte9 oldie" lang="cs"><![endif]-->
+<!--[if IE 9 ]><html class="ie ie9 lte9" lang="cs"><![endif]-->
+<!--[if !(IE)]><!--><html class="not-ie" lang="cs"><!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta content="cs" http-equiv="Content-language">
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<meta content="Pixman s.r.o." name="author">
+	<link rel="shortcut icon" href="{$basePath}/favicon.png">
+	<link href="{$basePath}/images/apple-touch-icon.png" rel="apple-touch-icon">
+
+	<title>{ifset title}{include title|striptags} | {/ifset}Cms - Pixatori</title>
+
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Montserrat:300,400,500,700" rel="stylesheet">
+
+	{*================== BEGIN BASE CSS STYLE ==================*}
+	<script type="application/javascript">var dataLayer = dataLayer || []; // Google Tag Manager</script>
+
+	{*{var $production = true}*}
+
+	{if $production}
+		{control css}
+
+	{else}
+		{*<!-- build:css {$basePath}/css/frontScreen.min.css -->*}
+		<link href="{$basePath}/assets/bootstrap/css/bootstrap.css" rel="stylesheet">
+		<link href="{$basePath}/assets/animate.css/animate.min.css" rel="stylesheet">
+		<link href="{$basePath}/assets/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+		<link href="{$basePath}/assets/lightbox/css/lightbox.min.css" rel="stylesheet">
+		<link href="{$basePath}/css/animate.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" media="screen" href="{$basePath}/css/front.css">
+		{*<!-- endbuild -->*}
+	{/if}
+	<link href="{$basePath}/assets/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="{$basePath}/assets/ionicons/css/ionicons.min.css" rel="stylesheet">
+
+	{*================== BEGIN BASE JS ==================*}
+	<script type="application/javascript" src="{$basePath}/plugins/bower_components/jquery/dist/jquery.min.js"></script>
+	{*================== END BASE JS ==================*}
+	{block head}{/block}
+</head>
+
+<body>
+
+	<header id="header">
+		<div class="container-fluid">
+
+			<div id="logo" class="pull-left">
+				<h1><a n:href="Homepage:#intro" class="scrollto">CMS Pixatori</a></h1>
+				{*<a href="#intro"><img src="img/logo.png" alt="" title="" /></a>*}
+			</div>
+
+			<nav id="nav-menu-container">
+				<ul class="nav-menu">
+					<li n:class="$presenter->isLinkCurrent('Homepage:*') ? 'menu-active'"><a n:href="Homepage:#intro">Home</a></li>
+					{*<li><a href="#about">About Us</a></li>*}
+					<li><a n:href="Homepage:#services">Služby</a></li>
+					<li><a n:href="Homepage:#portfolio">Portfolio</a></li>
+					<li n:class="$presenter->isLinkCurrent('Api:*') ? 'menu-active'"><a n:href="Api:example">Api v příkladech</a></li>
+					<li n:class="$presenter->isLinkCurrent(':Cms:Campaign:*') ? 'menu-active'"><a n:href=":Cms:Campaign:">Admin</a></li>
+				</ul>
+
+			</nav>
+		</div>
+	</header>
+
+	<main id="main">
+		{snippet content}
+			{include content}
+		{/snippet}
+	</main>
+
+	{include '#footer.latte'}
+	{*{control flashMessage}*}
+
+	{block scripts}
+		{*================== BEGIN BASE JS ==================*}
+		{if $production && true == false}
+			{*<script type="application/javascript" src="{$basePath}/assets/bootstrap/js/bootstrap.js"></script>*}
+			<script type="application/javascript" data-pf-placeholder="scripts" src="{$basePath}/js/index.min.js?rel=1531896897707"></script>
+
+			<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/nette.ajax.js"></script>
+			<script type="application/javascript" src="{$basePath}/assets/nette-live-form-validation/live-form-validation.js"></script>
+			<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/diagnostics.dumps.ajax.js"></script>
+			<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/fidRemove.ajax.js"></script>
+			<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/confirm.ajax.js"></script>
+
+
+
+			<script type="application/javascript" src="{$basePath}/js/nette.nprogress.js"></script>
+			<script type="application/javascript" src="{$basePath}/assets/nprogress/nprogress.js"></script>
+		{else}
+			{*<script type="application/javascript" src="{$basePath}/assets/bootstrap/js/bootstrap.js"></script>*}
+			{*<!-- build:js {$basePath}/js/index.min.js -->*}
+			<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/nette.ajax.js"></script>
+			<script type="application/javascript" src="{$basePath}/assets/nette-live-form-validation/live-form-validation.js"></script>
+			<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/diagnostics.dumps.ajax.js"></script>
+			<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/fidRemove.ajax.js"></script>
+			<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/confirm.ajax.js"></script>
+
+			{*<script src="{$basePath}/bootstrap/dist/js/bootstrap.min.js"></script>*}
+			<script src="{$basePath}/assets/bootstrap/js/bootstrap.min.js"></script>
+
+			<script src="{$basePath}/assets/easing/easing.min.js"></script>
+			<script src="{$basePath}/assets/superfish/hoverIntent.js"></script>
+			<script src="{$basePath}/assets/superfish/superfish.min.js"></script>
+			<script src="{$basePath}/assets/wow/wow.min.js"></script>
+			<script src="{$basePath}/assets/waypoints/waypoints.min.js"></script>
+			<script src="{$basePath}/assets/counterup/counterup.min.js"></script>
+			<script src="{$basePath}/assets/owlcarousel/owl.carousel.min.js"></script>
+			<script src="{$basePath}/assets/isotope/isotope.pkgd.min.js"></script>
+			<script src="{$basePath}/assets/lightbox/js/lightbox.min.js"></script>
+			<script src="{$basePath}/assets/touchSwipe/jquery.touchSwipe.min.js"></script>
+			<script src="{$basePath}/js/front.js"></script>
+
+
+			<script type="application/javascript" src="{$basePath}/js/nette.nprogress.js"></script>
+			<script type="application/javascript" src="{$basePath}/assets/nprogress/nprogress.js"></script>
+			{*<!-- endbuild -->*}
+
+		{/if}
+		{*================== END BASE JS ==================*}
+	{/block}
+	{block extraScripts}{/block}
+
+	<script data-pf-placeholder="scripts">
+		(function($, undefined) {
+			$(function () {
+				$.nette.init();
+			});
+		})(jQuery); //jNIV  test
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+{block title}Api příklady{/block}
+{block content}
+
+	<section id="api">
+		<div class="api-container">
+			<h1 class="text-primary text-center">API příklady</h1>
+		</div>
+	</section>
+
+	<div class="container">
+		<a n:href="default '854652B', 123" class="_ajax btn btn-default">check device</a>
+
+		<div class="row _page-header">
+			<div class="col-md-6">
+				<h4 class="text-info">gimmeAllActiveCampaignsData</h4>
+				<ul class="list-group">
+					<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => '854652B', activeDevice=>'ignore'" class="btn btn-link text-left">GimmeAllActiveCampaignsData</a></li>
+					<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! '854652Q3'" class="btn btn-link text-left">GimmeAllActiveCampaignsData</a></li>
+					<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => '854652Q3'" class="btn btn-link text-left">GimmeAllActiveCampaignsData</a></li>
+					<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => '854652Q3', realizedFrom => '2018-07-01' " class="btn btn-link text-left">GimmeAllActiveCampaignsData from '2018-07-01'</a></li>
+					<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => '854652Q3', realizedTo => '2018-08-01' " class="btn btn-link text-left">GimmeAllActiveCampaignsData to '2018-08-01'</a></li>
+					<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => '854652Q3', realizedFrom => '2018-07-01', realizedTo => '2018-08-01' " class="btn btn-link text-left">GimmeAllActiveCampaignsData range '2018-07-01' - '2018-08-01' </a></li>
+				</ul>
+
+			</div>
+			<div class="col-md-6">
+				<h4 class="text-info">gimmeAllActiveCampaigns</h4>
+				<ul class="list-group">
+					<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => '854652B'" class="btn btn-link text-left">GimmeAllActiveCampaigns</a></li>
+					<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => '854652B', realizedFrom => '2018-07-01'" class="btn btn-link text-left">GimmeAllActiveCampaigns from '2018-07-01' (device 5)</a></li>
+					<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => '854652B', realizedTo => '2018-08-01'" class="btn btn-link text-left">GimmeAllActiveCampaigns to '2018-08-01' (device 5)</a></li>
+					<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => '854652B', realizedFrom => '2018-07-01', realizedTo => '2018-08-01'" class="btn btn-link text-left">GimmeAllActiveCampaigns range '2018-07-01' - '2018-08-01' (device 1)</a></li>
+				</ul>
+			</div>
+
+		</div>
+
+		<div class="row _page-header">
+			<div class="col-md-6">
+				<h4 class="text-info">gimmeBestMatchedResultForCampaigns</h4>
+				<ul class="list-group">
+					<li class="list-group-item"><a n:href="gimmeBestMatchedResultForCampaigns! did => '854652B', kw=>test" class="btn btn-link text-left">GimmeBestMatchedResultForCampaigns test</a></li>
+					<li class="list-group-item"><a n:href="gimmeBestMatchedResultForCampaigns! did => '854652B', kw=>color, byWord => true" class="btn btn-link text-left">GimmeBestMatchedResultForCampaigns color [by word mode]</a></li>
+					<li class="list-group-item"><a n:href="gimmeBestMatchedResultForCampaigns! did => '854652B', kw=>'test color', byWord => true, match => 0.2" class="btn btn-link text-left">GimmeBestMatchedResultForCampaigns test color [by word mode, 20%]</a></li>
+				</ul>
+
+			</div>
+			<div class="col-md-6">
+			</div>
+
+		</div>
+
+		{ifset $json}
+			<div n:snippet="result" class="well">
+				{$json}
+			</div>
+		{/ifset}
+
+	</div>
+
+
+{/block}

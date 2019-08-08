@@ -1,0 +1,385 @@
+{block title}{_devicePage.title}{/block}
+{block content}
+	<div class="row bg-title">
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+			<h1 class="page-title">{_devicePage.management}</h1>
+			<a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" href="javascript:void(0)" class="btn btn-md m-l-15 btn-success" data-toggle="modal" data-target=".addDevicePopup">{_devicePage.addDevice}</a>
+
+
+{*
+			$grid->addToolbarButton('addDeviceGroup!', 'Přidat skupinu')
+			->addAttributes([
+			'data-target' => '.addGroupModal',
+			'data-title' => $this->translateMessage()->translate('devicePage.add_new_group'),
+			])
+			->setClass('ajax-modal btn btn-xs btn-success btn-secondary')
+			->setIcon('fa fa-plus');
+*}
+
+
+
+		</div>
+		<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
+			<ol class="breadcrumb">
+				<li><a n:href="Device:">{_devicePage.title}</a></li>
+				<li class="active">{_devicePage.navigation}</li>
+			</ol>
+		</div>
+	</div>
+
+	<div class="dd-item-backgroundWrap"></div>
+
+	<div class="row well-lg well">
+		<div class="col-md-6">
+			<div class="grido grido-tree">
+				{control deviceGroupGridControl}
+			</div>
+
+		</div>
+		<div class="col-md-6">
+			<div class="grido">
+				{control deviceGridControl}
+
+			</div>
+
+		</div>
+	</div>
+
+
+
+
+	<div class="row hidden">
+		<div class="col-md-7 col-sm-12 col-xs-12">
+			<div n:snippet="devices" class="myadmin-dd-empty dd{if $user->isAllowed('Cms:Device', 'nestable')} nestable{/if}" data-animate-before="fadeOut" data-animate-after="fadeIn" style="padding-bottom: 50px;">
+				{snippetArea items}
+					<ol n:if="$devices" class="dd-list">
+						{foreach $devices as $id => $device}
+							<li class="dd-item dd3-item" data-id="{$device->getId()}">
+
+								{*<div class="dd-item-backgroundWrap"></div>*}
+								<div class="dd-handle dd3-handle tagColor2"></div>
+
+								{form devicesForm-$device->id}
+									<div class="activ-controler">
+										<label n:name="active">
+											<span>{_devicePage.active}:</span>
+											<input n:name="active">
+										</label>
+									</div>
+								{/form}
+
+								<div n:if="!isset($toggle_detail)" n:snippet="item-{$device->getId()}" class="dd3-content box-list">
+									{* link to detail *}
+									<a class="ajax item-detail-link" n:href="detail! $device->id" data-toggle-item-detail="{$device->id}" data-ajax-off="datargid.item_detail"></a>
+									{* link to detail *}
+
+									<div class="box-list__preview js-preview">
+										<h2>{$device->name} - sn:{$device->sn}</h2>
+										<p>{_devicePage.place}: {$device->street} {$device->strno}, {$device->city} {$device->zip}</p>
+									</div>
+								</div>
+
+								<div n:snippet="item-{$device->id}-detail" class="item-detail-content item-detail-{$device->id}" data-animate-before="fadeOut" data-animate-after="fadeIn">
+									{if isset($toggle_detail) && $toggle_detail == $device->id}
+
+										{form deviceDetailForm-$device->id}
+
+											{if !isset($toggle_detail) || true}
+
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+													<h4 class="modal-title">{_devicePage.editDevice}</h4>
+												</div>
+
+												<label n:name="active" class="hidden">
+													<input n:name="active" class="hidden">
+												</label>
+
+
+												<div class="box-list__settings js-settings">
+
+													<div n:if="$form->hasErrors()" class="alert alert-success alert-dismissible">
+														<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+														<p n:foreach="$form->errors as $error"><strong>Warning!</strong> {$error}</p>
+													</div>
+
+													{if $user->isAllowed('CmsModule\Forms\DeviceForm', 'edit')}
+													{input sendSubmit}
+													{/if}
+
+													<div class="box-list__settings__one">
+														{label name}
+														{input name}
+													</div>
+													<div class="box-list__settings__one">
+														{label sn}
+														{input sn}
+													</div>
+													<div class="box-list__settings__one">
+														{label psw}
+														{input psw}
+													</div>
+													<div class="box-list__settings__one">
+														{label city}
+														{input city}
+													</div>
+													<div class="box-list__settings__one">
+														{label street}
+														{input street}
+													</div>
+													<div class="box-list__settings__one">
+														{label zip}
+														{input zip}
+													</div>
+													<div class="box-list__settings__one">
+														<div class="box-list__settings__one__templateSelectHead clearfix">
+															{label deviceGroup}
+															<span n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'edit')" data-toggle="modal" data-target=".addGroupPopup">{_devicePage.add_new_group}</span>
+														</div>
+														{input deviceGroup}
+													</div>
+													<div class="box-list__settings__one">
+														<div class="box-list__settings__one__templateSelectHead clearfix">
+															{label defaultCampaign}
+															<span n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'edit')"><a n:href="setSelectDeviceInNewCampaign! $device->id">{_devicePage.add_new_campaign}</a></span>
+															{input defaultCampaign}
+														</div>
+													</div>
+													<div class="box-list__settings__one">
+														<div class="box-list__settings__one__templateSelectHead clearfix">
+															{label loopCampaign}
+															<span n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'edit')"><a n:href="setSelectDeviceInNewCampaign! $device->id">{_devicePage.add_new_campaign}</a></span>
+															{input loopCampaign}
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-sm-6">
+															<div class="box-list__settings__one">
+																<strong>{_devicePage.plain_campaigns}</strong>
+																<a n:href="setDeviceFilterForCampaigns! did => $id" class="btn btn-info waves-effect waves-light"><span>{_devicePage.view}</span></a>
+															</div>
+														</div>
+														<div class="col-sm-6">
+															<div class="box-list__settings__one">
+																<strong>{_devicePage.heart_beat}</strong>
+																<div class="heartbeat red"></div><!-- dá se přidat classa red -->
+															</div>
+														</div>
+													</div>
+
+												</div>
+
+											{/if}
+										{/form}
+									{/if}
+								</div>
+
+							</li>
+						{/foreach}
+					</ol>
+
+				{/snippetArea}
+			</div>
+		</div>
+		<!-- /.col -->
+
+
+		<div class="col-md-5 col-sm-12 col-xs-12 hidden-xs">
+			<div n:snippet="filter" class="row" data-animate-before="flipOutX" data-animate-after="flipInX">
+				<!-- .col -->
+				<div class="col-sm-4">
+					<a n:href="setFilter!" class="ajax white-box text-center bg-inverse dlazdice" data-ajax-off="history" data-dismiss="filter">
+						<strong class="text-white  counter-filter counter">{$allDeviceCount}</strong>
+
+						<p class="text-white"><strong>{_allDevices}</strong></p>
+					</a>
+				</div>
+				<!-- /.col -->
+				<!-- .col -->
+				<div class="col-sm-4">
+					<a n:href="setFilter! active => true" class="ajax white-box text-center bg-megna dlazdice" data-ajax-off="history" data-dismiss="filter">
+						<strong class="text-white counter-filter counter">{$activeDeviceCount}</strong>
+						<p class="text-white">{_activeItems}</p>
+					</a>
+				</div>
+				<!-- /.col -->
+				<!-- .col -->
+				<div class="col-sm-4">
+					<a n:href="setFilter! active => false" class="ajax white-box text-center bg-danger dlazdice" data-ajax-off="history" data-dismiss="filter">
+						<strong class="counter counter-filter text-white">{$nonActiveDeviceCount}</strong>
+						<p class="text-white">{_nonActiveItems}</p>
+					</a>
+				</div>
+				<!-- /.col -->
+			</div>
+		</div>
+	</div>
+
+
+
+	{*{control devicesControl}*}
+
+
+	{*{control deviceGroupForm}*}
+	{*{control deviceForm}*}
+
+	{snippetArea deviceFormModal}{include deviceFormModal}{/snippetArea}
+	{snippetArea deviceGroupFormModal}
+		{include deviceGroupFormModal}
+	{/snippetArea}
+{/block}
+
+<script n:block="extraScripts">
+    $(function() {
+
+		{if $newDevice}
+        $('.modal.addDevicePopup').modal('show');
+		{/if}
+
+		/*
+		 * toggle campaign active
+		 */
+        $('body').on('change', 'input[name="active"]', function () {
+
+            var id = $(this).closest('form').data('id');
+            var checked = this.checked;
+
+            $.nette.ajax({
+                url: {link toggleActive!},
+                type: 'GET',
+                data: { 'did': id, 'checked': checked }
+            });
+
+        });
+
+    });
+
+</script>
+
+<div n:block="deviceFormModal" class="modal fade addDevicePopup animated bounceInLeft" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">{_devicePage.addDevice}</h4>
+			</div>
+
+			<div class="modal-body" n:snippet="editDeviceFormModal">
+				<div class="row">
+					<div n:class="$editDevice ? col-md-6">
+						{form deviceForm}
+							<div n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" class="form-group">
+								{input sendSubmit}
+								<p></p>
+							</div>
+							<div class="box-list__settings__one">
+								{label name}
+								{input name}
+							</div>
+							<div class="box-list__settings__one">
+								{label sn}
+								{input sn}
+							</div>
+							<div class="box-list__settings__one">
+								{label city}
+								{input city}
+							</div>
+							<div class="box-list__settings__one">
+								{label street}
+								{input street}
+							</div>
+							<div class="box-list__settings__one">
+								{label zip}
+								{input zip}
+							</div>
+							<div class="box-list__settings__one">
+								<div class="box-list__settings__one__templateSelectHead clearfix">
+									{label deviceGroup}
+								</div>
+								{input deviceGroup}
+							</div>
+
+
+							<div class="box-list__settings__one">
+								<div class="box-list__settings__one__templateSelectHead clearfix">
+									{label defaultCampaign}
+									{input defaultCampaign}
+									{*
+									<div class="vpraov">
+										Smyčka: &nbsp; <input type="checkbox" checked class="js-switch m-l-5" data-size="small" />
+									</div>
+									*}
+								</div>
+							</div>
+							<div class="box-list__settings__one">
+								<div class="box-list__settings__one__templateSelectHead clearfix">
+									{label loopCampaign}
+									{input loopCampaign}
+								</div>
+							</div>
+						{/form}
+
+					</div>
+					<div n:if="$editDevice" class="col-md-6">
+						{control deviceGroupListGridControl}
+					</div>
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div n:block="deviceGroupFormModal" class="modal fade addGroupModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">{_devicePage.add_group}</h4>
+			</div>
+
+			{snippet editDeviceGroupFormModal}
+			{form deviceGroupForm}
+				<div class="modal-body p-t-0 p-b-0">
+					<div class="box-list__settings js-settings">
+						{input sendSubmit}
+						<div class="box-list__settings__one">
+							{label name}
+							{input name}
+						</div>
+					</div>
+				</div>
+			{/form}
+			{/snippet}
+		</div>
+		<!-- /.modal-content -->
+	</div>
+</div>
+
+{* edit device group *}
+{*
+<div n:block="editDeviceGroupFormModal" class="modal fade editGroupPopup" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">{_devicePage.add_group}</h4>
+			</div>
+			{form deviceGroupForm}
+				<div class="modal-body p-t-0 p-b-0">
+					<div class="box-list__settings js-settings">
+						{input sendSubmit}
+						<div class="box-list__settings__one">
+							{label name}
+							{input name}
+						</div>
+					</div>
+				</div>
+			{/form}
+		</div>
+	</div>
+</div>
+*}

@@ -1,0 +1,234 @@
+<div class="row">
+	<!-- .col -->
+	<div n:snippet="devicesItems" class="col-md-7 col-sm-12 col-xs-12">
+		<div class="clearfix" style="position: relative; display: block;">
+			<div class="myadmin-dd-empty dd" id="nestable2" style="padding-bottom: 50px;">
+				{snippetArea items}
+					<ol n:if="$rows" class="dd-list">
+						<li n:foreach="$rows as $row" class="dd-item dd3-item" data-id="{$row->getId()}" n:snippet="item-{$row->getId()}">
+							{var $item = $row}
+
+							{form deviceDetailForm-$row->id}
+
+							{if !isset($toggle_detail) || true}
+								<div class="dd-item-backgroundWrap"></div>
+								<div class="dd-handle dd3-handle tagColor2"></div>
+								<div class="activ-controler">
+									<label n:name="active">
+										<span>Aktivní:</span>
+										<input n:name="active">
+									</label>
+								</div>
+								<div class="dd3-content box-list">
+									{* link to detail *}
+									<a class="ajax item-detail-link" n:href="detail!" data-toggle-detail="{$item->id}" data-ajax-off="datargid.item_detail"></a>
+									{* link to detail *}
+
+									<div class="box-list__preview js-preview">
+										<h2>{$row->name} - sn:{$row->sn}</h2>
+										<p>Umístění: {$row->street} {$row->strno}, {$row->city} {$row->zip}</p>
+									</div>
+
+
+									{**
+									 * Item detail
+									 *}
+									{*{form detailForm-$row->id}*}
+									{*{/form}*}
+
+
+
+
+									<div class="row-item-detail item-detail-{$row->getId()}" n:snippet="item-{$row->getId()}-detail">
+										{*{if isset($toggle_detail) && $toggle_detail == $row->getId()}*}
+											{*
+											{var $item_detail_params = ['item' => $item, '_form' => $filter] + $items_detail->getTemplateVariables()}
+											{if isset($filter['items_detail_form'])}
+												{var $item_detail_params['items_detail_form'] = $filter['items_detail_form']}
+											{/if}
+
+											{dump $item_detail_params}
+											*}
+											{ifset #detail}
+											{/ifset}
+											<div class="item-detail-content">
+												{*{include #detailmain, item => $item, row => $row}*}
+												{*{control detailForm-$row->id}*}
+
+												<div class="box-list__settings js-settings">
+
+													<div n:if="$form->hasErrors()" class="alert alert-success alert-dismissible">
+														<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+														<p n:foreach="$form->errors as $error"><strong>Warning!</strong> {$error}</p>
+													</div>
+
+													{input sendSubmit}
+
+													<div class="box-list__settings__one">
+														{label name}
+														{input name}
+													</div><div class="box-list__settings__one">
+														{label sn}
+														{input sn}
+													</div>
+													<div class="box-list__settings__one">
+														{label city}
+														{input city}
+													</div>
+													<div class="box-list__settings__one">
+														{label street}
+														{input street}
+													</div>
+													<div class="box-list__settings__one">
+														{label zip}
+														{input zip}
+													</div>
+													<div class="box-list__settings__one">
+														<div class="box-list__settings__one__templateSelectHead clearfix">
+															{label deviceGroup}
+															<span data-toggle="modal" data-target=".addGroupPopup">Přidat novou skupinu</span>
+														</div>
+														{input deviceGroup}
+													</div>
+													<div class="box-list__settings__one">
+														<div class="box-list__settings__one__templateSelectHead clearfix">
+															{label defaultCampaign}
+															{input defaultCampaign}
+															{*
+															<div class="vpraov">
+																Smyčka: &nbsp; <input type="checkbox" checked class="js-switch m-l-5" data-size="small" />
+															</div>
+															*}
+														</div>
+													</div>
+													<div class="box-list__settings__one">
+														<div class="box-list__settings__one__templateSelectHead clearfix">
+															{label loopCampaign}
+															{input loopCampaign}
+														</div>
+													</div>
+													<div class="row p-b-20">
+														<div class="col-sm-6">
+															<div class="box-list__settings__one">
+																<strong>Kampaně - naplánovány</strong>
+																<a href="{plink Campaign:}" class="btn btn-info waves-effect waves-light"><span>Zobrazit</span></a>
+															</div>
+														</div>
+														<div class="col-sm-6">
+															<div class="box-list__settings__one">
+																<strong>HeartBeat</strong>
+																<div class="heartbeat red"></div><!-- dá se přidat classa red -->
+															</div>
+														</div>
+													</div>
+
+												</div>
+
+
+											</div>
+
+										{*{/if}*}
+									</div>
+
+									{*{include detailmain}*}
+								</div>
+							{/if}
+							{/form}
+
+							{**
+							 * Item detail
+							 *}
+
+
+							{*
+							 *
+							 *}
+
+
+						</li>
+					</ol>
+
+				{/snippetArea}
+			</div>
+		</div>
+	</div>
+	<!-- /.col -->
+
+
+
+
+	<div class="col-md-5 col-sm-12 col-xs-12 hidden-xs">
+		<div n:snippet="filter" class="row">
+			<!-- .col -->
+			<div class="col-sm-4">
+				<a n:href="setFilter!" class="ajax white-box text-center bg-inverse dlazdice" data-dismiss="filter">
+					<strong class="text-white  counter-filter counter">{$allDeviceCount}</strong>
+
+					<p class="text-white"><strong>{_allDevices}</strong></p>
+				</a>
+			</div>
+			<!-- /.col -->
+			<!-- .col -->
+			<div class="col-sm-4">
+				<a n:href="setFilter! active => true" class="ajax white-box text-center bg-megna dlazdice" data-dismiss="filter">
+					<strong class="text-white counter-filter counter">{$activeDeviceCount}</strong>
+					<p class="text-white">{_activeItems}</p>
+				</a>
+			</div>
+			<!-- /.col -->
+			<!-- .col -->
+			<div class="col-sm-4">
+				<a n:href="setFilter! active => false" class="ajax white-box text-center bg-danger dlazdice" data-dismiss="filter">
+					<strong class="counter counter-filter text-white">{$nonActiveDeviceCount}</strong>
+					<p class="text-white">{_nonActiveItems}</p>
+				</a>
+			</div>
+			<!-- /.col -->
+		</div>
+	</div>
+</div>
+
+
+
+
+<div class="modal fade addGroupPopup" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">Přidat skupinu</h4>
+			</div>
+			{form deviceGroupForm}
+			<div class="modal-body">
+				<div class="form-group">
+					{label name}
+					{input name}
+				</div>
+			</div>
+			<div class="modal-footer">
+				{input sendSubmit}
+			</div>
+			{/form}
+		</div>
+		<!-- /.modal-content -->
+	</div>
+</div>
+
+<script>
+    $(function() {
+
+        $('body').on('change', 'input[name="active"]', function (e) {
+
+            var id = $(this).closest('form').data('id');
+
+            $.nette.ajax({
+                url: {link toggleActive!},
+                type: 'GET',
+                data: { 'devicesControl-id': id, 'devicesControl-checked': this.checked }
+            });
+
+
+        });
+
+    });
+</script>
