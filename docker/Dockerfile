@@ -23,36 +23,37 @@ RUN add-apt-repository ppa:ondrej/php
 
 # Install selected extensions and other stuff
 RUN apt-get  -o Acquire::Check-Valid-Until=false update \
-    && apt-get -y --no-install-recommends install php7.3-mbstring php7.3-mysql php-redis php7.3-bz2 php7.3-gd php-imagick php7.3-imap php7.3-soap php7.3-tidy php7.3-xmlrpc php7.3-xsl \
-    	php7.3-cgi \
-    	php7.3-cli \
-    	php7.3-common \
-    	php7.3-curl \
-    	php7.3-dev \
-    	php7.3-enchant \
-    	php7.3-fpm \
-    	php7.3-gmp \
-    	php7.3-imap \
-    	php7.3-interbase \
-    	php7.3-intl \
-    	php7.3-json \
-    	php7.3-ldap \
-    	php7.3-opcache \
-    	php7.3-phpdbg \
-    	php7.3-pspell \
-    	php7.3-readline \
-    	php7.3-recode \
-    	php7.3-sqlite3 \
-    	php7.3-zip \
-    	php7.3-sybase
+    && apt-get -y --no-install-recommends install git curl unzip php7.0-mbstring php7.0-mysql php-redis php7.0-bz2 php7.0-gd php-imagick php7.0-imap php7.0-soap php7.0-tidy php7.0-xmlrpc php7.0-xsl \
+        php7.0-xdebug \
+    	php7.0-cgi \
+    	php7.0-cli \
+    	php7.0-common \
+    	php7.0-curl \
+    	php7.0-dev \
+    	php7.0-enchant \
+    	php7.0-fpm \
+    	php7.0-gmp \
+    	php7.0-imap \
+    	php7.0-interbase \
+    	php7.0-intl \
+    	php7.0-json \
+    	php7.0-ldap \
+    	php7.0-opcache \
+    	php7.0-phpdbg \
+    	php7.0-pspell \
+    	php7.0-readline \
+    	php7.0-recode \
+    	php7.0-sqlite3 \
+    	php7.0-zip \
+    	php7.0-sybase
 
-RUN apt-get install apache2 libapache2-mod-php7.3 -y
+RUN apt-get install apache2 libapache2-mod-php7.0 -y
 RUN apt-get install mariadb-common mariadb-client -y
 RUN apt-get install nano curl -y
 RUN apt-get install openssl -y
 RUN apt-get install imagemagick -y
 RUN apt-get install -y sendmail
-RUN apt-get install -y php7.3-redis
+RUN apt-get install -y php7.0-redis
 RUN apt-get install -y redis
 RUN apt-get install -y cron
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
@@ -90,5 +91,5 @@ EXPOSE 80
 EXPOSE 443
 EXPOSE 6379
 
-ENTRYPOINT ["/tmp/run-server.sh"];
+ENTRYPOINT ["/tmp/run-server.sh"]
 #CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]

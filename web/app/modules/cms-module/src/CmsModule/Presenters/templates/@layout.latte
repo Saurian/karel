@@ -17,14 +17,14 @@
 	<meta content="Pixman s.r.o." name="author">
 	<link rel="shortcut icon" href="{$basePath}/favicon.png">
 
-	<title>{ifset title}{include title|striptags} | {/ifset}{_title}</title>
+	<title n:snippet="title">{ifset title}{include title|striptags} | {/ifset}{_title}</title>
 
 	<link href='https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900' rel='stylesheet' type='text/css'>
 
 	{*================== BEGIN BASE CSS STYLE ==================*}
 	<script type="application/javascript">var dataLayer = dataLayer || []; // Google Tag Manager</script>
 
-	{*{var $production = true}*}
+	{var $production = false}
 
 
 
@@ -55,6 +55,7 @@
 		<link href="{$basePath}/assets/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
 
 		<link href="{$basePath}/assets/happy/dist/happy.css" rel="stylesheet" type="text/css">
+		<link href="{$basePath}/assets/lightbox2/dist/css/lightbox.css" rel="stylesheet" type="text/css">
 
 		<!-- Daterange picker plugins css -->
 		{*<link href="{$basePath}/plugins/bower_components/timepicker/bootstrap-timepicker.min.css" rel="stylesheet">*}
@@ -161,7 +162,7 @@
 	</nav>
 	<!-- Left navbar-header -->
 	<div class="navbar-default sidebar" role="navigation">
-		<div class="sidebar-nav navbar-collapse slimscrollsidebar">
+		<div n:snippet="navigation" class="sidebar-nav navbar-collapse slimscrollsidebar">
 			<ul class="nav" id="side-menu">
 				<li class="sidebar-search hidden-sm hidden-md hidden-lg">
 					<!-- input-group -->
@@ -173,14 +174,14 @@
 					<!-- /input-group -->
 				</li>
 				<li class="nav-small-cap m-t-10">--- {_menu.base}</li>
-				<li><a n:href="Campaign:" n:class="$presenter->isLinkCurrent('Campaign:*') ? 'waves-effect active' : 'waves-effect'" data-ajax="false"><i class="fa fa-calendar-o"></i> <span class="hide-menu"> &nbsp;{_menu.campaigns}</span></a></li>
-				<li><a n:href="Device:" n:class="$presenter->isLinkCurrent('Device:*') ? 'waves-effect active' : 'waves-effect'" data-ajax="false"><i class="fa fa-laptop"></i> <span class="hide-menu"> &nbsp;{_menu.devices}</span></a></li>
-				<li><a n:href="DeviceGroup:" n:class="$presenter->isLinkCurrent('DeviceGroup:*') ? 'waves-effect active' : 'waves-effect'" data-ajax="false"><i class="fa fa-list"></i> <span class="hide-menu"> &nbsp;{_menu.devicesGroups}</span></a></li>
-				<li n:if="$user->isAllowed('Cms:Statistic')"><a n:href="Statistic:" n:class="$presenter->isLinkCurrent('Statistic:*') ? 'waves-effect active' : 'waves-effect'" data-ajax="false"><i class="fa fa-bar-chart-o" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.statistics}</span></a></li>
-				<li n:if="$user->isAllowed('Cms:Api')"><a n:href=":Cms:Api:" n:class="$presenter->isLinkCurrent(':Cms:Api:*') ? 'waves-effect active' : 'waves-effect'" data-ajax="false"><i class="fa fa-wifi" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.api}</span></a></li>
-				<li><a n:href="Users:" n:class="$presenter->isLinkCurrent('Users:*') ? 'waves-effect active' : 'waves-effect'" data-ajax="false"><i class="fa fa-users"></i> <span class="hide-menu"> &nbsp;{_menu.users}</span></a></li>
-				<li n:if="$user->isAllowed('Cms:Settings')"><a n:href="Settings:" n:class="$presenter->isLinkCurrent('Settings:*') ? 'waves-effect active' : 'waves-effect'"><i class="fa fa-cogs" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.settings}</span></a></li>
-				<li n:if="$user->isAllowed('Cms:Template', 'edit')"><a n:href="Template:" n:class="$presenter->isLinkCurrent('Template:*') ? 'waves-effect active' : 'waves-effect'" data-ajax="false"><i class="fa fa-industry" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.templates}</span></a></li>
+				<li><a n:href="Campaign:" n:class="$presenter->isLinkCurrent('Campaign:*') ? active, 'ajax waves-effect'" data-ajax="false"><i class="fa fa-calendar-o"></i> <span class="hide-menu"> &nbsp;{_menu.campaigns}</span></a></li>
+				<li><a n:href="Device:" n:class="$presenter->isLinkCurrent('Device:*') ? active, 'ajax waves-effect'" data-ajax="false"><i class="fa fa-laptop"></i> <span class="hide-menu"> &nbsp;{_menu.devices}</span></a></li>
+{*				<li><a n:href="DeviceGroup:" n:class="$presenter->isLinkCurrent('DeviceGroup:*') ? active, 'ajax waves-effect'" data-ajax="false"><i class="fa fa-list"></i> <span class="hide-menu"> &nbsp;{_menu.devicesGroups}</span></a></li>*}
+{*				<li n:if="$user->isAllowed('Cms:Statistic')"><a n:href="Statistic:" n:class="$presenter->isLinkCurrent('Statistic:*') ? active, 'ajax waves-effect'" data-ajax="false"><i class="fa fa-bar-chart-o" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.statistics}</span></a></li>*}
+{*				<li n:if="$user->isAllowed('Cms:Api')"><a n:href=":Cms:Api:" n:class="$presenter->isLinkCurrent(':Cms:Api:*') ? active, 'waves-effect'" data-ajax="false"><i class="fa fa-wifi" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.api}</span></a></li>*}
+{*				<li><a n:href="Users:" n:class="$presenter->isLinkCurrent('Users:*') ? active, 'waves-effect'" data-ajax="false"><i class="fa fa-users"></i> <span class="hide-menu"> &nbsp;{_menu.users}</span></a></li>*}
+{*				<li n:if="$user->isAllowed('Cms:Settings')"><a n:href="Settings:" n:class="$presenter->isLinkCurrent('Settings:*') ? active, 'waves-effect'"><i class="fa fa-cogs" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.settings}</span></a></li>*}
+{*				<li n:if="$user->isAllowed('Cms:Template', 'edit')"><a n:href="Template:" n:class="$presenter->isLinkCurrent('Template:*') ? active, 'waves-effect'" data-ajax="false"><i class="fa fa-industry" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.templates}</span></a></li>*}
 			</ul>
 		</div>
 	</div>
@@ -293,6 +294,7 @@
 		<!-- jQuery file upload -->
 		{*<script src="{$basePath}/plugins/bower_components/dropify/dist/js/dropify.min.js"></script>*}
 		<script src="{$basePath}/assets/dropify/dist/js/dropify.min.js"></script>
+		<script src="{$basePath}/assets/lightbox2/dist/js/lightbox.js"></script>
 		<!-- jQuery for carousel -->
 		{*<script src="{$basePath}/plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>*}
 		{*<script src="{$basePath}/plugins/bower_components/owl.carousel/owl.custom.js"></script>*}
@@ -304,6 +306,7 @@
 		{*<script src="{$basePath}/plugins/bower_components/timepicker/bootstrap-timepicker.min.js"></script>*}
 		<script src="{$basePath}/assets/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
 		{*<script src="{$basePath}/plugins/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>*}
+		<script src="{$basePath}/assets/daterangepicker/daterangepicker.js"></script>
 		<script src="{$basePath}/assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 
 		<script type="application/javascript" src="{$basePath}/assets/happy/dist/happy.js"></script>

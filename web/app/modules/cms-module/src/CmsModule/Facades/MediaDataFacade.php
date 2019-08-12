@@ -10,7 +10,11 @@
 namespace CmsModule\Facades;
 
 
+use CmsModule\Controls\IMultimediaUploadControlFactory;
+use CmsModule\Controls\MultimediaUploadControl;
 use CmsModule\Entities\MediumDataEntity;
+use CmsModule\Entities\MediumEntity;
+use CmsModule\Repositories\MediaRepository;
 use Nette\Http\FileUpload;
 use Nette\Utils\Strings;
 use Ublaboo\ImageStorage\ImageNameScript;
@@ -26,18 +30,51 @@ class MediaDataFacade
 
     private $dataDir;
 
+    /** @var MediaRepository */
+    private $repository;
+
+
     /**
      * MediaDataFacade constructor.
      *
-     * @param ImageStorage $imageStorage
-     * @param string       $dataPath
+     * @param string          $dataPath
+     * @param                 $dataDir
+     * @param ImageStorage    $imageStorage
+     * @param MediaRepository $mediaRepository
      */
-    public function __construct($dataPath, $dataDir, \Ublaboo\ImageStorage\ImageStorage $imageStorage)
+    public function __construct($dataPath, $dataDir, \Ublaboo\ImageStorage\ImageStorage $imageStorage, MediaRepository $mediaRepository)
     {
         $this->imageStorage = $imageStorage;
+        $this->repository   = $mediaRepository;
         $this->dataPath     = $dataPath;
         $this->dataDir      = $dataDir;
     }
+
+    /**
+     * @return MediaRepository
+     */
+    public function getRepository(): MediaRepository
+    {
+        return $this->repository;
+    }
+
+    /**
+     * @return MediumEntity|null
+     */
+    public function getImageTypeEntity()
+    {
+        return $this->repository->getEntityManager()->getRepository(MediumEntity::class)->findOneBy(['type' => 'image']);
+    }
+
+
+    /**
+     * @return MediumEntity|null
+     */
+    public function getVideoTypeEntity()
+    {
+        return $this->repository->getEntityManager()->getRepository(MediumEntity::class)->findOneBy(['type' => 'video']);
+    }
+
 
 
     private function saveImageUpload(MediumDataEntity $mediumDataEntity, FileUpload $fileUpload)

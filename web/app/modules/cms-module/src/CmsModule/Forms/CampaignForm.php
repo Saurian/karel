@@ -69,7 +69,7 @@ class CampaignForm extends BaseForm
 
     public function create()
     {
-        if (!$this->campaignEntity) throw new InvalidArgumentException('setCampaignEntity($campaign) first');
+//        if (!$this->campaignEntity) throw new InvalidArgumentException('setCampaignEntity($campaign) first');
 
         $disAllowed = $this->user->isAllowed(CampaignForm::class, 'edit') == false;
 
@@ -114,9 +114,9 @@ class CampaignForm extends BaseForm
             ->setTranslator(null)
 //            ->setDefaultValue([29])  // any value turn off auto setting
             ->setDisabled($disAllowed)
-            ->setOption(IComponentMapper::FIELD_IGNORE, true)
-            ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
-            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
+//            ->setOption(IComponentMapper::FIELD_IGNORE, true)
+            ->setOption(IComponentMapper::ITEMS_TITLE, 'name');
+//            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
 //            ->setOption(IComponentMapper::ITEMS_FILTER, ['devices IN' => [29]]);
 //            ->setOption(IComponentMapper::ITEMS_FILTER, ['deviceGroup' => null]);
 
@@ -126,9 +126,9 @@ class CampaignForm extends BaseForm
             ->setTranslator(null)
 //            ->setDefaultValue([29])  // any value turn off auto setting
             ->setDisabled($disAllowed)
-            ->setOption(IComponentMapper::FIELD_IGNORE, true)
-            ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
-            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items
+//            ->setOption(IComponentMapper::FIELD_IGNORE, true)
+            ->setOption(IComponentMapper::ITEMS_TITLE, 'name');
+//            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items
 //            ->setOption(IComponentMapper::ITEMS_FILTER, ['deviceGroup' => null]);
 
         $devices
@@ -157,15 +157,6 @@ class CampaignForm extends BaseForm
             ->addCondition(Form::FILLED)
             ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 65535);
 
-        $this->addSelect('template', $this->getTranslator()->translate('template'), $this->templates)
-            ->setTranslator(null)
-            ->setDisabled($disAllowed)
-            ->setPrompt($this->getTranslator()->translate('select'))
-            ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
-            ->setOption(IComponentMapper::FIELD_IGNORE, true)
-            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null])  // trick, we dont want autoload items
-//            ->setOption(IComponentMapper::ITEMS_FILTER, ['users.id' => $this->userEntity ? $this->userEntity->getId() : null])
-            ->addRule(Form::FILLED, 'ruleTemplate');
 
         /*
          * toggle container for more options
@@ -175,153 +166,13 @@ class CampaignForm extends BaseForm
             ->addCondition(form::EQUAL, true)
             ->toggle('keyword-container');
 
-        $index = 0;
-        $removeEvent = [$this, 'removeMediumData'];
-        $mediaData = $this->toMany('mediaData', function (\Nette\Forms\Container $medium, BaseForm $form) use ($removeEvent, $disAllowed, & $index, &$condition) {
 
-            /** @var CampaignEntity $entity */
-            $entity = $form->getEntity();
-            $mediumData = $entity->getMediaData();
-
-//            $entity->getTemplate()->getMedia()->
-
-            /** @var ToManyContainer $parent */
-            $parent = $medium->getParent();
-
-            $collection = $parent->getCollection();
-            $mediumDataEntity = null;
-
-            /*
-             * is medium name numeric? this is exist entity id, if not (medium name is string) then is new entity
-             */
-            if (is_numeric($medium->name)) {
-                $mediumDataEntity = $this->mediumDataEntities[$medium->name];
-
-            } elseif (preg_match('%_new_(?<id>\d+)%', $medium->name, $matches)) {
-                $mediumDataEntity = $collection[$matches['id']];
-            }
-
-
-            /** @var MediumDataEntity $mediumDataEntity */
-//            $mediumDataEntity = $collection[$index];
-            $mediumType = $mediumDataEntity->getMedium()->getType();
-            $condition->toggle($medium->name);
-
-
-            if ($mediumType == 'image') {
-                $medium->addUpload('file')
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('class', 'dropify')
-//                    ->setAttribute('data-allowed-file-extensions', 'pdf png psd')
-//                    ->setAttribute('data-max-file-size', '20K')
-
-                    ->setAttribute('data-id', $mediumDataEntity->getId())
-                    ->setAttribute('data-fileName', $mediumDataEntity->getFileName())
-                    ->setAttribute('data-identifier', $mediumDataEntity->getIdentifier())
-                    ->setAttribute('data-messageType', '(obrázek)')
-                    ->addCondition(Form::FILLED)
-                    ->addRule(Form::IMAGE, 'ruleImage')
-                    ->addRule(Form::MAX_FILE_SIZE, new Phrase('ruleMaxFileSize', NULL, ["size"=>sprintf("Soubor může mít maximálně %s", ini_get('upload_max_filesize'))]), PhpInfo::file_upload_max_size());
-
-                $medium->addText('time')
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('class', 'form-control')
-                    ->addRule(Form::FILLED, 'ruleRequired')
-                    ->addRule(Form::NUMERIC, 'ruleNumeric');
-
-                $medium->addSelect('timeType', null, ['s' => 's', 'min' => 'min'])
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('class', 'form-control')
-                    ->addRule(Form::FILLED, 'ruleRequired');
-
-                $this->addKeywordControl($medium, $disAllowed, $medium->name);
-
-            } elseif ($mediumType == 'zip') {
-                $medium->addUpload('file')
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('class', 'dropify')
-                    ->setAttribute('data-id', $mediumDataEntity->getId())
-                    ->setAttribute('data-fileName', $mediumDataEntity->getFileName())
-                    ->setAttribute('data-messageType', '(zip)')
-                    ->addCondition(Form::FILLED)
-                    ->addRule(Form::MIME_TYPE, 'ruleZip', ['application/x-rar', 'application/x-rar-compressed', 'application/zip', ])
-                    ->addRule(Form::MAX_FILE_SIZE, new Phrase('ruleMaxFileSize', NULL, ["size"=>sprintf("Soubor může mít maximálně %s", ini_get('upload_max_filesize'))]), PhpInfo::file_upload_max_size());
-
-                $medium->addText('time')
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('class', 'form-control')
-                    ->addRule(Form::FILLED, 'ruleRequired')
-                    ->addRule(Form::NUMERIC, 'ruleNumeric');
-
-                $medium->addSelect('timeType', null, ['s' => 's', 'min' => 'min'])
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('class', 'form-control')
-                    ->addRule(Form::FILLED);
-
-                $this->addKeywordControl($medium, $disAllowed, $medium->name);
-
-            } elseif ($mediumType == 'video') {
-                $medium->addUpload('file')
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('class', 'dropify')
-                    ->setAttribute('data-id', $mediumDataEntity->getId())
-                    ->setAttribute('data-fileName', $mediumDataEntity->getFileName())
-                    ->setAttribute('data-messageType', '(video)')
-                    ->addCondition(Form::FILLED)
-                        ->addRule(Form::MIME_TYPE, 'ruleVideo', ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv'])
-                        ->addRule(Form::MAX_FILE_SIZE, new Phrase('ruleMaxFileSize', NULL, ["size"=>sprintf("Soubor může mít maximálně %s", ini_get('upload_max_filesize'))]), PhpInfo::file_upload_max_size());
-
-                $medium->addCheckbox('sound')
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('class', 'form-control');
-
-                $this->addKeywordControl($medium, $disAllowed, $medium->name);
-
-            } elseif ($mediumType == 'url') {
-                $medium->addText('url')
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('data-id', $mediumDataEntity->getId())
-                    ->setAttribute('placeholder', "web presentace")
-                    ->setAttribute('style', "max-width: 100%")
-                    ->addCondition(Form::FILLED)
-                    ->addRule(Form::URL, 'ruleUrl')
-                    ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 255);
-
-                $medium->addText('time')
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('class', 'form-control')
-                    ->addRule(Form::FILLED, 'ruleRequired')
-                    ->addRule(Form::NUMERIC, 'ruleNumeric');
-
-                $medium->addSelect('timeType', null, ['s' => 's', 'min' => 'min'])
-                    ->setTranslator(null)
-                    ->setDisabled($disAllowed)
-                    ->setAttribute('class', 'form-control')
-                    ->addRule(Form::FILLED, 'ruleRequired');
-
-                $this->addKeywordControl($medium, $disAllowed, $medium->name);
-            }
-
-            $index++;
-        });
-
-//        $this->addSubmit('changeTemplateSubmit')->setAttribute('class', 'hidden')->onClick[] = [$this, 'changeTemplate'];
 //        $this->onSuccess[] = [$this, 'success'];
 
         $this->addFormClass(['ajax']);
         $this->getElementPrototype()
             ->addAttributes([
-                'data-dismiss1' => 'modal',
+//                'data-dismiss' => 'modal',
                 'data-name' => $this->formName,
                 'data-id' => $this->getId(),
                 'data-ajax' => "false",

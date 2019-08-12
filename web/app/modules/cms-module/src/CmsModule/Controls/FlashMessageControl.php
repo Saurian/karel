@@ -31,6 +31,9 @@ class FlashMessageControl extends Control
     const TOAST_CAMPAIGN_EDIT_SUCCESS = [
         'hideAfter' => 5000, 'bgColor' => '#50A050', 'icon' => 'success', 'showHideTransition' => 'slide', 'loader' => false, 'loaderBg' => '#9EC600',
     ];
+    const TOAST_DEVICE_EDIT_SUCCESS = [
+        'hideAfter' => 5000, 'bgColor' => '#50A050', 'icon' => 'info', 'showHideTransition' => 'slide', 'loader' => false, 'loaderBg' => '#9EC600',
+    ];
     const TOAST_DANGER = [
         'hideAfter' => 'false', 'bgColor' => '#B03030', 'textColor' => '#F0F000', 'icon' => 'warning',
     ];

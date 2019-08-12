@@ -224,18 +224,18 @@ $.nette.ext('template', {
  */
 $.nette.ext('campaignForm', {
     before: function(xhr, settings) {
-        if (settings.nette && settings.nette.isSubmit && settings.nette.form.data('name') == 'campaignDetailForm') {
+        if (settings.nette && settings.nette.isSubmit && settings.nette.form.data('name') === 'campaignDetailForm') {
 
             var progress = $(settings.nette.el.closest('form').find('.progress-group'));
             $(progress).addClass('in');
         }
     },
     success: function(payload, status, xhr, settings) {
-        if (settings.nette && settings.nette.isSubmit && settings.nette.form.data('name') == 'campaignDetailForm') {
+        if (settings.nette && settings.nette.isSubmit && settings.nette.form.data('name') === 'campaignDetailForm') {
 
             var progress = $(settings.nette.el.closest('form').find('.progress-group'));
             $(progress).removeClass('in');
-            if (payload._success && payload._success == true) {
+            if (payload._success && payload._success === true) {
                 $('.dd-item.open-detail').removeClass('open-detail');
                 $('#wrapper').removeClass('modal-detail-open');
 
@@ -280,18 +280,16 @@ $.nette.ext('newUser', {
 
 
 /**
- * @deprecated
  * deviceDetailForm ajax success submit
  */
-$.nette.ext('deviceDetailForm', {
+$.nette.ext('deviceForm', {
     success: function(payload, status, xhr, settings) {
-        if (settings.nette && settings.nette.isSubmit && settings.nette.form.data('name') == 'deviceDetailForm') {
+        if (settings.nette && settings.nette.isSubmit && settings.nette.form.data('name') == 'deviceForm') {
 
             console.log("deviceDetailForm success");
 
             if (payload._success && payload._success == true) {
-                $('.dd-item.open-detail').removeClass('open-detail');
-                $('#wrapper').removeClass('modal-detail-open');
+                $('.modal.addDeviceModal').modal('hide')
             }
         }
     }
@@ -734,7 +732,11 @@ Nette.validators.mimeType = function(elem, args, val) {
 
 
 $(function(){
-    $("body").on("click", "input.tagColor:checked", function(e) {
+
+    /**
+     * color (tag) changed
+     */
+    $(document).on("click", "input.tagColor:checked", function(e) {
 
         /**
          *
@@ -753,23 +755,105 @@ $(function(){
         }
 
 
+
+        /**
+         * on change autoSave form elements [auto send form]
+         */
     }).on('change', 'form.auto-save input:not(.not-auto-save), form.auto-save select:not(.not-auto-save)', function (e) {
 
         /**
          * auto save form
          */
-        var form = $(this).get(0);
+        // var form = $(this).get(0);
+        var form = $(this).closest('form').get(0);
 
         if (Nette.validateForm(form)) {
             $(form).submit();
         }
-    });
 
 
-    /**
-     * zařízení select / unselect ve skupinách zařízení
-     */
-    $(document).on("change", "form input.happy", function(e){
+
+        /**
+         * message error from media multi upload to another element
+         */
+    }).on('DOMSubtreeModified', "#frm-mediaForm-files_message", function() {
+        $('#mediaErrorMessage').text($(this).text());
+
+
+
+
+        /**
+         * click to target
+         */
+    }).on('click', "[data-click]", function(e) {
+        e.preventDefault();
+        $($(this).data('click')).click();
+
+
+
+
+        /**
+         * send ajax before modal open
+         */
+    }).on("click", ".ajax-modal", function(e){
+        e.preventDefault();
+
+        var target = $(this).data('target');
+        var targetEl;
+
+        if (!target) {
+            console.warn('`data-target` not found');
+
+        } else {
+            if ($(target).length == 0) {
+                console.warn('modal target `' + target + '` not found');
+
+            } else {
+                targetEl = $(target);
+            }
+        }
+
+        var backdrop = $(this).data('backdrop');
+        var title = $(this).data('title');
+        if (title) {
+            var titleTarget = $(this).find('.modal-title');
+            if (titleTarget && targetEl) {
+                targetEl.find('.modal-title').text(title);
+            }
+        }
+
+        $.nette.ajax({
+            type: "POST",
+            url: this.href,
+            success: function (payload) {
+
+                // snippets
+                if (payload.snippets) {
+                    $.nette.ext('snippets').updateSnippets(payload.snippets);
+                    if (backdrop) {
+                        targetEl.modal({
+                            show: true
+                            // backdrop: 'static'
+                        });
+
+                    } else {
+                        targetEl.modal('show');
+                    }
+
+                }
+
+            },
+            fail: function (payload) {
+                console.log(payload);
+            }
+        });
+
+
+
+        /**
+         * zařízení select / unselect ve skupinách zařízení
+         */
+    }).on("change", "form input.happy", function(e){
 
         var ajaxSelectEl = $(this).closest('[data-ajax-select]');
 
@@ -854,57 +938,6 @@ $(function(){
 
 
 
-
-
-
-
-
-
-    $(document).on("click", ".ajax-modal", function(e){
-        e.preventDefault();
-
-        var target = $(this).data('target');
-        var targetEl;
-
-        if (!target) {
-            console.warn('`data-target` not found');
-
-        } else {
-            if ($(target).length == 0) {
-                console.warn('modal target `' + target + '` not found');
-
-            } else {
-                targetEl = $(target);
-            }
-        }
-
-        var title = $(this).data('title');
-        if (title) {
-            var titleTarget = $(this).find('.modal-title');
-            if (titleTarget && targetEl) {
-                targetEl.find('.modal-title').text(title);
-            }
-        }
-
-        $.nette.ajax({
-            type: "POST",
-            url: this.href,
-            success: function (payload) {
-
-                // snippets
-                if (payload.snippets) {
-                    $.nette.ext('snippets').updateSnippets(payload.snippets);
-
-                    targetEl.modal('show');
-                }
-
-            },
-            fail: function (payload) {
-                console.log(payload);
-            }
-        });
-
-    });
 
 
 

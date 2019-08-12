@@ -9,6 +9,7 @@
 
 namespace CmsModule\Entities;
 
+use Devrun\Doctrine\Entities\PositionTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\Attributes\Identifier;
 use Kdyby\Doctrine\Entities\MagicAccessors;
@@ -27,6 +28,7 @@ class MediumDataEntity
 {
 
     use Identifier;
+    use PositionTrait;
     use MagicAccessors;
 
     /**
@@ -279,7 +281,7 @@ class MediumDataEntity
      */
     public function setKeywords($keywords)
     {
-        if ($keywords) $this->keywords = $keywords;
+        $this->keywords = trim($keywords);
         return $this;
     }
 

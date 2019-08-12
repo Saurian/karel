@@ -1,8 +1,16 @@
 parameters:
 	database:
-		user: karl
-		password: b11CO9py7ge
-		dbname: pixman_karl
+		host: database
+		user: cms2pixatori
+		password: "aI#UzlQ49Jw91B"
+		dbname: cms2pixatori
+
+session:
+	expiration: 14 days
+
+tracy:
+	email: pavel.paulik@seznam.cz
+	fromEmail: robot@cms.pixatori.com
 
 mail:
 	smtp: false
@@ -11,12 +19,6 @@ mail:
 	password: "b4RO2OT!}e"
 
 doctrine:
-	host: database
-	charset: UTF8
-	driver: pdo_mysql
-	user: %database.user%
-	password: %database.password%
-	dbname: %database.dbname%
 	autoGenerateProxyClasses: %debugMode%
 	proxyDir: "%tempDir%/proxies"
 	proxyNamespace: "proxy"

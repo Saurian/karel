@@ -165,6 +165,16 @@ class Configurator
 		$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		$last = end($trace);
 		$debugMode = static::detectDebugMode();
+
+//        $q = isset($last['file']) ? dirname($last['file']) : null;
+//        dump($q);
+//
+//        dump($trace);
+//        dump($last);
+//
+//        die();
+
+
 		return [
 			'appDir' => isset($trace[1]['file']) ? dirname($trace[1]['file']) : null,
 			'wwwDir' => isset($last['file']) ? dirname($last['file']) : null,

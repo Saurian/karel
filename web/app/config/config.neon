@@ -5,6 +5,7 @@
 parameters:
 	lang: cs # cs|sk|en
 	database:
+		host: localhost
 		dbname:
 		user:
 		password:
@@ -20,7 +21,7 @@ php:
 
 http:
 	frames: yes
-#	headers: X-Powered-By: MyCMS
+#	headers: X-Powered-By: Devrun
 
 application:
 	errorPresenter: Cms:Error
@@ -103,6 +104,10 @@ migrations:
 doctrine:
 	charset: UTF8
 	driver: pdo_mysql
+	host: %database.host%
+	user: %database.user%
+	password: %database.password%
+	dbname: %database.dbname%
 
 	orm:
 	dql:

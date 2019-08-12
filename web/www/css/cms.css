@@ -297,3 +297,7 @@
   border-radius: 7px;
   border: 1px solid #CACACA;
 }
+
+.datagrid .datagrid-tree .datagrid-tree-item .datagrid-tree-item-content .datagrid-tree-item-right .datagrid-tree-item-right-columns {
+  flex-basis: auto!important;
+}

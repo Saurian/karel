@@ -120,6 +120,27 @@ class MediaRepository extends EntityRepository
     }
 
 
+    /**
+     * return max position in category
+     *
+     * @param $category
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return mixed
+     */
+    public function getMaxPositionInCategory($category)
+    {
+        $result = $this->createQueryBuilder('e')
+            ->select('max(e.position)')
+            ->where('e.category = ?1')->setParameter(1, $category)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return intval($result);
+    }
+
+
     public function getMediaQuery()
     {
         $query = (new MediaQuery());

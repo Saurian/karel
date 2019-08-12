@@ -1,5 +1,5 @@
 # global
-title: Karl
+title: cms.pixatori.com
 configuration has been saved.: konfigurace byla uložena.
 news configuration: konfigurace novinek
 manage news: Správa novinek
@@ -257,9 +257,9 @@ homePage:
 # login page
 loginPage:
 	title: Přihlaste se
-	windowTitle: "Karl: přihlaste se"
+	windowTitle: "CMS.pixatori.com: přihlaste se"
 	newUserTitle: Nový uživatel
-	newUserWindowTitle: "Karl: zaregistrujte se"
+	newUserWindowTitle: "CMS.pixatori.com: zaregistrujte se"
 	newUser: Založit nového uživatele
 	existUser: "Přihlásit se, již jsem registrován"
 	userNotFound: Uživatel nenalezen
@@ -269,7 +269,7 @@ loginPage:
 	userPasswordChange: Heslo bylo nastaveno
 	forgotPassword: Zapomenuté heslo?
 	forgottenUserTitle: Zapomenuté heslo
-	forgottenUserWindowTitle: "Karl: zapomenuté heslo"
+	forgottenUserWindowTitle: "CMS.pixatori.com: zapomenuté heslo"
 	user_added_title: Registrace uživatele
 	user_added: "Potvrďte prosím Vaši registraci z emailu"
 	user_updated: "Uživatel %name% upraven"
@@ -323,11 +323,19 @@ campaignPage:
 	form_has_error: "Formulář kampaně <strong class='text-bold'>%name%:</strong><br> obsahuje chyby:<br>%errors%"
 	device_not_found: "Před vytvořením kampaně je potřeba nejdříve vytvořit zařízení, na kterém se bude kampaň zobrazovat."
 
+	medium:
+	    unsupported: "Médium `%media%` se nepodařilo nahrát, ověřte prosím typ souboru.|Média `%media%` se nepodařilo nahrát, ověřte prosím jejich typ."
+	    supported: "Nahráno médium %media%.|Nahrána média %media%."
+	    not_found: médium nenalezeno
+	    removed: médium %name% smazáno
+
 	filter:
 		set: Nastaven filtr
 		setActives: Nastaven filtr `Správa aktivních kampaní`
 		setNonActives: Nastaven filtr `Správa neaktivních kampaní`
 		setAll: Nastaven filtr `Správa všech kampaní`
+
+
 
 # devices page
 devicePage:
@@ -363,11 +371,15 @@ devicePage:
 	device_removed: "Nové zařízení %name% vytvořeno"
 	device_group_removed: "Skupina zařízení %name% smazána"
 
+	group_moved: Skupina `%name%` přesunuta
+	group_move_denied: Skupina `%name%` nelze přesunout
 
 
 	campaigns_on_device: "Kampaně na zařízení `%name%`"
 
 	filter:
+		devicesOnGroup: "Zařízení ve skupině <span class='text-primary'> `%name%` </span>"
+		devicesOnGroupMessage: Filtrovaný seznam zařízení ve skupině `%name%`
 		set: Nastaven filtr
 		setActives: Nastaven filtr `Správa aktivních zařízení`
 		setNonActives: Nastaven filtr `Správa neaktivních zařízení`

@@ -234,6 +234,11 @@ class DevicePresenter extends BasePresenter
         }
 
         $this->template->editDevice = $this->editDevice;
+        $this->template->selectDeviceGroup = $this->selectDeviceGroup;
+
+        if ($this->selectDeviceGroup) {
+            $this->template->selectDeviceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->find($this->selectDeviceGroup);
+        }
 
 
 
@@ -245,8 +250,6 @@ class DevicePresenter extends BasePresenter
         $this->template->newDevice            = $this->deviceFacade->isNewDevice();
 
 
-        Debugger::barDump(__FUNCTION__);
-        Debugger::barDump($_POST);
     }
 
 
@@ -256,6 +259,7 @@ class DevicePresenter extends BasePresenter
      * @param $did
      * @param $gid
      * @param $checked
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function handleDeviceSelectInDeviceGroup($did, $gid, $checked)
     {
@@ -312,12 +316,22 @@ class DevicePresenter extends BasePresenter
             $uow->computeChangeSets();
 
             if ($uow->getScheduledCollectionDeletions() || $uow->getScheduledCollectionUpdates()) {
-                $this->deviceFacade->getEntityManager()->flush();
-
                 $translator = $this->translateMessage();
 
+                $this->deviceFacade->getEntityManager()->flush();
+
+                /*
+                 * check one device group
+                 */
+                if ($device->getDevicesGroups()->count() == 0) {
+                    $unPlaceDeviceGroup = $this->deviceFacade->getDeviceGroupRepository()->getUserUnPlaceDeviceGroup($this->getUser());
+
+                    $unPlaceDeviceGroup->addDevice($device);
+                    $this->deviceFacade->getEntityManager()->persist($unPlaceDeviceGroup)->flush();
+                }
+
                 $title      = $translator->translate('devicePage.management');
-                $this->flashMessage($translator->translate("devicePage.add_new_campaign_for_device", null, ['device' => 'ASS']), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
+                $this->flashMessage($translator->translate("devicePage.filter.devicesOnGroup", null, ['name' => $deviceGroup->getName()]), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
                 $this->ajaxRedirect('this', null, 'flash');
             }
 
@@ -327,7 +341,7 @@ class DevicePresenter extends BasePresenter
 
 
 //        dump($did);
-//        dump($gid);
+//        dump($gid);ASS
 //        dump($checked);
 //
 //        die("ASd");
@@ -511,7 +525,11 @@ class DevicePresenter extends BasePresenter
         $form->setTranslator($this->translator->domain("messages.forms.deviceDetailForm"));
         $form->setFormName($name);
 
+        /** @var DeviceGroupEntity $unPlaceGroupEntity */
+        $unPlaceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserUnPlaceDeviceGroup($this->getUser());
+
         $entity = new DeviceEntity();
+
         $form->setDevicesGroups($devicesGroups = $this->deviceFacade->getAllowedDevicesGroups($this->user));
 
         if ($this->deviceFacade->isNewDevice()) {
@@ -522,12 +540,15 @@ class DevicePresenter extends BasePresenter
         if ($this->editDevice) {
             if (!$entity = $this->deviceFacade->getDeviceRepository()->find($this->editDevice)) {
                 $entity = new DeviceEntity();
+                $unPlaceGroupEntity->addDevice($entity);
             }
+
+        } else {
+            $unPlaceGroupEntity->addDevice($entity);
         }
 
 
 
-        Debugger::barDump(__FUNCTION__);
 
 
 
@@ -564,9 +585,9 @@ class DevicePresenter extends BasePresenter
                     : $translator->translate("devicePage.device_updated", null, ['name' => $entity->getName()]);
 
                 $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
-                $this->payload->_switchery_redraw = true;
+                $this->payload->_success = true;
                 $this->payload->_scroll_id = $entity->getId();
-                $this->ajaxRedirect('this', null, ['devices', 'flash']);
+                $this->ajaxRedirect('this', 'deviceGridControl', ['flash']);
 
             } catch (UniqueConstraintViolationException $e) {
                 $title   = $translator->translate('devicePage.management');
@@ -599,10 +620,13 @@ class DevicePresenter extends BasePresenter
 
 
         $entity = new DeviceGroupEntity('Výchozí');
+        $rootEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
+        $entity->setParent($rootEntity);
 
         if ($this->editDeviceGroup) {
             if (!$entity = $this->deviceFacade->getDeviceGroupRepository()->find($this->editDeviceGroup)) {
                 $entity = new DeviceGroupEntity('Výchozí');
+                $entity->setParent($rootEntity);
             }
 
         } else {
@@ -616,11 +640,10 @@ class DevicePresenter extends BasePresenter
 
         $form->bindEntity($entity);
 
-        Debugger::barDump(__FUNCTION__);
+
 
         $form->onSuccess[] = function (BaseForm $form) {
 
-            Debugger::barDump(__FUNCTION__, 'onSuccess');
 
 
 
@@ -824,6 +847,16 @@ class DevicePresenter extends BasePresenter
     }
 
 
+    public function handleDeviceSort()
+    {
+        $translator = $this->translateMessage();
+        $title      = $translator->translate('devicePage.management');
+        $message    = "Přesun zařízení není implementováno <em><strong>(feature?)</strong></em>";
+        $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_WARNING);
+        $this->ajaxRedirect('this', null, ['flash']);
+    }
+
+
     public function handleSort($item_id, $prev_id, $next_id, $parent_id)
     {
         Debugger::barDump($_REQUEST);
@@ -844,6 +877,16 @@ class DevicePresenter extends BasePresenter
         /** @var DeviceGroupEntity $item */
         $item     = $repository->find($item_id);
 
+        $translator = $this->translateMessage();
+        if ($item->isUnPlace()) {
+            $title      = $translator->translate('devicePage.management');
+            $message    = $translator->translate("devicePage.group_move_denied", null, ['name' => $item->getName()]);
+            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_WARNING);
+            $this->ajaxRedirect('this', "deviceGroupGridControl", [/*'devices',*/ 'flash']);
+            return;
+        }
+
+
         /** @var DeviceGroupEntity|null $parent */
         $parent = $parent_id ? $repository->find($parent_id) : null;
 
@@ -857,17 +900,18 @@ class DevicePresenter extends BasePresenter
             $item->setParent($parent);
         }
 
-        if ($parent_id) {
-            if ($next) {
-                $repository->persistAsPrevSiblingOf($item, $next);
+        if ($next) {
+            $repository->persistAsPrevSiblingOf($item, $next);
 
-            } elseif ($prev) {
-                $repository->persistAsNextSiblingOf($item, $prev);
-            }
+        } elseif ($prev) {
+            $repository->persistAsNextSiblingOf($item, $prev);
+        }
+
+        if ($parent_id) {
 
         } else {
-            Debugger::barDump("special");
-            $item->setParent(null);
+//            Debugger::barDump("special");
+//            $item->setParent(null);
 //            $repository->persistAsFirstChild($item);
 
 //            $repository->getEntityManager()->flush();
@@ -913,7 +957,10 @@ class DevicePresenter extends BasePresenter
 //        $repository->getEntityManager()->flush();
 
 //        Debugger::barDump($item);
+
+
         $repository->getEntityManager()->flush();
+
 
 //        $repository->recover();
 //        $repository->getEntityManager()->flush();
@@ -928,26 +975,53 @@ class DevicePresenter extends BasePresenter
         */
 
 
-        $translator = $this->translateMessage();
         $title      = $translator->translate('devicePage.management');
-        $message = "asdadad";
-        $this->flashMessage($translator->translate("devicePage.filter.$message"), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
+        $message    = $translator->translate("devicePage.group_moved", null, ['name' => $item->getName()]);
+        $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_DEVICE_EDIT_SUCCESS);
 //        $this->ajaxRedirect('this', "deviceGroupGridControl", [/*'devices',*/ 'flash']);
-        $this->ajaxRedirect('this', null, [/*'devices',*/ 'flash']);
+
+
+        /*
+         * redraw item
+         * @todo not complete yet
+         */
+
+        $model = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+            ->select('e')
+//            ->addSelect("({$subDQL->getDQL()}) as products")
+            ->andWhere('e.lvl = :level')->setParameter('level', 0)
+            ->addOrderBy('e.lvl')
+            ->addOrderBy('e.lft')
+            ;
+
+
+        /** @var DataGrid $grid */
+        $grid = $this['deviceGroupGridControl'];
+
+        $grid->setDataSource($model);
+
+//        $grid->setDataSource($model);
+
+//        $grid->redrawItem($item_id, 'e.id');
+//        $grid->redrawItem(6, 'id' );
+//        $grid->redrawItem(4 );
+//        $grid->redrawItem(7 );
+
+
+//        $grid->reload();
+//        $this['deviceGroupGridControl']->redrawControl();
+//        $this['deviceGroupGridControl']->redrawItem(6, 'e.id');
+
+//        $this->ajaxRedirect('this', null, ['flash']);
+        $this->ajaxRedirect('this', null, ['flash']);
 
     }
 
 
-    public function handleDeviceSort($item_id, $prev_id, $next_id)
-    {
-        Debugger::barDump("device", $item_id);
-        Debugger::barDump($prev_id);
-        Debugger::barDump($next_id);
-
-
-    }
-
-
+    /**
+     * @return DataGrid
+     * @throws \Ublaboo\DataGrid\Exception\DataGridException
+     */
     protected function createComponentDeviceGroupGridControl()
     {
         $grid = new DataGrid();
@@ -957,24 +1031,42 @@ class DevicePresenter extends BasePresenter
             ->select("count(dge.id) as pocet")
             ;
 
+//        $q = $this->deviceFacade->getDeviceGroupRepository()->getUserAllowedQuery($this->getUser());
 
-        $model = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
-            ->select('e')
+//        $result = $this->deviceFacade->getDeviceGroupRepository()->fetch($q);
+
+
+        if ($this->user->isAllowed('Cms:Device', 'listAllDevices')) {
+            $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                ->select('e')
 //            ->addSelect("({$subDQL->getDQL()}) as products")
                 ->andWhere('e.lvl = :level')->setParameter('level', 0)
                 ->addOrderBy('e.lvl')
                 ->addOrderBy('e.lft')
-//            ->getQuery()
-//            ->getResult()
-
             ;
 
-//        Debugger::barDump($model->getQuery()->getResult());
+        } else {
+            $rootDeviceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
+
+            $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                ->select('e')
+                ->andWhere('e.lft > :left')->setParameter('left', $rootDeviceGroupEntity->getLft())
+                ->andWhere('e.rgt < :right')->setParameter('right', $rootDeviceGroupEntity->getRgt())
+                ->andWhere('e.root = :root')->setParameter('root', $rootDeviceGroupEntity)
+                ->andWhere('e.lvl = :level')->setParameter('level', 1)
+                ->addOrderBy('e.lvl')
+                ->addOrderBy('e.lft')
+            ;
+        }
+
+
+
+//        Debugger::barDump($query->getQuery()->getResult());
 
 //        dump($model);
 //        die();
 
-        $grid->setDataSource($model);
+        $grid->setDataSource($query);
         $grid->setTreeView(function ($id) {
             $dataSource = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
                 ->where('e.parent = :parent')->setParameter('parent', $id)
@@ -995,8 +1087,15 @@ class DevicePresenter extends BasePresenter
         $grid->addColumnText('id', 'Id');
         $grid->addColumnText('active', 'Aktivní');
 
+        $selectDeviceGroup = $this->selectDeviceGroup;
+
         $grid->addColumnLink('name', 'Název', 'selectDeviceGroup!')
             ->setClass('ajax btn btn-xs btn-default btn-block')
+//            ->setRenderer(function (DeviceGroupEntity $deviceGroupEntity) use ($selectDeviceGroup) {
+//                $html = Html::el('a')->setText($deviceGroupEntity->getName())->href($this->link('selectDeviceGroup!', ['id' => $deviceGroupEntity->getId()]));
+//                $html->addAttributes(['class' => $deviceGroupEntity->getId() == $selectDeviceGroup ? 'ajax btn btn-xs btn-primary btn-block' : 'ajax btn btn-xs btn-default btn-block']);
+//                return $html;
+//            })
             ->setFilterText();
 
 
@@ -1016,6 +1115,9 @@ class DevicePresenter extends BasePresenter
 //                $el->addHtml($content);
 //                return $el;
 //            })
+            ->setRenderCondition(function (DeviceGroupEntity $row) {
+                return !$row->isUnPlace();
+            })
             ->setIcon('plus')
             ->setDataAttribute('target', '.addGroupModal')
             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.add_new_group'))
@@ -1031,7 +1133,12 @@ class DevicePresenter extends BasePresenter
             ->setClass('ajax-modal btn btn-xs btn-info');
 
 
+
+
         $grid->addAction('delete', '', 'deleteDeviceGroup!')
+            ->setRenderCondition(function (DeviceGroupEntity $row) {
+                return !$row->isUnPlace();
+            })
             ->setIcon('trash')
             ->setClass('ajax btn btn-xs btn-danger')
             ->setConfirm(function ($item) {
@@ -1049,7 +1156,7 @@ class DevicePresenter extends BasePresenter
 
 
 
-        $grid->setOuterFilterRendering();
+        $grid->setOuterFilterRendering(false);
 
 //        $grid->addGroupAction('Aktivní')->onSelect[]   = [$this, 'setActives'];
 
@@ -1058,6 +1165,7 @@ class DevicePresenter extends BasePresenter
 
 
         $grid->setSortable();
+
 
         return $grid;
     }
@@ -1069,26 +1177,36 @@ class DevicePresenter extends BasePresenter
         $grid = new DataGrid();
         $grid->setTranslator($this->translator);
 
-        $subDQL = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('dge')
-            ->select("count(dge.id) as pocet")
-            ;
 
 
-        $model = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
-            ->select('e')
-//            ->addSelect("({$subDQL->getDQL()}) as products")
+        if ($this->user->isAllowed('Cms:Device', 'listAllDevices')) {
+            $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                ->select('e')
                 ->andWhere('e.lvl = :level')->setParameter('level', 0)
                 ->addOrderBy('e.lvl')
                 ->addOrderBy('e.lft')
-//            ->getQuery()
-//            ->getResult()
-
             ;
 
-//        Debugger::barDump($model->getQuery()->getResult()[0]);
+        } else {
+            $rootDeviceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
+
+            $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                ->select('e')
+                ->andWhere('e.lft > :left')->setParameter('left', $rootDeviceGroupEntity->getLft())
+                ->andWhere('e.rgt < :right')->setParameter('right', $rootDeviceGroupEntity->getRgt())
+                ->andWhere('e.root = :root')->setParameter('root', $rootDeviceGroupEntity)
+                ->andWhere('e.lvl = :level')->setParameter('level', 1)
+                ->addOrderBy('e.lvl')
+                ->addOrderBy('e.lft')
+            ;
+        }
+
+
+
+//        Debugger::barDump($query->getQuery()->getResult()[0]);
 
         /** @var DeviceGroupEntity[] $deviceGroups */
-        $deviceGroups = $model->getQuery()->getResult();
+        $deviceGroups = $query->getQuery()->getResult();
 
 
 //        Debugger::barDump($deviceGroupEntity);
@@ -1099,10 +1217,10 @@ class DevicePresenter extends BasePresenter
 
 
 
-//        dump($model);
+//        dump($query);
 //        die();
 
-        $grid->setDataSource($model);
+        $grid->setDataSource($query);
         $grid->setTreeView(function ($id) {
             $dataSource = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
                 ->where('e.parent = :parent')->setParameter('parent', $id)
@@ -1174,25 +1292,34 @@ class DevicePresenter extends BasePresenter
         ;
 
 
-        $model = $this->deviceFacade->getDeviceRepository()->createQueryBuilder('e')
-            ->select('e')
-//            ->addSelect("({$subDQL->getDQL()}) as products")
-//            ->where('e.parent IS NULL')
-//            ->getQuery()
-//            ->getResult()
+        if ($this->user->isAllowed('Cms:Device', 'listAllDevices')) {
+            $query = $this->deviceFacade->getDeviceRepository()->createQueryBuilder('e')
+                ->select('e');
 
-        ;
-
-        if ($this->selectDeviceGroup) {
-            $model
-                ->leftJoin('e.deviceGroup', 'dg')
-                ->andWhere('dg = :deviceGroup')->setParameter('deviceGroup', $this->selectDeviceGroup);
+        } else {
+            $query = $this->deviceFacade->getDeviceRepository()->createQueryBuilder('e')
+                ->select('e')
+                ->join('e.devicesUsers', 'du')
+                ->andWhere('du = :user')->setParameter('user', $this->getUser()->getId());
         }
 
-//        dump($model);
-//        die();
 
-        $grid->setDataSource($model);
+        if ($this->selectDeviceGroup) {
+
+            /** @var DeviceGroupEntity $deviceGroupEntity */
+            $deviceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->find($this->selectDeviceGroup);
+
+            $query
+                ->join('e.devicesGroups', 'dg')
+                ->andWhere('dg = :deviceGroup')->setParameter('deviceGroup', $this->selectDeviceGroup)
+                ->orWhere('dg.lft > :left AND dg.rgt < :right AND dg.root = :root')
+                ->setParameter('root', $deviceGroupEntity->getRoot())
+                ->setParameter('left', $deviceGroupEntity->getLft())
+                ->setParameter('right', $deviceGroupEntity->getRgt());
+        }
+
+
+        $grid->setDataSource($query);
 /*        $grid->setTreeView(function ($id) {
             $dataSource = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
                 ->where('e.parent = :parent')->setParameter('parent', $id)
@@ -1208,9 +1335,11 @@ class DevicePresenter extends BasePresenter
         });*/
 
         $grid->addColumnText('name', 'Název')
+            ->setSortable()
             ->setFilterText();
 
         $grid->addColumnText('sn', 'SN')
+            ->setSortable()
             ->setFitContent()
             ->setFilterText();
 
@@ -1219,7 +1348,7 @@ class DevicePresenter extends BasePresenter
 
         $grid->addAction('edit', '', 'editDevice!')
             ->setIcon('pencil')
-            ->setDataAttribute('target', '.addDevicePopup')
+            ->setDataAttribute('target', '.addDeviceModal')
             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.editDevice'))
             ->setTitle($this->translateMessage()->translate('devicePage.editDevice'))
             ->setClass('ajax-modal btn btn-xs btn-info');
@@ -1293,7 +1422,7 @@ class DevicePresenter extends BasePresenter
 
         $grid->addToolbarButton('addDevice!', 'Přidat zařízení')
             ->addAttributes([
-                'data-target' => '.addDevicePopup',
+                'data-target' => '.addDeviceModal',
                 'data-title' => $this->translateMessage()->translate('devicePage.edit_device_group'),
             ])
             ->setClass('ajax-modal btn btn-xs btn-success btn-secondary')
@@ -1427,19 +1556,18 @@ class DevicePresenter extends BasePresenter
     }
 
 
-
-
     /**
      * nastaví výběr skupiny zařízení
      *
      * @param $id
+     * @throws \Nette\Application\UI\InvalidLinkException
      */
     public function handleSelectDeviceGroup($id)
     {
         $this->selectDeviceGroup = $id;
 
         $this->payload->url = $this->link('this', ['selectDeviceGroup' => $id]);
-        $this->ajaxRedirect('this', 'deviceGridControl', false);
+        $this->ajaxRedirect('this', 'deviceGridControl', 'deviceInGroupName');
     }
 
 
@@ -1451,7 +1579,7 @@ class DevicePresenter extends BasePresenter
         $this->selectDeviceGroup = null;
 
         $this->payload->url = $this->link('this');
-        $this->ajaxRedirect('this', 'deviceGridControl', false);
+        $this->ajaxRedirect('this', 'deviceGridControl', 'deviceInGroupName');
     }
 
 

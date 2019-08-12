@@ -14,6 +14,7 @@ use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Presenters\BasePresenter;
 use CmsModule\Repositories\DeviceGroupRepository;
+use CmsModule\Repositories\DeviceRepository;
 use CmsModule\Repositories\UserRepository;
 use Devrun\Doctrine\DoctrineForms\IComponentMapper;
 use Nette\Application\UI\Form;
@@ -39,8 +40,8 @@ class DeviceForm extends BaseForm
     /** @var User @inject */
     public $user;
 
-    /** @var DeviceGroupRepository @inject */
-    public $deviceGroupRepository;
+    /** @var DeviceRepository @inject */
+    public $deviceRepository;
 
     /** @var UserRepository @inject */
     public $userRepository;
@@ -125,16 +126,27 @@ class DeviceForm extends BaseForm
         $this->addSubmit('sendSubmit', 'save')
             ->setDisabled($disAllowed)
             ->setAttribute('class', 'btn btn-success box-list__settings__close js-settingsClose');
-//            ->setAttribute('data-dismiss', 'modal')
+//            ->setAttribute('data-dismiss', 'modal');
 //            ->onClick[] = [$this, 'success'];
 
 
+        $this->onValidate[] = [$this, 'validateSN'];
 //        $this->onSuccess[] = [$this, 'success'];
 
         $this->getElementPrototype()->setAttribute('data-name', $this->formName)->addAttributes(['data-id' => $this->getId()]);
         $this->addFormClass(['ajax']);
 
         return $this;
+    }
+
+
+    public function validateSN(DeviceForm $form, $values)
+    {
+        if ($values->id == null) {
+            return !$this->deviceRepository->findOneBy(['sn' => $values->sn]);
+        }
+
+        return true;
     }
 
 

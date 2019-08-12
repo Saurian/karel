@@ -11,6 +11,7 @@ namespace CmsModule\Presenters;
 
 use CmsModule\Controls\FlashMessageControl;
 use CmsModule\Entities\UserEntity;
+use CmsModule\Facades\DeviceFacade;
 use CmsModule\Forms\ChangePasswordForm;
 use CmsModule\Forms\ForgottenPasswordForm;
 use CmsModule\Forms\IChangePasswordFormFactory;
@@ -26,6 +27,9 @@ class LoginPresenter extends BasePresenter
 
     /** @persistent */
     public $backlink = '';
+
+    /** @var DeviceFacade @inject */
+    public $deviceFacade;
 
     /** @var ILoginFormFactory @inject */
     public $loginFormFactory;
@@ -120,6 +124,11 @@ class LoginPresenter extends BasePresenter
                 ->setRole(UserEntity::ADMIN)
                 ->setUsername($values->mail)
                 ->setPassword($values->password);
+
+            $rootDeviceGroupEntity = $this->deviceFacade->createNewDeviceGroupForUser($entity);
+            $rootDeviceGroupEntity
+                ->setCreatedBy($entity)
+                ->setUpdatedBy($entity);
 
             $em = $form->getEntityMapper()->getEntityManager();
             $em->persist($entity)->flush();

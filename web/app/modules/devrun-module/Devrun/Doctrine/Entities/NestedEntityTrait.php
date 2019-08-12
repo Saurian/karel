@@ -30,4 +30,31 @@ trait NestedEntityTrait
      */
     protected $rgt;
 
+    /**
+     * @return mixed
+     */
+    public function getLft()
+    {
+        return $this->lft;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLvl()
+    {
+        return $this->lvl;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRgt()
+    {
+        return $this->rgt;
+    }
+
+
+
+
 }

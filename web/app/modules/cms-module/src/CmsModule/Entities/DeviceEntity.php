@@ -113,6 +113,7 @@ class DeviceEntity
 
 
     /**
+     * @deprecated
      * @var DeviceGroupEntity
      * @ORM\ManyToOne(targetEntity="DeviceGroupEntity", inversedBy="devicesOld", cascade={"persist", "remove"})
      * @ORM\JoinColumn(onDelete="CASCADE")
@@ -197,6 +198,8 @@ class DeviceEntity
 
 
     /**
+     * @deprecated
+     *
      * @return DeviceGroupEntity
      */
     public function getDeviceGroup()
@@ -205,12 +208,35 @@ class DeviceEntity
     }
 
     /**
+     * @deprecated
      * @param DeviceGroupEntity $deviceGroup
      */
     public function setDeviceGroup($deviceGroup = null)
     {
         $this->deviceGroup = $deviceGroup;
     }
+
+    /**
+     * @return DeviceGroupEntity[]|ArrayCollection
+     */
+    public function getDevicesGroups()
+    {
+        return $this->devicesGroups;
+    }
+
+    /**
+     * @param DeviceGroupEntity[]|ArrayCollection $devicesGroups
+     * @return DeviceEntity
+     */
+    public function setDevicesGroups($devicesGroups)
+    {
+        $this->devicesGroups = $devicesGroups;
+        return $this;
+    }
+
+
+
+
 
     /**
      * @return CampaignEntity[]|ArrayCollection

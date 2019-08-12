@@ -107,6 +107,12 @@ class DeviceGroupEntity
      */
     protected $active = false;
 
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean", options={"default" : false})
+     */
+    protected $unPlace = false;
+
 
     /**
      * DeviceGroupEntity constructor.
@@ -162,15 +168,30 @@ class DeviceGroupEntity
         return $this->active;
     }
 
+    /**
+     * @return bool
+     */
+    public function isUnPlace(): bool
+    {
+        return $this->unPlace;
+    }
+
+    /**
+     * @param bool $unPlace
+     * @return DeviceGroupEntity
+     */
+    public function setUnPlace(bool $unPlace): DeviceGroupEntity
+    {
+        $this->unPlace = $unPlace;
+        return $this;
+    }
+
 
     /**
      * @return mixed
      */
     public function getRoot()
     {
-
-        die("ASDD");
-
         return $this->root;
     }
 

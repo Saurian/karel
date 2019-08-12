@@ -23,6 +23,7 @@ use CmsModule\Entities\UserEntity;
 use Kdyby\Doctrine\DI\IEntityProvider;
 use Kdyby\Doctrine\DI\OrmExtension;
 use Kdyby\Events\DI\EventsExtension;
+use Nette;
 use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
 use Nette\DI\CompilerExtension;
@@ -33,6 +34,10 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
 {
 
     public $defaults = array(
+        'paths' => [
+            'webTempDir'     => '%wwwDir%/webtemp',
+        ],
+
         'newPassword'  => 123123,
         'mediaDir'     => 'media',
         'dataPath'     => '%wwwDir%',
@@ -49,7 +54,6 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
         /** @var ContainerBuilder $builder */
         $builder = $this->getContainerBuilder();
         $config  = $this->getConfig($this->defaults);
-
 
 
         /*
@@ -232,6 +236,14 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
 
         // subscribers
 
+
+        // tree
+        $builder->addDefinition($this->prefix('listener.sortableListener'))
+            ->setType('Gedmo\Sortable\SortableListener')
+            ->addSetup('setAnnotationReader', ['@Doctrine\Common\Annotations\Reader'])
+            ->addTag(EventsExtension::TAG_SUBSCRIBER);
+
+
         /*
          * Listeners
          */
@@ -266,6 +278,20 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             ->addTag(EventsExtension::TAG_SUBSCRIBER);
 
 
+    }
+
+
+    public function beforeCompile()
+    {
+        $config = $this->getConfig($this->defaults);
+
+        foreach ($config['paths'] as $pathSystem) {
+            if (!is_dir($pathSystem)) {
+                mkdir($pathSystem, 0777, true);
+            }
+        }
+
+        parent::beforeCompile();
     }
 
 

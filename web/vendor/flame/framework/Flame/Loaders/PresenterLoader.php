@@ -13,10 +13,12 @@ namespace Flame\Loaders;
 use Flame\Utils\Strings;
 use Nette\Caching\Storages\FileStorage;
 use Nette\Loaders\RobotLoader;
-use Nette\Object;
+use Nette\SmartObject;
 
-class PresenterLoader extends Object
+class PresenterLoader
 {
+
+    use SmartObject;
 
 	/** @var \Nette\Loaders\RobotLoader */
 	private $robotLoader;

@@ -118,6 +118,8 @@ class BasePresenter extends Nette\Application\UI\Presenter
     {
         parent::afterRender();
         if ($this->isAjax() && !$this->signaled && !$this->isControlInvalid()) {
+            $this->redrawControl('navigation');
+            $this->redrawControl('title');
             $this->redrawControl('content');
         }
     }

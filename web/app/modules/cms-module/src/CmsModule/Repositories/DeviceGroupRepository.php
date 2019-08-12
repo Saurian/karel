@@ -9,6 +9,7 @@
 
 namespace CmsModule\Repositories;
 
+use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Repositories\Queries\DeviceGroupQuery;
 use Gedmo\Tree\Traits\Repository\ORM\NestedTreeRepositoryTrait;
 use Kdyby\Doctrine\EntityManager;
@@ -86,6 +87,38 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
     }
 
 
+    /**
+     * return root device group for user
+     *
+     * @param User $user
+     * @return DeviceGroupEntity|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getUserRootDeviceGroup(User $user)
+    {
+        return $this->createQueryBuilder('e')
+            ->join('e.devicesGroupsUsers', 'dgu')
+            ->where('dgu.id = ?1')->setParameter(1, $user->getId())
+            ->andWhere('e.lvl = 0')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+
+    /**
+     * @param User $user
+     * @return DeviceGroupEntity|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getUserUnPlaceDeviceGroup(User $user)
+    {
+        return $this->createQueryBuilder('e')
+            ->join('e.devicesGroupsUsers', 'dgu')
+            ->where('dgu.id = ?1')->setParameter(1, $user->getId())
+            ->andWhere('e.unPlace = 1')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
 
 

@@ -3,6 +3,7 @@
 /*.json
 /*.sh
 /*.phar
+/*.sql
 /.bowerrc
 
 .idea/*
@@ -11,7 +12,8 @@ node_modules/
 web/composer.lock
 web/log/*
 web/temp/*
-
-/web/www/media/
+web/www/media/*
+web/www/adminer/*
 !web/www/media/web.config
+!web/www/media/_storage_no_image/
 !web/www/media/_storage_no_image/8f/no-images-placeholder.png

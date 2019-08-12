@@ -12,6 +12,7 @@ namespace CmsModule\Facades;
 
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
+use CmsModule\Entities\UserEntity;
 use CmsModule\Forms\DeviceForm;
 use CmsModule\Repositories\DeviceGroupRepository;
 use CmsModule\Repositories\DeviceRepository;
@@ -64,9 +65,10 @@ class DeviceFacade
     /**
      * DeviceFacade constructor.
      *
-     * @param DeviceRepository      $deviceRepository
+     * @param DeviceRepository $deviceRepository
      * @param DeviceGroupRepository $deviceGroupRepository
-     * @param UserRepository        $userRepository
+     * @param UserRepository $userRepository
+     * @param Session $session
      */
     public function __construct(DeviceRepository $deviceRepository, DeviceGroupRepository $deviceGroupRepository, UserRepository $userRepository, Session $session)
     {
@@ -181,6 +183,23 @@ class DeviceFacade
         return $this->deviceRepository;
     }
 
+
+    /**
+     * @return DeviceGroupEntity root deviceGroup for admin user
+     */
+    public function createNewDeviceGroupForUser(UserEntity $userEntity)
+    {
+        $deviceGroupEntity = new DeviceGroupEntity('Default');
+        $unClassifyDeviceGroupEntity = new DeviceGroupEntity('Nezařazené');
+
+        $userEntity->addDeviceGroup($deviceGroupEntity);
+        $userEntity->addDeviceGroup($unClassifyDeviceGroupEntity);
+
+        $unClassifyDeviceGroupEntity->setParent($deviceGroupEntity)->setUnPlace(true);
+        $this->getEntityManager()->persist($unClassifyDeviceGroupEntity)->persist($deviceGroupEntity);
+
+        return $deviceGroupEntity;
+    }
 
 
     private function getSection()
