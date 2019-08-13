@@ -9,7 +9,7 @@ $configurator = new Nette\Config\Configurator;
 
 $configurator->setDebugMode([$myIP = '37.221.241.103', $remoteIP = '172.18.0.1']);
 $configurator->enableDebugger(__DIR__ . '/../log', 'pavel.paulik@seznam.cz');
-$configurator->setDebugMode(true);
+//$configurator->setDebugMode(false);
 
 error_reporting(~E_USER_DEPRECATED); // note ~ before E_USER_DEPRECATED
 umask(0000);

@@ -62,8 +62,6 @@
 		<link href="{$basePath}/assets/bootstrap-timepicker/css/timepicker.less" rel="stylesheet">
 		{*<link href="{$basePath}/plugins/bower_components/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">*}
 		<link href="{$basePath}/assets/daterangepicker/daterangepicker.css" rel="stylesheet">
-		<!--nestable CSS -->
-		<link href="{$basePath}/plugins/bower_components/nestable/nestable.css" rel="stylesheet" type="text/css" />
 		<!-- toast CSS -->
 		{*<link href="{$basePath}/plugins/bower_components/toast-master/css/jquery.toast.css" rel="stylesheet">*}
 		<link href="{$basePath}/assets/toast-master/css/jquery.toast.css" rel="stylesheet">
@@ -92,7 +90,6 @@
 
 		<link href="{$basePath}/assets/grido/assets/dist/css/grido.css" rel="stylesheet">
 		{*<!-- endbuild -->*}
-		{*<link href="{$basePath}/assets/nestable2/jquery.nestable.css" rel="stylesheet" type="text/css" />*}
 		{*<link href="{$basePath}/assets/nittro-full/dist/nittro.min.css" rel="stylesheet">*}
 		{*<link n:if="$production" rel="stylesheet" type="text/css" media="screen" href="{$basePath}/css/index.min.css">*}
 
@@ -234,9 +231,6 @@
 
 {block scripts}
 	{*================== BEGIN BASE JS ==================*}
-	<!-- Nestable Plugin JavaScript -->
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.js"></script>
-
 	{if $production}
 		{*<script type="application/javascript" src="{$basePath}/assets/bootstrap/js/bootstrap.js"></script>*}
 		<script type="application/javascript" data-pf-placeholder="scripts" src="{$basePath}/js/index.min.js?rel=1552333765478"></script>
@@ -244,7 +238,6 @@
 		{*<script type="application/javascript" src="{$basePath}/assets/nprogress/nprogress.js"></script>*}
 	{else}
 		{*<!-- build:js {$basePath}/js/index.min.js -->*}
-		{*<script type="application/javascript" src="{$basePath}/js/nestable.min.js"></script>*}
 		<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/nette.ajax.js"></script>
 		<script type="application/javascript" src="{$basePath}/assets/nette-live-form-validation/live-form-validation.js"></script>
 		<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/diagnostics.dumps.ajax.js"></script>
@@ -326,47 +319,7 @@
 		{*<!-- endbuild -->*}
 
 		{*<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/spinner.ajax.js"></script>*}
-		{*<script src="{$basePath}/plugins/bower_components/nestable/jquery.nestable.js"></script>*}
-		{*<script src="{$basePath}/assets/nestable2/jquery.nestable.js"></script>*}
-		{*<script src="{$basePath}/assets/nestable2/dist/jquery.nestable.min.js"></script>*}
-
 		{*<script type="application/javascript" src="{$basePath}/assets/nittro-full/dist/nittro.min.js"></script>*}
-
-
-		<script>
-
-/*
-            jQuery('#date-range').datepicker({
-                toggleActive: true
-            });
-*/
-
-
-
-
-
-
-
-
-
-            // Nestable
-            var updateOutput = function(e) {
-                var list = e.length ? e : $(e.target),
-                    output = $('#nestable-output');
-                if (window.JSON) {
-                    output.val(window.JSON.stringify(list.nestable('serialize'))); //, null, 2));
-                } else {
-                    output.val('JSON browser support required for this demo.');
-                }
-            };
-
-
-
-
-		</script>
-		<!--Style Switcher -->
-		{*<script src="{$basePath}/plugins/bower_components/styleswitcher/jQuery.style.switcher.js"></script>*}
-		<script src="{$basePath}/assets/jquery.switcher/dist/switcher.js"></script>
 	{/if}
 	{*================== END BASE JS ==================*}
 {/block}
@@ -375,24 +328,7 @@
 <script data-pf-placeholder="scripts">
     (function($, undefined) {
         $(function () {
-
             $.nette.init();
-
-            $('.nestable').nestable({
-                group: 1,
-                maxDepth: 1,
-                callback: function(list,e){
-
-                    $.nette.ajax({
-                        url: {link 'itemsNested!'},
-                        data: {
-                            'nestedData': window.JSON.stringify(list.nestable('serialize')),
-                            'elementId': $(e).data('id')
-                        }
-                    });
-                }
-            });
-
         });
     })(jQuery);
 </script>
