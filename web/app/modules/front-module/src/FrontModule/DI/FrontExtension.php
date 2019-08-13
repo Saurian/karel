@@ -22,7 +22,7 @@ use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\Environment;
 
-class FrontExtension extends CompilerExtension implements IPresenterMappingProvider, IRouterProvider, IEntityProvider
+class FrontExtension extends CompilerExtension implements IPresenterMappingProvider, IRouterProvider
 {
     const TAG_SUBSCRIBER = 'kdyby.subscriber';
 
@@ -41,23 +41,6 @@ class FrontExtension extends CompilerExtension implements IPresenterMappingProvi
         $builder = $this->getContainerBuilder();
         $config  = $this->getConfig($this->defaults);
 
-//        $builder->addDefinition($this->prefix('commonFilter'))
-//            ->setClass('FrontModule\Filters\CommonFilter');
-//
-//        $builder->addDefinition($this->prefix('pageTranslator'))
-//            ->setClass('FrontModule\Router\PageTranslator');
-//
-//        $builder->addDefinition($this->prefix('repository.dayDescription'))
-//            ->setFactory('FrontModule\Repositories\DayDescriptionRepository')
-//            ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, DayDescription::class);
-//
-//        $builder->addDefinition($this->prefix('repository.equation'))
-//            ->setClass('FrontModule\Repositories\EquationRepository')
-//            ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, EquationEntity::class);
-//
-//        $builder->addDefinition($this->prefix('control.environment'))
-//            ->setImplement('FrontModule\Control\IJSEnvironmentControl')
-//            ->setInject();
 
 
         /*
@@ -69,12 +52,12 @@ class FrontExtension extends CompilerExtension implements IPresenterMappingProvi
         /*
          * controls
          */
-//        $builder->addDefinition($this->prefix('control.flashMessageControl'))
-//            ->setImplement('FrontModule\Control\IFlashMessageControl');
 
 
 
-        // subscribers
+        /*
+         * subscribers
+         */
 
 
 
@@ -135,15 +118,4 @@ class FrontExtension extends CompilerExtension implements IPresenterMappingProvi
     }
 
 
-    /**
-     * Returns associative array of Namespace => mapping definition
-     *
-     * @return array
-     */
-    function getEntityMappings()
-    {
-        return array(
-            'FrontModule\Entities' => dirname(__DIR__) . '/Entities/',
-        );
-    }
 }
