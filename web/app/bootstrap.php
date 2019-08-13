@@ -28,9 +28,7 @@ if (Devrun\Utils\Debugger::getIPAddress() == $myIP) {
     $configurator->setDebugMode(true);
 }
 
-$environment = (Nette\Configurator::detectDebugMode(['127.0.0.1', $remoteIP]) or
-    (PHP_SAPI == 'cli' && Nette\Utils\Strings::startsWith(getHostByName(getHostName()), "127.0.")) or
-    (PHP_SAPI == 'apache2handler' && Nette\Utils\Strings::startsWith(getHostByName(getHostName()), "172.18.")))
+$environment = (Nette\Configurator::detectDebugMode(['127.0.0.1', $remoteIP]) or (PHP_SAPI == 'cli' && Nette\Utils\Strings::startsWith(getHostByName(getHostName()), "127.0.")))
     ? 'development'
     : 'production';
 
