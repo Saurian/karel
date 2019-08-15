@@ -21,9 +21,13 @@ use Nette\Utils\Strings;
 
 /**
  * Class DeviceEntity
- *
+ * @ORM\Cache(region="device", usage="NONSTRICT_READ_WRITE")
  * @ORM\Entity(repositoryClass="CmsModule\Repositories\DeviceRepository")
- * @ORM\Table(name="device", indexes={
+ * @ORM\Table(name="device",
+ *  uniqueConstraints={
+ *      @ORM\UniqueConstraint(name="sn_rotate_idx", columns={"sn", "sn_rotate"}),
+ *  },
+ *  indexes={
  *     @ORM\Index(name="device_active_idx", columns={"active"}),
  *     @ORM\Index(name="device_name_idx", columns={"name"}),
  *     @ORM\Index(name="position_idx", columns={"position"}),
@@ -43,9 +47,15 @@ class DeviceEntity
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=128, unique=true)
+     * @ORM\Column(type="string", length=16)
      */
     protected $sn;
+
+    /**
+     * @var string
+     * @ORM\Column(type="smallint", nullable=true)
+     */
+    protected $snRotate;
 
     /**
      * @var string

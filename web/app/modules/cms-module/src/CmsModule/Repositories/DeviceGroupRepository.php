@@ -11,6 +11,8 @@ namespace CmsModule\Repositories;
 
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Repositories\Queries\DeviceGroupQuery;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Gedmo\Tree\Traits\Repository\ORM\NestedTreeRepositoryTrait;
 use Kdyby\Doctrine\EntityManager;
 use Kdyby\Doctrine\EntityRepository;
@@ -22,6 +24,7 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
 
     use NestedTreeRepositoryTrait;
     use FilterRepositoryTrait;
+    use PostProcessingTrait;
 
 
     const SESSION_NAME = 'deviceGroupFilter';
@@ -73,6 +76,35 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
         $section = $this->getSection();
         return $section->openDetailDeviceGroup = $id;
     }
+
+
+    /**
+     * return QueryBuilder
+     *
+     * @param User $user
+     * @return Query|\Doctrine\ORM\QueryBuilder
+     */
+    public function getUserAllowedQueryBuilder(User $user)
+    {
+        return $this->getUserAllowedQuery($user)->doCreateQueryBuilder($this);
+    }
+
+
+    /**
+     * return cached result
+     *
+     * @param QueryBuilder $queryBuilder
+     * @param string $cacheId
+     * @return array
+     */
+    public function getCachedResult(QueryBuilder $queryBuilder, $cacheId = 'deviceGroups')
+    {
+        $query = $queryBuilder->getQuery();
+
+        $cacheQb = $query->useResultCache(true, 600, $cacheId );
+        return $cacheQb->getResult();
+    }
+
 
 
     public function getUserAllowedQuery(User $user)

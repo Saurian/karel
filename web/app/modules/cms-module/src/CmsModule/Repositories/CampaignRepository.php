@@ -19,6 +19,7 @@ class CampaignRepository extends EntityRepository implements IFilter
     const SESSION_NAME = 'campaignFilter';
 
     use FilterRepositoryTrait;
+    use PostProcessingTrait;
 
 
     public function getActiveRowsCount()

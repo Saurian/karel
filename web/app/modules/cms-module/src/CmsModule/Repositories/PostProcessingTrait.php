@@ -13,29 +13,46 @@ namespace CmsModule\Repositories;
 trait PostProcessingTrait
 {
 
+
     /**
      * Associate entity
      * no check id exist
      *
      * @param $rows
-     *
+     * @param string $primaryKey
      * @return array
      */
-    private static function entityAssoc($rows)
+    public function getAssoc($rows, $primaryKey = 'id')
     {
         $_rows = [];
         foreach ($rows as $row) {
-            $_rows[$row->id] = $row;
+            $_rows[$row->$primaryKey] = $row;
         }
 
         return $_rows;
     }
 
 
-    public function getAssocRows($rows)
+    /**
+     * Pairs by key entity
+     * no check id exist
+     *
+     * @param $rows
+     * @param string $primaryKey
+     * @param string $columnValue
+     * @return array
+     */
+    public function getPairs($rows, $primaryKey = 'id', $columnValue = 'name')
     {
-        return self::entityAssoc($rows);
+        $_rows = [];
+        foreach ($rows as $row) {
+            $_rows[$row->$primaryKey] = $row->$columnValue;
+        }
+
+        return $_rows;
     }
+
+
 
 
 

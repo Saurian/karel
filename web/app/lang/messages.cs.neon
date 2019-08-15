@@ -91,7 +91,10 @@ forms:
 		name: Název
 		name_holder: Název
 		sn: SN
+		snRotate: SN - rotace
 		sn_holder: Název pro systém
+		sn-rotate_holder: Rotace zařízení
+		address: Vyplnit adresu
 		password: Heslo
 		password_holder: Heslo zařízení
 		city: Město
@@ -109,6 +112,10 @@ forms:
 		ruleRequired: vyplňte prosím toto pole
 		ruleName: vyplňte prosím název zařízení
 		ruleSn: vyplňte prosím unikátní identifikátor zařízení
+		ruleSnRotate: vyplňte prosím rotaci zařízení
+		ruleSnRotateNum: vyplněná hodnota by měla být číslo
+		ruleSnRotateRange: vyplněná hodnota by měla být v rozsahu %d-%d
+		ruleLength: vyplňte pole %d znaků
 		ruleMaxLength: vyplňte nejvýše %d znaků
 		ruleMinLength: vyplňte alespoň %d znaky
 		noAnyDevices: žádné zařízení nebylo nalezeno

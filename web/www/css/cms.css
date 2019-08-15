@@ -301,3 +301,17 @@
 .datagrid .datagrid-tree .datagrid-tree-item .datagrid-tree-item-content .datagrid-tree-item-right .datagrid-tree-item-right-columns {
   flex-basis: auto!important;
 }
+
+.datagrid .datagrid-tree .datagrid-tree-item:not(.has-children) > .datagrid-tree-item-children {
+  /*background: red;*/
+}
+
+.filterUl {
+  padding: 5px 0;
+  column-gap: 30px;
+  columns: 4;
+  list-style: none;
+}
+.filterUl li + li {
+  margin: 5px 0;
+}

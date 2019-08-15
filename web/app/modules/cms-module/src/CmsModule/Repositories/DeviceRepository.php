@@ -11,6 +11,7 @@ namespace CmsModule\Repositories;
 
 use CmsModule\Repositories\Queries\DeviceQuery;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Kdyby\Doctrine\EntityRepository;
 use Nette\Security\User;
 
@@ -74,26 +75,38 @@ class DeviceRepository extends EntityRepository implements IFilter
 
 
     /**
-     * @deprecated
+     * return QueryBuilder
      *
      * @param User $user
+     * @return Query|\Doctrine\ORM\QueryBuilder
+     */
+    public function getUserAllowedQueryBuilder(User $user)
+    {
+        return $this->getUserAllowedQuery($user)->doCreateQueryBuilder($this);
+    }
+
+
+    /**
+     * return cached result
      *
+     * @param QueryBuilder $queryBuilder
+     * @param string $cacheId
      * @return array
      */
-    public function getAllowedDevices(User $user)
+    public function getCachedResult(QueryBuilder $queryBuilder, $cacheId = 'device')
     {
-        $query = (new DeviceQuery());
+        $query = $queryBuilder->getQuery();
 
-        if (!$user->isAllowed('Cms:Device', 'listAllDevices')) {
-            $query->byUser($user);
-        }
-
-        return self::entityAssoc($this->fetch($query)->getIterator());
+        $cacheQb = $query->useResultCache(true, 600, $cacheId );
+        return $cacheQb->getResult();
     }
 
 
 
-
+    /**
+     * @param User $user
+     * @return DeviceQuery
+     */
     public function getUserAllowedQuery(User $user)
     {
         $query = (new DeviceQuery());

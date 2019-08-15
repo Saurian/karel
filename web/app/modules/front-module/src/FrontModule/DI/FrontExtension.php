@@ -11,11 +11,6 @@ namespace FrontModule\DI;
 
 use Flame\Modules\Providers\IPresenterMappingProvider;
 use Flame\Modules\Providers\IRouterProvider;
-use FrontModule\Entities\DayDescription;
-use FrontModule\Entities\EquationEntity;
-use FrontModule\Entities\UserEntity;
-use Kdyby\Doctrine\DI\IEntityProvider;
-use Kdyby\Doctrine\DI\OrmExtension;
 use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
 use Nette\DI\CompilerExtension;

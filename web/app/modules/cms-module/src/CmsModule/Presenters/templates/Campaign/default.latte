@@ -1,8 +1,6 @@
 {*{translator front.homepage /}*}
 {block title}{_campaignPage.title}{/block}
 {block content}
-	{* komponenta pro přidání šablon do kampaně *}
-	{control templateControl}
 
 	<div class="row bg-title">
 		<div class="col-sm-10 col-xs-12">
@@ -11,7 +9,7 @@
 				<div class="btn-group">
 					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices > 0" n:href="addCampaign!" class="ajax-modal btn btn-md btn-success m-r-5" data-toggle="_modal" data-backdrop="static" data-target=".addCampaignModal">{_campaignPage.addCampaign}</a>
 					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices == 0" n:href="Device:" class="btn btn-md btn-success">{_campaignPage.addDeviceFirst}</a>
-					{*{control campaignsFilterControl}*}
+					{control campaignsFilterControl}
 					<a n:if="$presenter->campaign" n:href="resetSelectCampaign!" data-ajax="false" class="btn btn-md btn-warning">{_campaignPage.filter_delete} <i class="fa fa-close"></i></a>
 				</div>
 			</div>
@@ -68,28 +66,6 @@
             });
 
 
-			/*
-			 * select other template
-			 */
-        }).on('change', '[data-name="campaignDetailForm"] select[name="template"]', function (e) {
-
-            var form = $(this).closest('form');
-            var id = $(form).data('id');
-            var values = $(form).serializeArray();
-
-            $.nette.ajax({
-                url: {link changeTemplate!},
-                type: 'GET',
-                data: { 'cid': id, 'tid': $(this).val(), 'values': values }
-            });
-
-        }).on('addNewTemplate', function(e, eventInfo) {
-			return;
-            $.nette.ajax({
-                url: {link changeTemplate!},
-                type: 'GET',
-                data: { 'cid': eventInfo.cid, 'tid': eventInfo.tid }
-            });
         }).on('change', 'input[name="tag"]', function() {
 			var header = $(this).closest('form').find('.modal-header');
 			var checked = this.checked;
@@ -111,87 +87,6 @@
         });
 
 
-        /**
-         * media carousel form send by ajax
-         */
-        $.nette.ext('mediaCarousel', {
-			init: function () {
-
-            },
-
-            load: function() {
-
-                $( ".js-media:not(.owl-loaded)" ).each(function(index) {
-
-					var indexFile = 0;
-                    var files = $(this).find('[type="file"]');
-
-                    // Dropify
-                    var drEvent = $('.dropify').dropify({
-
-                        messages: {
-                            'default': function (q, e, r) {
-								return 'Nahrajte soubor <br>' + $(files[indexFile++]).data("message-type");
-                            },
-                            replace: 'Nahradit soubor',
-                            remove: 'Odstranit',
-                            error: 'Chyba'
-                        }
-                    });
-
-                    drEvent.on('dropify.beforeClear', function(event, object){
-						var filename = $(this).data('filename') ? $(this).data('filename') : 'nový soubor';
-                        return confirm("Opravdu chcete smazat \"" + filename + "\" ?");
-                    });
-
-                    drEvent.on('dropify.afterClear', function(event, object){
-                        var id = $(this).data('id');
-                        $.nette.ajax({
-                            url: {link removeMediumData!},
-                            type: 'GET',
-                            data: { 'mid': id }
-                        });
-
-                        // alert('File deleted');
-                    });
-
-					var $this = $(this);
-					
-					// Carousel
-					setTimeout(function() {
-						$this.owlCarousel({
-							margin:20,
-							nav:true,
-							autoplay:false,
-							touchDrag: true,
-							mouseDrag: false,
-							dots:false, 
-							navText: ["Předchozí","Další"],
-							responsive:{
-								0:{
-									items:1
-								},
-								520:{
-									items:2
-								},
-								700:{
-									items:3
-								},
-								990:{
-									items:2
-								},
-								1400:{
-									items:3
-								},
-								1680:{
-									items:4
-								}
-							}
-						});
-					}, 200);
-                });
-            }
-        });
     });
 
 </script>

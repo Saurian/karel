@@ -13,14 +13,13 @@ use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Presenters\BasePresenter;
-use CmsModule\Repositories\DeviceGroupRepository;
 use CmsModule\Repositories\DeviceRepository;
 use CmsModule\Repositories\UserRepository;
 use Devrun\Doctrine\DoctrineForms\IComponentMapper;
+use Kdyby\Translation\Phrase;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Security\User;
-use Tracy\Debugger;
 
 interface IDeviceFormFactory
 {
@@ -67,7 +66,14 @@ class DeviceForm extends BaseForm
             ->setDisabled($disAllowed)
             ->setAttribute('placeholder', "sn_holder")
             ->addRule(Form::FILLED, 'ruleSn')
-            ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 64);
+            ->addRule(Form::LENGTH, 'ruleLength', 11);
+
+        $this->addText('snRotate', 'snRotate')
+            ->setDisabled($disAllowed)
+            ->setAttribute('placeholder', "sn-rotate_holder")
+            ->addRule(Form::FILLED, 'ruleSnRotate')
+            ->addRule(Form::NUMERIC, 'ruleSnRotateNum')
+            ->addRule(Form::RANGE, new Phrase('ruleSnRotateRange', 0), [0, 360]);
 
         $this->addPassword('psw', 'password', null, 64)
             ->setDisabled($disAllowed)
@@ -75,6 +81,11 @@ class DeviceForm extends BaseForm
             ->addCondition(Form::FILLED)
             ->addRule(Form::MIN_LENGTH, 'ruleMinLength', 3)
             ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 64);
+
+        $this->addCheckbox('address', 'address')
+            ->setAttribute('class', 'happy primary')
+            ->addCondition(Form::EQUAL, true)
+            ->toggle('address-container');
 
         $this->addText('city', 'city')
             ->setDisabled($disAllowed)

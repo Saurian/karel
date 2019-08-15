@@ -13,8 +13,17 @@ use Ublaboo\DataGrid\DataModel;
 use Ublaboo\DataGrid\Exception\DataGridColumnNotFoundException;
 use Ublaboo\DataGrid\Utils\Sorting;
 
+/**
+ * Class DataGrid
+ * @package Devrun\CmsModule\Controls
+ * @method onResetFilter($dataGrid);
+ */
 class DataGrid extends \Ublaboo\DataGrid\DataGrid
 {
+
+    /** @var callable array  */
+    public $onResetFilter = [];
+
 
     /**
      * @return array
@@ -52,5 +61,29 @@ class DataGrid extends \Ublaboo\DataGrid\DataGrid
         header('Content-Type: application/json; charset=UTF-8');
         die(json_encode(array('message' => 'ERROR ' . $message, 'code' => 1337)));
     }
+
+
+    public function handleResetFilter()
+    {
+        parent::handleResetFilter();
+        $this->onResetFilter($this);
+    }
+
+
+
+    /**
+     * @return array
+     */
+    public function getFiltersSet($key = null): array
+    {
+        return $key ? $this->filter[$key] ?? [] : $this->filter;
+    }
+
+
+
+
+
+
+
 
 }

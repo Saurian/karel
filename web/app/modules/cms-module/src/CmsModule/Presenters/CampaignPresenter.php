@@ -15,14 +15,10 @@ use CmsModule\Controls\FlashMessageControl;
 use CmsModule\Controls\ICampaignFilterTagsControlFactory;
 use CmsModule\Controls\ICampaignsFilterControlFactory;
 use CmsModule\Controls\ITemplateControlFactory;
-use CmsModule\Controls\MultimediaUploadControl;
-use CmsModule\Controls\TemplateControl;
 use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\MediumDataEntity;
-use CmsModule\Entities\MediumEntity;
-use CmsModule\Entities\TemplateEntity;
 use CmsModule\Facades\CampaignFacade;
 use CmsModule\Facades\DeviceFacade;
 use CmsModule\Facades\MediaDataFacade;
@@ -38,7 +34,6 @@ use Devrun\Php\PhpInfo;
 use Kdyby\Doctrine\QueryBuilder;
 use Kdyby\Translation\Phrase;
 use Nette\Application\UI\Form;
-use Nette\Application\UI\Multiplier;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\FileUpload;
 use Nette\Utils\DateTime;
@@ -221,111 +216,6 @@ class CampaignPresenter extends BasePresenter
     }
 
 
-    /**
-     * @todo upravit na facade
-     *
-     * @param $cid
-     * @param $tid
-     */
-    public function handleChangeTemplate($cid, $tid, array $values = array())
-    {
-        /** @var CampaignEntity $campaign */
-        if ($campaign = $this->campaignFacade->getCampaignRepository()->find($cid)) {
-
-            $em = $this->campaignFacade->getCampaignRepository()->getEntityManager();
-
-            /** @var TemplateEntity $template */
-            if ($template = $em->getRepository(TemplateEntity::getClassName())->find($tid)) {
-
-                $campaign->setTemplate($template);
-
-                if ($mediaDataEntities = $em->getRepository(MediumDataEntity::getClassName())->findBy(['campaign' => $campaign])) {
-                    $em->remove($mediaDataEntities);
-
-                    $translator = $this->translateMessage();
-                    $message = $translator->translate('campaignPage.template_data_deleted');
-                    $title   = $translator->translate('campaignPage.management');
-
-                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_WARNING);
-                    $this->redrawControl('flash');
-                }
-
-
-                /** @var CampaignForm $form */
-/*
-                $form       = $this["campaignsDetailForm-$cid"];
-                $components = $form->components;
-
-                $ignored = ['template', 'devices', 'realizedFrom'];
-                $assocValues = [];
-
-                foreach ($values as $value) {
-                    $name = $value['name'];
-                    if (Strings::endsWith($name, '[]')) {
-                        $name = str_replace('[]', '', $name);
-                        $assocValues[$name][] = $value['value'];
-
-                    } else {
-                        $assocValues[$name] = $value['value'];
-                    }
-                }
-
-                foreach ($components as $name => $component) {
-                    if (isset($assocValues[$name]) && !in_array($name, $ignored) ) {
-                        $component->value = $assocValues[$name];
-
-                        Debugger::barDump($name);
-
-                        $component->validate();
-                        if (!$component->hasErrors()) {
-                            $campaign->$name = $component->value;
-                        }
-
-//                        Debugger::barDump($q = $component->hasErrors());
-
-                    }
-                }
-
-//                $form->setCampaignEntity($campaign);
-*/
-                $em->persist($campaign)->flush();
-            }
-
-        }
-
-        $this->template->change_template = $cid;
-        $this->payload->_change_template = $cid;
-
-        $this->ajaxRedirect('this', null, ['items', 'flash']);
-    }
-
-
-    public function handleRemoveMediumData($mid)
-    {
-        $openCampaignId = $this->campaignFacade->getRepository()->getOpenDetailCampaign();
-
-        $em = $this->campaignFacade->getCampaignRepository()->getEntityManager();
-
-        /** @var MediumDataEntity $mediumDataEntity */
-        if ($mid && $mediumDataEntity = $em->getRepository(MediumDataEntity::class)->find($mid)) {
-
-            if ($mediumDataEntity->getCampaign()->getId() == $openCampaignId) {
-                $filename = $mediumDataEntity->getFileName();
-
-                if ($this->mediaDataFacade->removeFileFromMedium($mediumDataEntity)) {
-                    $em->persist($mediumDataEntity)->flush();
-
-                    $translator = $this->translateMessage();
-                    $message    = $translator->translate('campaignPage.file_deleted', null, ['name' => $filename]);
-                    $title      = $translator->translate('campaignPage.management');
-
-                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
-                }
-            }
-        }
-
-        $this->ajaxRedirect('this', null, ['flash']);
-    }
 
 
     public function actionInit()
@@ -605,220 +495,6 @@ class CampaignPresenter extends BasePresenter
     }
 
 
-    /**
-     * display panel campaigns form
-     * @param $name
-     *
-     * @return Multiplier
-     */
-    protected function createComponentCampaignsForm($name)
-    {
-        $self = $this;
-
-        return new Multiplier(function ($id) use ($self, $name) {
-
-
-            /** @var CampaignEntity $entity */
-            $entity = $self->template->campaigns[$id]['entity'];
-
-            $form = new Form();
-
-            $form->addCheckbox('active', $this->translator->translate('messages.forms.campaignsDetailForm.active'))
-                ->setDisabled($this->user->isAllowed(CampaignForm::class, 'edit') == false)
-                ->setAttribute('class', 'js-switch')
-                ->setAttribute('data-size', 'small');
-
-            $form->getElementPrototype()
-                ->addAttributes([
-                    'class' => 'ajax',
-                    'data-name' => "CampaignForm",
-                    'data-id' => $id,
-                    'data-ajax' => "false",
-                ]);
-
-            $form->setDefaults([
-                'active' => $entity->isActive(),
-            ]);
-
-            return $form;
-        });
-    }
-
-
-    /**
-     * campaign detail form
-     * @param $name
-     *
-     * @return Multiplier
-     */
-    protected function createComponentCampaignsDetailForm($name)
-    {
-        $self = $this;
-
-        $campaignRepository = $this->campaignFacade->getCampaignRepository();
-
-        $devices = $this->getDevices();
-        $devicesGroups = $this->getDevicesGroups();
-
-        return new Multiplier(function ($id) use ($self, $name, $devices, $devicesGroups, $campaignRepository) {
-
-            /** @var CampaignEntity $entity */
-//            $entity = $self->template->campaigns[$id]['entity'];
-            $entity = $this->getCampaigns()[$id]['entity'];
-            $entity->synchronizeMediaDataFromTemplate();
-
-            $mediumData = $entity->getMediaData();
-
-            $form = $this->campaignFormFactory->create();
-
-            $form->setId($id);
-            $form->setFormName("campaignDetailForm");
-
-            $templates = $this->templateRepository->getTemplates($this->user);
-
-            $form
-                ->setTranslator($this->translator->domain("messages.forms.$name"))
-                ->setUserEntity($this->userEntity)
-                ->setCampaignEntity($entity)
-                ->setTemplates($templates)
-                ->setDevices($devices)
-                ->setDevicesGroups($devicesGroups);
-
-            $form->create();
-            $form->bootstrap3Render();
-            $form->bindEntity($entity);
-
-            $deviceList = [];
-            foreach ($entity->getDevices() as $device) {
-                if (in_array($device->getId(), array_keys($devices))) {
-                    $deviceList[] = $device->getId();
-                }
-            }
-
-            $deviceGroupList = [];
-            foreach ($entity->getDevicesGroups() as $devicesGroup) {
-                if (in_array($devicesGroup->getId(), array_keys($devicesGroups))) {
-                    $deviceGroupList[] = $devicesGroup->getId();
-                }
-            }
-
-            $form->setDefaults([
-                'devices' => $deviceList,
-                'devicesGroups' => $deviceGroupList,
-            ]);
-
-            $form->onError[] = function (BaseForm $form) {
-                $entity = $form->getValues();
-
-                $errors = implode("<br>", $form->getErrors());
-
-                $this->translator->translate('messages.forms.campaignsDetailForm.active');
-
-                $translator = $this->translateMessage();
-                $message    = $translator->translate('campaignPage.form_has_error', null, ['name' => $entity->name, 'errors' => $errors]);
-                $title      = $translator->translate('campaignPage.management');
-
-                $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_WARNING);
-
-                $openCampaignId = $this->campaignFacade->getCampaignRepository()->getOpenDetailCampaign();
-
-                $this->template->change_template = $openCampaignId;
-                $this->payload->_change_template = $openCampaignId;
-
-                $this->ajaxRedirect('this', null, [/*'items',*/'flash']);
-            };
-
-
-            $form->onSuccess[] = function (BaseForm $form, $values) use ($devices, $devicesGroups) {
-
-                /** @var SubmitButton $changeTemplateSubmit */
-//                $changeTemplateSubmit = $form['changeTemplateSubmit'];
-
-                /** @var SubmitButton $sendSubmit */
-                $sendSubmit = $form['sendSubmit'];
-
-                if ($sendSubmit->isSubmittedBy()) {
-
-                    /** @var CampaignEntity $entity */
-                    $entity = $form->getEntity();
-
-                    $selectDevices       = (array)$values->devices;
-                    $selectDevicesGroups = (array)$values->devicesGroups;
-
-                    $this->campaignFacade->updateDevices($entity, $devices, $selectDevices);
-                    $this->campaignFacade->updateDevicesGroups($entity, $devicesGroups, $selectDevicesGroups);
-
-                    foreach ($values->mediaData as $key => $value) {
-
-                        if (isset($value->file)) {
-                            $mediumDataEntity = null;
-                            if (is_numeric($key)) {
-                                foreach ($entity->getMediaData() as $_mediumDataEntity) {
-                                    if ($_mediumDataEntity->getId() == $key) {
-                                        $mediumDataEntity = $_mediumDataEntity;
-                                        break;
-                                    }
-                                }
-
-                            } elseif (preg_match('%_new_(?<id>\d+)%', $key, $matches)) {
-                                $collection = $entity->getMediaData();
-                                $mediumDataEntity = $collection[$matches['id']];
-                            }
-
-                            $this->mediaDataFacade->saveFileUpload($mediumDataEntity, $value->file);
-                        }
-                    }
-
-                    /*
-                     * clear empty mediaData
-                     */
-                    /*
-                    foreach ($entity->getMediaData() as $mediumDataEntity) {
-                        if (null == $mediumDataEntity->getType() ) {
-                            $entity->removeMediumData($mediumDataEntity);
-                        }
-                    }
-                    */
-
-//                    die("Data");
-
-
-
-                    $this->campaignFacade->getEntityManager()->persist($entity)->flush();
-
-                    $translator = $this->translateMessage();
-                    $message    = $translator->translate('campaignPage.campaign_updated', null, ['name' => $values->name]);
-                    $title      = $translator->translate('campaignPage.management');
-
-                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_CAMPAIGN_EDIT_SUCCESS);
-
-                    $deviceFilter = $this->deviceRepository->getFilterDevice();
-                    $deviceGroupFilter = $this->deviceGroupRepository->getFilterDeviceGroup();
-
-                    $this->payload->_success = true;
-
-                    /*
-                     * if some filter is set, must re-validate more snippets
-                     */
-                    if ($deviceFilter || $deviceGroupFilter) {
-
-                        $this->payload->_switchery_redraw = true;
-                        $this->ajaxRedirect('this', null, ['campaigns', 'items', 'filter', 'flash']);
-
-                    } else {
-
-                        /*
-                         * if not device filter define, can re-validate less snippets
-                         */
-                        $this->ajaxRedirect('this', null, ['items', 'flash']);
-                    }
-
-                };
-            };
-
-            return $form;
-        });
-    }
 
 
 
@@ -832,6 +508,17 @@ class CampaignPresenter extends BasePresenter
     {
         $control = $this->campaignsFilterControlFactory->create();
         $control->onFilter[] = function ($filter) {
+
+            /** @var DataGrid $grid */
+            $grid = $this['campaignGridControl'];
+
+            if ($filter) {
+                $grid->setFilter($filter);
+            }
+
+            $grid->reload();
+            $grid->redrawControl();
+
 
             /** @var CampaignFilterTagsControl $tagsControl */
             $tagsControl = $this['campaignFilterTagsControl'];
@@ -871,40 +558,6 @@ class CampaignPresenter extends BasePresenter
     }
 
 
-    /**
-     * add new template popup control
-     *
-     * @return \CmsModule\Controls\TemplateControl
-     */
-    protected function createComponentTemplateControl()
-    {
-        $control = $this->templateControlFactory->create();
-        $control->onTemplateFormSuccess[] = function (TemplateEntity $entity, TemplateControl $templateControl) {
-
-            $entity->updateUser($this->userEntity);
-
-            $em = $this->campaignFacade->getEntityManager();
-            $em->persist($entity)->flush();
-
-            $openCampaignId = $this->campaignFacade->getCampaignRepository()->getOpenDetailCampaign();
-
-            $this->payload->lastTemplateId = $entity->getId();
-            $this->payload->lastTemplateName = $entity->getName();
-
-            $this->template->change_template = $openCampaignId;
-            $this->payload->_change_template = $openCampaignId;
-
-            $translator = $this->translateMessage();
-            $message    = $translator->translate('campaignPage.template_added', null, ['name' => $entity->getName()]);
-            $title      = $translator->translate('campaignPage.management');
-
-            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
-            $this->ajaxRedirect('this', null, ['_campaignFormModal', 'flash']);
-        };
-
-        return $control;
-    }
-
 
     /**
      * @return DataGrid
@@ -917,6 +570,7 @@ class CampaignPresenter extends BasePresenter
         $grid->setTranslator($this->translator);
         $grid->setItemsPerPageList([20, 30, 50]);
         $grid->setRememberState(true);
+        $grid->setRefreshUrl(true);
 
 
         if ($this->getUser()->isAllowed('Cms:Campaign', 'listAllCampaigns')) {
@@ -934,31 +588,11 @@ class CampaignPresenter extends BasePresenter
         }
 
 
+        $deviceEntities = $this->deviceRepository->getCachedResult($this->deviceRepository->getUserAllowedQueryBuilder($this->getUser()));
+        $deviceGroupsEntities = $this->deviceGroupRepository->getCachedResult($this->deviceGroupRepository->getUserAllowedQueryBuilder($this->getUser()));
 
-
-//        $query = (new CampaignQuery());
-//        $query->byUser($this->getUser());
-
-//        dump($query->fetch($this->deviceRepository)->getIterator());
-//        dump($query->doCreateQueryBuilder($this->deviceRepository)->getQuery()->getResult());
-
-//        $model = $query->doCreateQueryBuilder($this->deviceRepository)->getQuery()->getResult();
-
-
-//        if ($filterDevice && !empty($filterDevice)) {
-//            $query->byDevices($filterDevice);
-//        }
-//        if ($filterGroupDevice && !empty($filterGroupDevice)) {
-//            $query->orDevicesGroups($filterGroupDevice);
-//        }
-//        if (!$user->isAllowed('Cms:Campaign', 'listAllCampaigns')) {
-//        }
-//        if ($campaign) {
-//            $query->byCampaigns($campaign);
-//        }
-
-
-
+        $devices = $this->deviceRepository->getPairs($deviceEntities);
+        $deviceGroups = $this->deviceGroupRepository->getPairs($deviceGroupsEntities);
 
 
         $grid->setDataSource($model);
@@ -1022,7 +656,6 @@ class CampaignPresenter extends BasePresenter
             ->setSortable()
             ->setFitContent()
             ->addOption(0, 'Neaktivní')
-            ->setIcon('close')
             ->setClass('btn-default')
             ->endOption()
             ->addOption(1, 'Aktivní')
@@ -1043,9 +676,37 @@ class CampaignPresenter extends BasePresenter
         };
 
 
+        $grid->addFilterMultiSelect('devices', 'Zařízení', $devices, 'd.id')
+            ->setCondition(function (\Kdyby\Doctrine\QueryBuilder $queryBuilder, $value) use ($grid) {
+                if ($devicesGroupFilter = $grid->getFilter('deviceGroups')->getValue()) {
+                    $queryBuilder->andWhere('d.id IN (:devices) OR dg.id IN (:deviceGroups)')
+                        ->setParameter('devices', $value)
+                        ->setParameter('deviceGroups', $devicesGroupFilter);
+
+                } else {
+                    $queryBuilder->andWhere('d.id IN (:devices)')->setParameter('devices', $value);
+                }
+            });
+
+        $grid->addFilterMultiSelect('deviceGroups', 'Skupiny', $deviceGroups, 'dg.id')
+            ->setCondition(function (\Kdyby\Doctrine\QueryBuilder $queryBuilder, $value) use ($grid) {
+                if (!$deviceFilter = $grid->getFilter('devices')->getValue()) {
+                    $queryBuilder->andWhere('dg.id IN (:deviceGroups)')->setParameter('deviceGroups', $value);
+                }
+            });
+
+
+
+        $grid->onResetFilter[] = function () {
+
+            /** @var CampaignsFilterControl $filterControl */
+            $filterControl = $this['campaignsFilterControl'];
+            $filterControl->onRedraw();
+        };
+
 
         $grid->addAction('edit', 'Upravit', 'editCampaign!')
-            ->setIcon('pencil')
+            ->setIcon('pencil fa-1x')
             ->setDataAttribute('backdrop', 'static')
             ->setDataAttribute('target', '.addCampaignModal')
             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.editDevice'))
@@ -1060,10 +721,7 @@ class CampaignPresenter extends BasePresenter
                 return "Opravdu chcete smazat kampaň `{$item->name}`?";
             });
 
-
-
-
-
+        $grid->setTemplateFile(__DIR__ . '/templates/Campaign/#datagrid_campaign.latte');
 
         return $grid;
     }
@@ -1229,8 +887,10 @@ class CampaignPresenter extends BasePresenter
             });
 
 
-
-        $grid->addToolbarButton('addMedias', 'Nahrát soubory')
+        /**
+         * error span message
+         */
+        $grid->addToolbarButton('#')
             ->setRenderer(function () {
                 $html = Html::el("span")->addAttributes(['id' => 'mediaErrorMessage', 'class' => 'text-danger']);
                 return $html;
@@ -1238,11 +898,10 @@ class CampaignPresenter extends BasePresenter
             ->addAttributes([
                 'data-target' => '.addDeviceModal',
                 'data-title' => $this->translateMessage()->translate('devicePage.edit_device_group'),
-            ])
-            ->setClass('_ajax-modal btn btn-xs btn-success')
-            ->setIcon('files-o');
+            ]);
 
-        $grid->addToolbarButton('addMedia', 'Nahrát soubory')
+
+        $grid->addToolbarButton('addMedia', 'Nahrát obsah')
             ->addAttributes([
                 'data-click' => '#frm-mediaForm-files',
                 'data-title' => $this->translateMessage()->translate('devicePage.edit_device_group'),
@@ -1513,7 +1172,7 @@ class CampaignPresenter extends BasePresenter
     public function getDevices()
     {
         if (null === $this->devices) {
-            $this->devices = $this->deviceRepository->getAssocRows($this->deviceRepository->fetch($this->deviceRepository->getUserAllowedQuery($this->user))->getIterator());
+            $this->devices = $this->deviceRepository->getAssoc($this->deviceRepository->fetch($this->deviceRepository->getUserAllowedQuery($this->user))->getIterator());
         }
 
         return $this->devices;

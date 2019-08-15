@@ -70,6 +70,10 @@ class DeviceGroupQuery extends QueryObject
     }
 
 
+    /**
+     * @param Kdyby\Persistence\Queryable $repository
+     * @return \Doctrine\ORM\Query|\Doctrine\ORM\QueryBuilder
+     */
     public function doCreateQueryBuilder(Kdyby\Persistence\Queryable $repository)
     {
         return $this->doCreateQuery($repository);

@@ -62,31 +62,13 @@ class DeviceQuery extends QueryObject
         $this->filter[] = function (QueryBuilder $qb) use ($user) {
 
             $qb
-//                ->addSelect('du')
                 ->leftJoin('q.devicesUsers', 'du')
                 ->leftJoin('q.deviceGroup', 'dg')
                 ->leftJoin('dg.devicesGroupsUsers', 'dgu');
 
             $qb->andWhere('du.id = :user')
-//                ->orWhere('dg.id = :dgIds')->setParameter('dgIds', 1);
                 ->orWhere('dgu.id = :user')
                 ->setParameter('user', $user->getId());
-//                ->orWhere('dg IN (:dgIds)')->setParameter('dgIds', [2,1]);
-//                ->orWhere(
-//                        $qb->expr()->in( 'dg', $qb->getEntityManager()->createQueryBuilder()
-//                            ->select('dg3.id')
-//                            ->from(UserEntity::class, 'u3')
-//                            ->join('u3.devicesGroups', 'dg3',
-//                                \Doctrine\ORM\Query\Expr\Join::WITH,
-//                                $qb->expr()->andX(
-////                                    $qb->expr()->eq('i2.order', 'd2')
-//                                    $qb->expr()->eq('u3.id', ':uid')
-//                                )
-//                            )
-//                            ->getDQL()
-//                        )
-//                    );
-
 
         };
         return $this;
@@ -101,6 +83,10 @@ class DeviceQuery extends QueryObject
         return $this;
     }
 
+    /**
+     * @param Kdyby\Persistence\Queryable $repository
+     * @return Query|\Doctrine\ORM\QueryBuilder
+     */
     public function doCreateQueryBuilder(Kdyby\Persistence\Queryable $repository)
     {
         return $this->doCreateQuery($repository);
@@ -119,11 +105,6 @@ class DeviceQuery extends QueryObject
         foreach ($this->select as $modifier) {
             $modifier($qb);
         }
-
-        $query = $qb->getQuery();
-
-        /** @var Query $cacheQb */
-//        $cacheQb = $query->useResultCache(true, 600, "deviceSN_$id" );
 
         return $qb;
     }

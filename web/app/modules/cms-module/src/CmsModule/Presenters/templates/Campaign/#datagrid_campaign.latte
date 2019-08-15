@@ -1,0 +1,8 @@
+{extends $original_template}
+{block header-filters}
+    {include parent}
+    {var $i = $filter['filter']['devices']}
+    {input $i style=> 'display: none;'}
+    {var $i = $filter['filter']['deviceGroups']}
+    {input $i style=> 'display: none;'}
+{/block}

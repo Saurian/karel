@@ -72,21 +72,39 @@
 								{input name}
 							</div>
 							<div class="box-list__settings__one">
-								{label sn}
-								{input sn}
+								<div class="row">
+									<div n:class="$editDevice ? col-md-7 : col-md-8">
+										{label sn}
+										{input sn}
+									</div>
+									<div n:class="$editDevice ? col-md-5 : col-md-4">
+										{label snRotate}
+										{input snRotate}
+									</div>
+								</div>
 							</div>
+
 							<div class="box-list__settings__one">
-								{label city}
-								{input city}
+								{input address class=>'happy primary'}
+								{label address}
 							</div>
-							<div class="box-list__settings__one">
-								{label street}
-								{input street}
+
+							<div id="address-container">
+								<div class="box-list__settings__one">
+									{label city}
+									{input city}
+								</div>
+								<div class="box-list__settings__one">
+									{label street}
+									{input street}
+								</div>
+								<div class="box-list__settings__one">
+									{label zip}
+									{input zip}
+								</div>
 							</div>
-							<div class="box-list__settings__one">
-								{label zip}
-								{input zip}
-							</div>
+
+{*
 							<div class="box-list__settings__one">
 								<div class="box-list__settings__one__templateSelectHead clearfix">
 									{label deviceGroup}
@@ -94,16 +112,10 @@
 								{input deviceGroup}
 							</div>
 
-
 							<div class="box-list__settings__one">
 								<div class="box-list__settings__one__templateSelectHead clearfix">
 									{label defaultCampaign}
 									{input defaultCampaign}
-									{*
-									<div class="vpraov">
-										Smyčka: &nbsp; <input type="checkbox" checked class="js-switch m-l-5" data-size="small" />
-									</div>
-									*}
 								</div>
 							</div>
 							<div class="box-list__settings__one">
@@ -112,6 +124,7 @@
 									{input loopCampaign}
 								</div>
 							</div>
+*}
 						{/form}
 
 					</div>
@@ -119,9 +132,6 @@
 						{control deviceGroupListGridControl}
 					</div>
 				</div>
-
-
-
 			</div>
 		</div>
 	</div>

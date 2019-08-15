@@ -10,11 +10,11 @@
 
 namespace Devrun\Tests;
 
-use Devrun\CmsModule\Presenters\LoginPresenter;
 use Nette\Application\PresenterFactory;
 use Nette\Application\Request;
 use Nette\Application\Responses\TextResponse;
 use Nette\Security\User;
+use Test\InvalidArgumentException;
 
 
 class Presenter extends BaseTestCase
@@ -85,9 +85,34 @@ class Presenter extends BaseTestCase
      *
      * @return Request
      */
-    public function getRequest(array $params = array(), array $post = array(), $presenterName = '', $method = 'POST', array $files = array())
+    public function getRequest(array $params = array(), array $post = array(), $presenterName = NULL, $method = 'POST', array $files = array())
     {
         $pName = $presenterName ? $presenterName : $this->presenterName;
+        return new Request($pName, $method, $params, $post, $files);
+    }
+
+
+    /**
+     * synonym to getRequest
+     *
+     * @param array  $params
+     * @param array  $post
+     * @param string $presenterName
+     * @param string $method
+     * @param array  $files
+     *
+     * @return Request
+     */
+    public function createRequest(array $params = array(), array $post = array(), $presenterName = NULL, $method = 'POST', array $files = array())
+    {
+        $pName = $presenterName ? $presenterName : $this->presenterName;
+        if (!$this->presenterName) {
+            if (NULL == $presenterName) {
+                throw new InvalidArgumentException("presenter not defined");
+            }
+            $this->init($presenterName);
+        }
+
         return new Request($pName, $method, $params, $post, $files);
     }
 
@@ -142,14 +167,14 @@ class Presenter extends BaseTestCase
      *
      * @return string
      */
-    protected function createHtmlFromResponse($response, $saveToFile = true)
+    protected function createHtmlFromResponse($response, $saveToFile = null)
     {
         $html = '';
         if ($response instanceof TextResponse) {
             $html = (string)$response->getSource();
+
             if ($saveToFile) {
-                $out = __DIR__ . '/htmlOutput.html';
-                file_put_contents($out, $html);
+                file_put_contents($saveToFile, $html);
             }
         }
 
@@ -206,25 +231,26 @@ class Presenter extends BaseTestCase
      * @param null $username
      * @param null $password
      *
-     * @throws \PHPUnit_Framework_AssertionFailedError
+     * @throws \PHPUnit\Framework\AssertionFailedError
      * @return User
      */
     public function sendLoginForm($username = null, $password = null)
     {
-        $this->getContainer()->user->logout();
+        $container = $this->getContainer();
 
+        $user = $container->getByType('Nette\Security\User');
         $testUser = $this->getContainer()->getParameters()['testUser'];
-
-        $userLoginAction = 'Cms:Login';
+        $userLoginAction = 'Front:Login';
 
         $request = new Request($userLoginAction, 'POST', array(
             'action' => 'default',
-            'do'     => 'loginForm-submit',
+            'do'     => 'emailLoginForm-submit',
         ), array(
-            "username"    => $username ? $username : $testUser['login'],
-            "password" => $password ? $password : $testUser['password'],
-            "test"     => true,
-            "send"     => "Login",
+            "email"       => $username ? $username : $testUser['login'],
+            "password"    => $password ? $password : $testUser['password'],
+            "test"        => true,
+//            "reg"         => true,
+            "loginSubmit" => "Login",
         ));
 
         /** @var LoginPresenter $presenter */
@@ -240,12 +266,25 @@ class Presenter extends BaseTestCase
             $out = __DIR__ . '/htmlOutput.html';
             file_put_contents($out, $html);
 
-            throw new \PHPUnit_Framework_AssertionFailedError('není redirect, vygenerován html, ' . $err);
+            throw new \PHPUnit\Framework\AssertionFailedError('není redirect, vygenerován html, ' . $err);
         }
 
         $this->assertEmpty($err, 'Chyba formuláře ' . $err);
         return $presenter->getUser();
     }
 
+
+
+    protected function assocProviderData($items, $assocBy = null)
+    {
+        if ($assocBy) {
+            $resultAssoc = [];
+            foreach ($items as $item) {
+                $resultAssoc[$item[$assocBy]] = $item;
+            }
+            return $resultAssoc;
+        }
+        return $items;
+    }
 
 }

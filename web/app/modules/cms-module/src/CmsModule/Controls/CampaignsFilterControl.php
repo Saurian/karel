@@ -11,10 +11,10 @@ namespace CmsModule\Controls;
 
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
+use CmsModule\Presenters\CampaignPresenter;
 use CmsModule\Repositories\DeviceGroupRepository;
 use CmsModule\Repositories\DeviceRepository;
-use CmsModule\Repositories\Queries\DeviceGroupQuery;
-use CmsModule\Repositories\Queries\DeviceQuery;
+use Devrun\CmsModule\Controls\DataGrid;
 use Flame\Application\UI\Control;
 use Kdyby\Events\Event;
 use Nette\Security\User;
@@ -31,8 +31,7 @@ interface ICampaignsFilterControlFactory
  *
  * @package CmsModule\Controls
  * @method onFilter(array $filters)
- * @method onDeviceFiltered($id)
- * @method onDeviceGroupFiltered($id)
+ * @method onRedraw()
  */
 class CampaignsFilterControl extends Control
 {
@@ -46,36 +45,24 @@ class CampaignsFilterControl extends Control
     /** @var DeviceGroupRepository @inject */
     public $deviceGroupRepository;
 
+    /** @var Callback[] events */
+    public $onFilter = [];
+
+    /** @var Event[] events */
+    public $onRedraw = [];
+
     /** @var DeviceEntity[] */
     private $deviceRows = [];
 
     /** @var DeviceGroupEntity[] */
     private $deviceGroupRows = [];
 
-    /** @var Callback[] events */
-    public $onFilter = [];
-
-    /** @var Event[] events */
-    public $onDeviceFiltered = [];
-
-    /** @var Event[] events */
-    public $onDeviceGroupFiltered = [];
+    /** @var DataGrid */
+    private $campaignGridControl;
 
 
-    protected function attached($presenter)
-    {
-        parent::attached($presenter);
-
-        $this->onDeviceFiltered[] = function ($filter) {
-            $this->handleToggleFilterDevice($filter);
-            $this->onFilter(['device' => [$filter]]);
-        };
-
-        $this->onDeviceGroupFiltered[] = function ($filter) {
-            $this->handleToggleFilterDeviceGroup($filter);
-            $this->onFilter(['deviceGroup' => [$filter]]);
-        };
-    }
+    /** @var array */
+    private $filter = [];
 
 
     public function render()
@@ -84,118 +71,11 @@ class CampaignsFilterControl extends Control
 
         $template->deviceRows = $this->getDeviceRows();
         $template->deviceGroupRows = $this->getDeviceGroupRows();
-        $template->filterDevice = $this->deviceRepository->existFilterDevice() ? $this->deviceRepository->getFilterDevice() : [];
-        $template->filterDeviceGroup = $this->deviceGroupRepository->existFilterDeviceGroup() ? $this->deviceGroupRepository->getFilterDeviceGroup() : [];
+        $template->filterDevice = $this->getDeviceFilterData();
+        $template->filterDeviceGroup = $this->getDeviceGroupFilterData();
 
         $template->render();
     }
-
-
-    public function handleToggleFilterDeviceGroup($filter)
-    {
-        if (!$this->deviceGroupRepository->existFilterDeviceGroup()) {
-            $filterDeviceGroup[] = intval($filter);
-
-        } else {
-            $filterDeviceGroup = $this->deviceGroupRepository->getFilterDeviceGroup();
-
-            if (in_array($filter, $filterDeviceGroup)) {
-                $index = array_search($filter, $filterDeviceGroup);
-                unset($filterDeviceGroup[$index]);
-                $filterDeviceGroup = array_values($filterDeviceGroup);
-
-            } else {
-                $filterDeviceGroup[] = intval($filter);
-            }
-        }
-
-        $this->deviceGroupRepository->setFilterDeviceGroup($filterDeviceGroup);
-
-        if ($this->presenter->isAjax()) {
-            $this->redrawControl('devicesGroupFilter');
-
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-
-    public function handleToggleFilterDevice($filter)
-    {
-        if (!$this->deviceRepository->existFilterDevice()) {
-            $filterDevice[] = intval($filter);
-
-        } else {
-            $filterDevice = $this->deviceRepository->getFilterDevice();
-
-            if (in_array($filter, $filterDevice)) {
-                $index = array_search($filter, $filterDevice);
-                unset($filterDevice[$index]);
-                $filterDevice = array_values($filterDevice);
-
-            } else {
-                $filterDevice[] = intval($filter);
-            }
-        }
-
-        $this->deviceRepository->setFilterDevice($filterDevice);
-
-        if ($this->presenter->isAjax()) {
-            $this->redrawControl('devicesFilter');
-
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-
-    public function handleClearDeviceFilter()
-    {
-        if ($this->deviceRepository->existFilterDevice()) {
-            $this->deviceRepository->clearFilterDevices();
-        }
-
-
-        if ($this->presenter->isAjax()) {
-            $this->redrawControl('devicesFilter');
-
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-
-    public function handleClearDeviceGroupFilter()
-    {
-        if ($this->deviceGroupRepository->existFilterDeviceGroup()) {
-            $this->deviceGroupRepository->clearFilterDeviceGroup();
-        }
-
-        if ($this->presenter->isAjax()) {
-            $this->redrawControl('devicesGroupFilter');
-
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-
-    public function handleFilter()
-    {
-        $filterDevice = $this->deviceRepository->existFilterDevice() ? $this->deviceRepository->getFilterDevice() : [];
-        $filterDeviceGroup = $this->deviceGroupRepository->existFilterDeviceGroup() ? $this->deviceGroupRepository->getFilterDeviceGroup() : [];
-
-        $this->onFilter(['device' => $filterDevice, 'deviceGroup' => $filterDeviceGroup]);
-
-        if ($this->presenter->isAjax()) {
-            $this->redrawControl();
-
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-
 
     /**
      * @return DeviceEntity[]
@@ -203,17 +83,8 @@ class CampaignsFilterControl extends Control
     public function getDeviceRows()
     {
         if (!$this->deviceRows) {
-            $query = (new DeviceQuery());
-
-            if (!$this->user->isAllowed('Cms:Device', 'listAllDevices')) {
-                $query->byUser($this->user);
-            }
-
-            if ($this->deviceRepository->existFilterDevice()) {
-//                $query->inDevices($this->deviceRepository->getFilterDevice());
-            }
-
-            $this->setDeviceRows($this->deviceRepository->fetch($query));
+            $result = $this->deviceRepository->getCachedResult($this->deviceRepository->getUserAllowedQueryBuilder($this->user));
+            $this->deviceRows = $this->deviceRepository->getAssoc($result);
         }
 
         return $this->deviceRows;
@@ -226,17 +97,8 @@ class CampaignsFilterControl extends Control
     public function getDeviceGroupRows()
     {
         if (!$this->deviceGroupRows) {
-            $query = (new DeviceGroupQuery());
-
-            if (!$this->user->isAllowed('Cms:Device', 'listAllDevices')) {
-                $query->byUser($this->user);
-            }
-
-            if ($this->deviceRepository->existFilterDevice()) {
-//                $query->inDevices($this->deviceRepository->getFilterDevice());
-            }
-
-            $this->setDeviceGroupRows($this->deviceGroupRepository->fetch($query));
+            $result = $this->deviceGroupRepository->getCachedResult($this->deviceGroupRepository->getUserAllowedQueryBuilder($this->user));
+            $this->deviceGroupRows = $this->deviceGroupRepository->getAssoc($result);
         }
 
         return $this->deviceGroupRows;
@@ -244,38 +106,152 @@ class CampaignsFilterControl extends Control
 
 
     /**
-     * @param DeviceEntity[] $rows
-     *
-     * @return $this
+     * @return array
      */
-    public function setDeviceRows($rows)
+    private function getDeviceFilterData()
     {
-        $_rows = [];
-        foreach ($rows as $row) {
-            $_rows[$row->getId()] = $row;
-        }
-
-        $this->deviceRows = $_rows;
-        return $this;
+        return (array) $this->campaignGridControl->getSessionData('devices');
     }
 
     /**
-     * @param DeviceGroupEntity[] $rows
-     *
-     * @return $this
+     * @return array
      */
-    public function setDeviceGroupRows($rows)
+    private function getDeviceGroupFilterData()
     {
-        $_rows = [];
-        foreach ($rows as $row) {
-            $_rows[$row->getId()] = $row;
-        }
-
-        $this->deviceGroupRows = $_rows;
-        return $this;
+        return (array) $this->campaignGridControl->getSessionData('deviceGroups');
     }
 
 
+
+    public function handleToggleFilterDeviceGroup($filter)
+    {
+        $filterDevices = $this->getDeviceFilterData();
+        $filterDeviceGroup = $this->getDeviceGroupFilterData();
+
+        if (in_array($filter, $filterDeviceGroup)) {
+            $index = array_search($filter, $filterDeviceGroup);
+            unset($filterDeviceGroup[$index]);
+            $filterDeviceGroup = array_values($filterDeviceGroup);
+
+        } else {
+            $filterDeviceGroup[] = intval($filter);
+        }
+
+        $this->campaignGridControl->saveSessionData('deviceGroups', $filterDeviceGroup);
+
+        $this->filter['devices'] = $filterDevices;
+        $this->filter['deviceGroups'] = $filterDeviceGroup;
+
+        $this->onFilter($this->filter);
+
+        if ($this->presenter->isAjax()) {
+            $this->redrawControl('devicesGroupFilter');
+
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleToggleFilterDevice($filter)
+    {
+        $filterDevice = $this->getDeviceFilterData();
+        $filterDeviceGroup = $this->getDeviceGroupFilterData();
+
+        if (in_array($filter, $filterDevice)) {
+            $index = array_search($filter, $filterDevice);
+            unset($filterDevice[$index]);
+            $filterDevice = array_values($filterDevice);
+
+        } else {
+            $filterDevice[] = intval($filter);
+        }
+
+        $this->campaignGridControl->saveSessionData('devices', $filterDevice);
+
+        $this->filter['devices'] = $filterDevice;
+        $this->filter['deviceGroups'] = $filterDeviceGroup;
+
+        $this->onFilter($this->filter);
+
+        if ($this->presenter->isAjax()) {
+            $this->redrawControl('devicesFilter');
+
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleClearDeviceFilter()
+    {
+        $filterDeviceGroup = $this->getDeviceGroupFilterData();
+        $this->campaignGridControl->saveSessionData('devices', []);
+
+        $this->filter['devices'] = [];
+        $this->filter['deviceGroups'] = $filterDeviceGroup;
+
+        $this->onFilter($this->filter);
+
+        if ($this->presenter->isAjax()) {
+            $this->redrawControl('devicesFilter');
+
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleClearDeviceGroupFilter()
+    {
+        $filterDevice = $this->getDeviceFilterData();
+        $this->campaignGridControl->saveSessionData('deviceGroups', []);
+//
+        $this->filter['devices'] = $filterDevice;
+        $this->filter['deviceGroups'] = [];
+//
+        $this->onFilter($this->filter);
+
+        if ($this->presenter->isAjax()) {
+            $this->redrawControl('devicesGroupFilter');
+
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleFilter()
+    {
+        $filterDevice = $this->getDeviceFilterData();
+        $filterDeviceGroup = $this->getDeviceGroupFilterData();
+
+        $this->filter['devices'] = $filterDevice;
+        $this->filter['deviceGroups'] = $filterDeviceGroup;
+
+        $this->onFilter($this->filter);
+
+        if ($this->presenter->isAjax()) {
+            $this->redrawControl();
+
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    protected function attached($presenter)
+    {
+        parent::attached($presenter);
+
+        if ($presenter instanceof CampaignPresenter) {
+            if (isset($presenter['campaignGridControl'])) {
+                $this->campaignGridControl = $presenter['campaignGridControl'];
+
+                $this->filter = $this->campaignGridControl->getFiltersSet();
+            }
+        }
+
+        $this->onRedraw[] = function () {
+            $this->redrawControl();
+        };
+
+    }
 
 
 }

@@ -303,6 +303,12 @@ window.datagridSerializeUrl = function(obj, prefix) {
             next_id = row.next().data('id');
           }
           parent = row.parent().closest('.datagrid-tree-item');
+          // parent = row.closest('.datagrid-tree-item');
+          // parent = row.parents('.datagrid-tree-item');
+
+          // console.log(row);
+          // console.log(parent);
+          // console.log(parent.length);
           if (parent.length) {
             parent.find('.datagrid-tree-item-children').first().css({
               display: 'block'
@@ -337,6 +343,21 @@ window.datagridSerializeUrl = function(obj, prefix) {
           });
         },
         stop: function(event, ui) {
+          /**
+           * clear class has-children if has not any children
+           */
+          var row, parent, hasChildren;
+          row = ui.item.closest('.datagrid-tree-item[data-id]');
+          parent = row.parent().closest('.datagrid-tree-item');
+          hasChildren = parent.find('.has-children');
+
+          $(hasChildren).each(function () {
+            var childrens = $(this).find('.datagrid-tree-item[data-id]');
+            if ($(childrens).length === 0) {
+              $(this).removeClass('has-children');
+            }
+          });
+
           return $('.toggle-tree-to-delete').removeClass('toggle-tree-to-delete');
         },
         start: function(event, ui) {
