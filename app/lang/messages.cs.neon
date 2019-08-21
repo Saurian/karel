@@ -1,0 +1,469 @@
+# global
+title: cms.pixatori.com
+configuration has been saved.: konfigurace byla uložena.
+news configuration: konfigurace novinek
+manage news: Správa novinek
+news: novinky
+page: Stránka
+home: Domů
+article has been saved.: článek byl uložen.
+you have been logged out of the system: Byl jste odhlášen ze systému
+forgot pwd?: Zapomenuté heslo?
+
+media: Média
+campaign: Kampaň
+campaigns: Kampaně
+users: Uživatelé
+devices: Zařízení
+templates: Šablony
+
+flash:
+	danger: Chyba!
+	success: OK
+
+allItems: Všechny
+allUsers: Všichni uživatelé
+allDevices: Všechna zařízení
+allDeviceGroups: Všechny skupiny zařízení
+allCampaigns: Všechny kampaně
+activeItems: Aktivní
+nonActiveItems: Neaktivní
+
+mediaType:
+	image: obrázek
+	zip: statická html
+	video: video
+	url: web
+
+grids:
+	action:
+		edit: Editovat
+		delete: Smazat
+
+# layout
+logout: Odhlásit
+profile: Můj profil
+password: Správa hesla
+copyright: 2018 &copy; Pixman.cz
+menu:
+	base: Hlavní menu
+	campaigns: Kampaně
+	devices: Správa zařízení
+	devicesGroups: Skupiny zařízení
+	reach: Cílové skupiny
+	statistics: Statistiky
+	users: Uživatelé
+	settings: Nastavení
+	api: Wifi aktivita
+	templates: Šablony
+
+# forms
+forms:
+	campaignsDetailForm:
+		active: Aktivní
+		save: Uložit úpravy
+		name: Název
+		campaignName: Název kampaně
+		realized: Trvání
+		devices: Zařízení
+		groups: Skupiny
+		tag: Štítek
+		keywords: Klíčová slova
+		keywordsToggle: více možností
+		template: Vyberte šablonu
+		select: -- vyberte prosím --
+
+		ruleMaxLength: vyplňte nejvýše %d znaků
+		ruleRequired: vyplňte prosím toto pole
+		ruleCampaignRealization: Zadejte prosím datum realizace kampaně
+		ruleCampaignRealizationRange: Datum realizace kampaně není v platném rozsahu %from% - %to%
+		ruleDeviceOrGroup: "Vyberte prosím jedno zařízení, nebo jednu skupinu."
+		ruleTag: "Vyberte prosím tag."
+		ruleTemplate: "Vyberte prosím šablonu."
+		ruleImage: "Nahrávaný soubor musí být obrázek ve formátu JPEG, GIF or PNG."
+		ruleVideo: "Nahrejte prosím video ve správném formátu, podporovány jsou [mp4|quicktime|msvideo|wmv]"
+		ruleZip: Nahrejte prosím soubor ve formátu "zip"
+		ruleMaxFileSize: Soubor může mít maximálně %size%
+		ruleUrl: Vyplňte prosím platnou url adresu.
+		ruleNumeric: Hodnota musí být číslo.
+
+	deviceDetailForm:
+		active: Aktivní
+		name: Název
+		name_holder: Název
+		tag: Štítek
+		keywords: Klíčová slova
+		sn: SN
+		snRotate: SN - rotace
+		sn_holder: Název pro systém
+		sn-rotate_holder: Rotace zařízení
+		address: Vyplnit adresu
+		password: Heslo
+		password_holder: Heslo zařízení
+		city: Město
+		city_holder: Město
+		street: Ulice
+		street_holder: Ulice
+		psc: PSČ
+		psc_holder: psč
+		group: Skupina
+		default_campaign: Výchozí kampaň
+		loop_campaign: Kampaň ve smyčce
+		save: Uložit úpravy
+		select: -- vyberte prosím --
+
+		ruleRequired: vyplňte prosím toto pole
+		ruleName: vyplňte prosím název zařízení
+		ruleSn: vyplňte prosím unikátní identifikátor zařízení
+		ruleSnRotate: vyplňte prosím rotaci zařízení
+		ruleSnRotateNum: vyplněná hodnota by měla být číslo
+		ruleSnRotateRange: vyplněná hodnota by měla být v rozsahu %d-%d
+		ruleLength: vyplňte pole %d znaků
+		ruleMaxLength: vyplňte nejvýše %d znaků
+		ruleMinLength: vyplňte alespoň %d znaky
+		noAnyDevices: žádné zařízení nebylo nalezeno
+		noAnyDeviceGroups: žádná skupina zařízení nenalezena
+
+
+	deviceGroupDetailForm:
+		active: Aktivní
+		name: Název skupiny
+		tag: Štítek
+		keywords: Klíčová slova
+		name_holder: Název skupiny zařízení
+		save: Uložit úpravy
+
+		ruleRequired: vyplňte prosím toto pole
+		ruleName: vyplňte prosím název skupiny zařízení
+		ruleMaxLength: vyplňte nejvýše %d znaků
+		ruleMinLength: vyplňte alespoň %d znaky
+
+
+	userDetailForm:
+		active: Aktivní
+		sendUser: Uložit úpravy
+		first_name: Jméno
+		last_name: Příjmení
+		email: E-mail
+		devices: Zařízení
+
+		user_added: Vytvořen nový uživatel
+		user_updated: Uživatel %user% upraven
+		user_password: "Nový uživatel získal heslo `%password%`"
+		user_form_error: "Nepodařilo se vytvořit uživatele [error-code %count%]"
+		user_form_duplicate_error: "Nepodařilo se vytvořit uživatele [error-code %count%, tento uživatel již existuje]"
+		user_has_been_send_email: "Uživateli %user% byl zaslán e-mail s přístupovymi údaji."
+
+		role:
+			role: Role
+			guest: Host
+			watcher: Pozorovatel
+			editor: Editor
+			master: Mistr
+			admin: Správce
+			supervisor: Supervisor
+			devrun: Vývojář
+
+		placeholder:
+			first_name: vyplňte prosím jméno
+			last_name: vyplňte prosím příjmení
+			email: vyplňte prosím e-mail
+
+		select_please: -- vyberte prosím --
+		filled: Vyplňte prosím toto pole
+		valid_email: Vyplňte prosím platný e-mail.
+		ruleDeviceOrGroup: "Vyberte prosím jedno zařízení, nebo jednu skupinu."
+		min: Vyplňte prosím alespoň %d znak|Vyplňte prosím alespoň %d znaky|Vyplňte prosím alespoň %d znaků
+		max: Vyplňte prosím maximálně %d znaků
+
+	templateForm:
+		name: Název
+		template_name: Název šablony
+		add_template: Přidat šablonu
+
+		filled: Vyplňte prosím toto pole
+		min: Vyplňte prosím alespoň %d znak|Vyplňte prosím alespoň %d znaky|Vyplňte prosím alespoň %d znaků
+		max: Vyplňte prosím maximálně %d znaků
+
+		image: Obrázek
+		video: Video
+		url: Url
+		zip: Statická HMTL
+
+
+	loginForm:
+		remember: Zapamatovat si
+		login: Přihlásit se
+		placeholder:
+			username: Zadejte přihlašovací jméno...
+			password: Zadejte heslo...
+		ruleUsername: vyplňte prosím přihlašovací jméno
+		rulePassword: vyplňte prosím heslo
+		ruleMinLength: vyplňte alespoň jeden znak|vyplňte alespoň %d znaky|vyplňte alespoň %d znaků
+		ruleMaxLength: vyplňte nejvýše %d znaků
+		invalid_login_information: Neplatné přihlašovací údaje
+		account_disable: Účet je neaktivní
+
+	registrationForm:
+		remember: Zapamatovat si
+		send: Odeslat na e-mail
+		placeholder:
+			first_name: Zadejte jméno
+			last_name: Zadejte příjmení
+			email: Zadejte e-mail
+			password: Zadejte heslo...
+			confirm_password: Zadejte heslo pro kontrolu...
+		mail: mail
+		user_form_duplicate_error: uživatel `%mail%` již existuje
+		ruleFirstName: vyplňte prosím jméno
+		ruleLastName: vyplňte prosím příjmení
+		ruleEMail: vyplňte prosím e-mail
+		rulePassword: vyplňte prosím heslo
+		ruleConfirmPassword: vyplňte prosím heslo pro kontrolu
+		password_dont_match: hesla se neshodují
+		ruleMinLength: vyplňte alespoň jeden znak|vyplňte alespoň %d znaky|vyplňte alespoň %d znaků
+		ruleMaxLength: vyplňte nejvýše %d znaků
+		invalid_login_information: Neplatné přihlašovací údaje
+		user_has_been_send_email: uživateli byl zaslán e-mail s přístupovími údaji.
+
+	forgottenPasswordForm:
+		placeholder:
+			email: Zadejte e-mail
+		ruleEMail: vyplňte prosím e-mail
+		valid_email: Vyplňte prosím platný e-mail.
+		ruleMinLength: vyplňte alespoň jeden znak|vyplňte alespoň %d znaky|vyplňte alespoň %d znaků
+		ruleMaxLength: vyplňte nejvýše %d znaků
+		user_form_not_exist: uživatel `%mail%` v databázi neexistuje
+		send: zaslat
+
+	changePasswordForm:
+		title: Správa uživatelského hesla
+		password: Heslo
+		confirm_password: Heslo pro potvrzení
+		email: E-mail
+		flash:
+			title: Nastavení uživatelského hesla
+			text: Heslo bylo změněno.
+		placeholder:
+			email: Zadejte e-mail
+			password: Zadejte heslo...
+			confirm_password: Zadejte heslo pro kontrolu...
+		ruleEMail: vyplňte prosím e-mail
+		rulePassword: vyplňte prosím heslo
+		ruleConfirmPassword: vyplňte prosím heslo pro kontrolu
+		password_dont_match: hesla se neshodují
+		valid_email: Vyplňte prosím platný e-mail.
+		ruleMinLength: vyplňte alespoň jeden znak|vyplňte alespoň %d znaky|vyplňte alespoň %d znaků
+		ruleMaxLength: vyplňte nejvýše %d znaků
+		user_form_not_exist: uživatel `%mail%` v databázi neexistuje
+		user_has_been_send_email: uživateli byl zaslán e-mail s aktivačním kódem.
+		send: změnit
+
+
+# home page
+homePage:
+	redirect:
+		title: Zpráva homepage
+		text: "Titulní stránka je omezena, byli jste přesměrováni do správy stránek.<br>Pro zobrazení HomePage kontaktujte správce."
+
+# login page
+loginPage:
+	title: Přihlaste se
+	windowTitle: "CMS.pixatori.com: přihlaste se"
+	newUserTitle: Nový uživatel
+	newUserWindowTitle: "CMS.pixatori.com: zaregistrujte se"
+	newUser: Založit nového uživatele
+	existUser: "Přihlásit se, již jsem registrován"
+	userNotFound: Uživatel nenalezen
+	userCodeNotValid: "Žádost o změnu hesla nebyla zaslána, nebo již byla vyřízena, pokud chcete zaslat žádost novou, odešlete prosím tento formulář."
+	userCodeChanged: "Nové heslo bylo aktivováno."
+	userCodeSend: "Žádost o obnovu hesla byla odeslána na e-mailu %mail%. Postupujte dále dle pokunů.<br> Stále se můžete přihlásit stávajícími přístupy."
+	userPasswordChange: Heslo bylo nastaveno
+	forgotPassword: Zapomenuté heslo?
+	forgottenUserTitle: Zapomenuté heslo
+	forgottenUserWindowTitle: "CMS.pixatori.com: zapomenuté heslo"
+	user_added_title: Registrace uživatele
+	user_added: "Potvrďte prosím Vaši registraci z emailu"
+	user_updated: "Uživatel %name% upraven"
+
+
+# statistics page
+statisticsPage:
+	title: Statistiky
+
+# users page
+userPage:
+	title: Uživatelé
+	active: Aktivní
+	management: Správa uživatelů
+	navigation: Navigace
+	addUser: Přidat uživatele
+	editUser: Upravit uživatele
+
+reachPage:
+	title: Cílové skupiny - data z prodejen
+	navigation: Navigace
+	management: Správa cílových skupin - dat z prodejen
+
+# campaigns page
+campaignPage:
+	title: Kampaně
+	management: Správa kampaní
+	addCampaign: Nová kampaň
+	addDeviceFirst: Nejdříve vytvořte zařízení
+	editCampaign: Upravit kampaň
+	newDevice: Nové zařízení
+	newDeviceGroup: Nová skupina
+	filter_delete: Smazat filtr kampaně
+	navigation: Navigace
+	active: Aktivní
+	plan_from: Naplánováno od %from% - %to%
+	add_new_template: Přidat novou šablonu
+	template_data: Data pro šablonu
+	add_link: Přidejte link
+	sound: zvuk
+	time: čas
+	template_not_set: šablona není nastavena
+	recommendation: Doporučení
+	select_template_ready: "Vyberte prosím správně nastavenou šablonu, nebo vytvořte novou."
+	server_uploading: Nahrávání dat
+	campaign_added: "Nová kampaň %name% vytvořena"
+	campaign_updated: "Kampaň `%name%` upravena"
+	campaign_active: kampaň `%name%` je nyní aktivní
+	campaign_non_active: kampaň `%name%` je nyní neaktivní
+	template_added: Vytvořena nová šablona `%name%`
+	template_data_deleted: Smazána data pro šablonu
+	file_deleted: Soubor `%name%` odstraněn
+	upload_error: "Zdá se, že velikost všech nahrávaných souborů přesáhl limit pro přesun dat na server v jednom požadavku.<br>Nahrejte prosím soubory na server ve více požadavcích."
+	max_upload_limit_info: "Nahrejte prosím v jednom požadavku méně souborů najednou. Limit je stanoven na %count%"
+	form_has_error: "Formulář kampaně <strong class='text-bold'>%name%:</strong><br> obsahuje chyby:<br>%errors%"
+	device_not_found: "Před vytvořením kampaně je potřeba nejdříve vytvořit zařízení, na kterém se bude kampaň zobrazovat."
+
+	medium:
+	    unsupported: "Médium `%media%` se nepodařilo nahrát, ověřte prosím typ souboru.|Média `%media%` se nepodařilo nahrát, ověřte prosím jejich typ."
+	    supported: "Nahráno médium %media%.|Nahrána média %media%."
+	    not_found: médium nenalezeno
+	    removed: médium %name% smazáno
+
+	filter:
+		set: Nastaven filtr
+		setActives: Nastaven filtr `Správa aktivních kampaní`
+		setNonActives: Nastaven filtr `Správa neaktivních kampaní`
+		setAll: Nastaven filtr `Správa všech kampaní`
+
+
+
+# devices page
+devicePage:
+	title: Zařízení - skupiny zařízení
+	management: Správa zařízení
+	navigation: Navigace
+	active: Aktivní
+	addDevice: Přidat zařízení
+	addNewDevice: Přidat nové zařízení
+	editDevice: Upravit zařízení
+	add_group: Přidat skupinu zařízení
+	addNewGroup: Přidat novou skupinu zařízení
+	place: Umístění
+	add_new_group: Přidat novou skupinu
+	edit_device_group: Úprava skupiny zařízení
+	add_new_campaign: Přidat novou kampaň
+	add_new_campaign_for_device: Přidat novou kampaň pro zařízení `%device%`
+	group_added: "Přidána nová skupina `%name%`"
+	view: Zobrazit
+	plain_campaigns: Kampaně - naplánovány
+	heart_beat: HeartBeat
+
+	device_added: "Nové zařízení %name% vytvořeno"
+	device_updated: "Zařízení %name% upraveno"
+	device_error: "Nepodařilo se vytvořit zařízení<br> `SN - %name%` [%count%]"
+	device_not_found: Zařízení id `%id%` nenalezeno
+	device_group_not_found: Skupina zařízení id `%id%` nenalezena
+	device_update_error: "Nepodařilo se upravit zařízení<br> `SN - %name%` [%count%]<br>Zkontrolujte prosím sériové číslo zařízení, musí být jedinečné."
+
+	device_active: zařízení `%name%` je nyní aktivní
+	device_non_active: zařízení `%name%` je nyní neaktivní
+
+	device_removed: "Nové zařízení %name% vytvořeno"
+	device_group_removed: "Skupina zařízení %name% smazána"
+
+	group_moved: Skupina `%name%` přesunuta
+	group_move_denied: Skupina `%name%` nelze přesunout
+
+
+	campaigns_on_device: "Kampaně na zařízení `%name%`"
+
+	filter:
+		devicesOnGroup: "Zařízení ve skupině <span class='text-primary'> `%name%` </span>"
+		devicesOnGroupMessage: Filtrovaný seznam zařízení ve skupině `%name%`
+		set: Nastaven filtr
+		setActives: Nastaven filtr `Správa aktivních zařízení`
+		setNonActives: Nastaven filtr `Správa neaktivních zařízení`
+		setAll: Nastaven filtr `Správa všech zařízení`
+
+
+# deviceGroup page
+deviceGroupPage:
+	title: Skupiny zařízení
+	management: Správa skupin zařízení
+	navigation: Navigace
+	addDeviceGroup: Přidat skupinu zařízení
+	editDeviceGroup: Upravit skupinu zařízení
+	active: Aktivní
+	device_group_active: skupina zařízení `%name%` je nyní aktivní
+	device_group_non_active: skupina zařízení `%name%` je nyní neaktivní
+
+	device_group_added: "Nová skupina zařízení %name% vytvořena"
+	device_group_updated: "Skupina zařízení %name% upravena"
+
+	filter:
+		set: Nastaven filtr
+		setActives: Nastaven filtr `Správa aktivních skupin zařízení`
+		setNonActives: Nastaven filtr `Správa neaktivních skupin zařízení`
+		setAll: Nastaven filtr `Správa všech skupin zařízení`
+
+# api page
+apiPage:
+	title: Přehled logů
+	removeItem:
+		title: wifi přístupy
+		text: "log id: %id% smazán"
+
+# template page/control
+template:
+	templates: Šablony
+	management: Správa šablon
+	editing_media_templates: Editace médií šablony
+	create_a_new_media_template: Vytvoření nové šablony médií
+	cancel_add: Zrušit přidání
+
+	mediaCount: Celkem jedno médium|Celkem %count% média|Celkem %count% médií
+	campaignCount: Celkem jedna kampaň|Celkem %count% kampaně|Celkem %count% kmapaní
+
+	template_not_found: Šablona nenalezena
+	media_type_not_found: Typ media nenalezen
+	template_deleted: Šablona smazána
+	medium_deleted: Medium smazáno
+
+	detail:
+	 	title: detail šablony
+	 	record_inserted: Záznam vložen
+	 	medium_type: Typ média
+
+	templateGrid:
+		id: ID
+		inserted: Vytvořena
+		name: Název
+		createdBy: Uživatelem
+		media: Media
+		campaigns: Kampaně
+		delete_confirmation: "Opravdu chcete smazat šablonu [id: %d%]?"
+
+	mediaGrid:
+		type: Typ
+		name: Popis
+		image: " obrázek formátu jpg, png, gif"
+		zip: " soubor formátu zip"
+		url: " url adresa"
+		video: " video mp4, quicktime, msvideo, wmv"
+		delete_confirmation: "Opravdu chcete smazat medium [id: %d%]?"
