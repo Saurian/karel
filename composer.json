@@ -16,6 +16,7 @@
     "kdyby/doctrine": "^3.3",
     "kdyby/translation": "^2.4",
     "kdyby/nette-session-panel": "^3.4",
+    "kdyby/forms-replicator": "^1.4",
     "kdyby/fake-session": "^2.0",
     "kdyby/monolog": "^1.3",
     "ublaboo/datagrid": "^5.7",

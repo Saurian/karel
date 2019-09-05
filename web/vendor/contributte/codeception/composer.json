@@ -1,0 +1,36 @@
+{
+    "name": "arachne/codeception",
+    "description": "Integration of Nette framework to Codeception.",
+    "type": "library",
+    "keywords": [ "arachne", "codeception", "nette" ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jáchym Toušek",
+            "homepage": "http://enumag.cz",
+            "email": "enumag@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^5.5.0|^7.0.0",
+        "codeception/codeception": "^2.2.0",
+        "nette/bootstrap": "^2.3.0",
+        "nette/di": "^2.3.0",
+        "nette/http": "^2.3.0"
+    },
+    "require-dev": {
+        "enumag/application": "^0.3.16",
+        "latte/latte": "^2.3.0",
+        "tracy/tracy": "^2.3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Arachne\\Codeception\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Integration\\": "tests/integration/src"
+        }
+    }
+}

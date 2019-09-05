@@ -1,0 +1,22 @@
+language: php
+sudo: false
+
+php:
+    - 7.0
+    - 7.1
+    - hhvm
+    - nightly
+
+matrix:
+  allow_failures:
+    - php: hhvm
+
+before_script:
+    - composer config disable-tls true
+    - composer config secure-http false
+    - composer install --prefer-source
+
+script: vendor/bin/phpunit
+
+notifications:
+    email: false

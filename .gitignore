@@ -11,12 +11,12 @@
 docs/*
 node_modules/
 composer.lock
-log/*
-temp/*
+web/log/*
+web/temp/*
 vendor/*
-www/media/*
-!www/media/_storage_no_image/
-!www/media/_storage_no_image/8f/no-images-placeholder.pngweb/
+#web/www/media/*
+#!web/www/media/_storage_no_image/
+!web/www/media/_storage_no_image/8f/no-images-placeholder.png
 !/composer.json
 !/start*.sh
 !/stop*.sh

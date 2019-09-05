@@ -1,0 +1,194 @@
+{block title}{_reachPage.title}{/block}
+{block content}
+<div class="row bg-title">
+    <div class="col-md-8 col-xs-12">
+        <h1 class="page-title">{_reachPage.management}</h1>
+{*        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addTargetGroup!" class="ajax-modal btn btn-md m-l-15 btn-success" data-toggle="_modal" data-target="#targetGroupFormModal">{_devicePage.add_new_group}</a>*}
+
+        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="editTargetGroupParams!" class="ajax-modal btn btn-md m-l-15 btn-success" data-toggle="_modal" data-target="#targetGroupParamsFormModal">Správa parametrů cílových skupin</a>
+        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="editMetricParams!" class="ajax-modal btn btn-md m-l-15 btn-success" data-toggle="_modal" data-target="#metricParamFormModal">Správa měřených metrik</a>
+    </div>
+    <div class="col-md-4 col-xs-12">
+        <ol class="breadcrumb">
+            <li><a n:href="Device:">{_reachPage.title}</a></li>
+            <li class="active">{_reachPage.navigation}</li>
+        </ol>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Cílové skupiny</div>
+    <div class="panel-body">
+        <div class="grido">
+            {control reachGridControl}
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Data cílových skupin</div>
+    <div class="panel-body">
+        <div class="grido">
+{*            {control reachGridControl}*}
+        </div>
+    </div>
+</div>
+
+{include targetGroupFormModal}
+{include targetGroupParamsFormModal}
+{include metricParamFormModal}
+
+{snippetArea metricParamFormModal}
+{/snippetArea}
+
+
+<div n:define="targetGroupFormModal" id="targetGroupFormModal" class="modal fade animated bounceInLeft" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">{_devicePage.add_group}</h4>
+            </div>
+
+            {snippet editTargetGroupFormModal}
+            <div class="modal-body">
+                {control targetGroupForm}
+            </div>
+            {/snippet}
+        </div>
+    </div>
+</div>
+
+<div n:define="targetGroupParamsFormModal" id="targetGroupParamsFormModal" class="modal fade animated bounceInDown" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">{_devicePage.add_group}</h4>
+            </div>
+
+            {snippet editTargetGroupParamsFormModal}
+            {form targetGroupParamForm}
+                <div class="modal-body">
+                    <div class="alert alert-danger" n:if="$form->hasErrors()">
+                        <p n:foreach="$form->errors as $error">{$error}</p>
+                    </div>
+
+                    <div class="row row-flex-sm">
+                        <div n:foreach="$form[targetParams]->getContainers() as $id => $paramContainer" class="panel panel-info col-md-4 col-lg-3">
+                            <div class="panel-heading">
+                                {if $paramContainer[name]->value}
+                                    {$paramContainer[name]->value}
+                                {else}
+                                    Nový parametr
+                                {/if}
+                                <button n:ifset="$paramContainer[removeParam]" n:name="$paramContainer[removeParam]" class="pull-right btn btn-danger btn-xs">{$paramContainer[removeParam]->caption}</button>
+                            </div>
+                            <div class="panel-body bg-extlgt">
+
+                                <div class="form-group">
+                                    {label $paramContainer[name] /}
+                                    {input $paramContainer[name]}
+                                </div>
+
+                                <fieldset>
+                                    <legend>Hodnoty:</legend>
+                                    {foreach $paramContainer[values]->getContainers() as $id => $valuesContainer}
+                                        {ifset $valuesContainer['removeValue']}
+                                            <div class="form-group input-group">
+                                                {input $valuesContainer['name']}
+                                                <span class="input-group-btn">
+                                                {input $valuesContainer['removeValue']}
+                                            </span>
+                                            </div>
+                                        {else}
+                                            <div class="form-group">
+                                                {input $valuesContainer[name]}
+                                            </div>
+                                        {/ifset}
+                                    {/foreach}
+                                </fieldset>
+
+
+                                {ifset $paramContainer['values']->getComponents()['addValue']}
+                                    {input $paramContainer['values']['addValue']}
+                                {/ifset}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            {input targetParams-addParam}
+                        </div>
+                        <div class="col-xs-6">
+                            {input send}
+                        </div>
+                    </div>
+                </div>
+            {/form}
+            {/snippet}
+        </div>
+    </div>
+</div>
+
+<div n:define="metricParamFormModal" id="metricParamFormModal" class="modal fade animated bounceInLeft" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">{_devicePage.add_group}</h4>
+            </div>
+
+            {snippet editMetricParamFormModal}
+                {form metricParamForm}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-offset-2 col-md-8">
+                                <div class="alert alert-danger" n:if="$form->hasErrors()">
+                                    <p n:foreach="$form->errors as $error">{$error}</p>
+                                </div>
+                                {foreach $form["metricParams"]->getContainers() as $id => $metricContainer}
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            {ifset $metricContainer['remove']}
+                                                <div class="input-group form-group">
+                                                    {input $metricContainer['name']}
+                                                    {ifset $metricContainer['_name']}
+                                                    {input $metricContainer['_name']}
+                                                    {/ifset}
+                                                    <span class="input-group-btn">
+                                                        {input $metricContainer['remove']}
+                                                    </span>
+                                                </div>
+                                            {else}
+                                                <div class="form-group">
+                                                    {input $metricContainer['name']}
+                                                    {ifset $metricContainer['_name']}
+                                                        {input $metricContainer['_name']}
+                                                    {/ifset}
+                                                </div>
+                                            {/ifset}
+                                        </div>
+                                    </div>
+                                {/foreach}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                {input $form["metricParams"]['add']}
+                            </div>
+                            <div class="col-sm-6">
+                                {input send}
+                            </div>
+                        </div>
+                    </div>
+                {/form}
+            {/snippet}
+        </div>
+    </div>
+</div>

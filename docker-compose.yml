@@ -12,7 +12,8 @@ services:
       - redis1
       - composer
     external_links:
-      - database
+#      - database
+      - database_mysql57
     expose:
       - 80
       - 443
@@ -26,6 +27,8 @@ services:
       - ./www:/var/www/html
       - ./log/apache:/var/log/apache2
       - ./database/:/docker-entrypoint-initdb.d
+    depends_on:
+      - composer
     hostname:
       local.cz
     environment:
