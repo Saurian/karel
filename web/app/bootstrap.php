@@ -32,15 +32,6 @@ $environment = (Nette\Configurator::detectDebugMode(['127.0.0.1', $remoteIP]) or
     ? 'development'
     : 'production';
 
-
-//var_dump(PHP_SAPI);
-//var_dump($_SERVER);
-//var_dump(getHostByName(getHostName()));
-//var_dump($environment);
-//die();
-
-$environment = 'development';
-
 // Create Dependency Injection container from config.neon file
 $configurator->addConfig(__DIR__ . '/config/config.neon');
 $configurator->addConfig(__DIR__ . "/config/config.$environment.neon");
