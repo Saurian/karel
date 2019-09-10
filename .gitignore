@@ -13,7 +13,8 @@ node_modules/
 composer.lock
 web/log/*
 web/temp/*
-vendor/*
+web/migrations/disabled/*
+web/vendor/*
 #web/www/media/*
 #!web/www/media/_storage_no_image/
 !web/www/media/_storage_no_image/8f/no-images-placeholder.png

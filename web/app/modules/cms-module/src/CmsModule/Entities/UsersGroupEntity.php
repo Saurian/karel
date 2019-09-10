@@ -53,6 +53,12 @@ class UsersGroupEntity
      */
     protected $metricParams;
 
+    /**
+     * @var ShopEntity[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="ShopEntity", mappedBy="usersGroup", cascade={"persist"})
+     */
+    protected $shops;
+
 
 
     /**
@@ -62,6 +68,7 @@ class UsersGroupEntity
     {
         $this->users = new ArrayCollection();
         $this->targets = new ArrayCollection();
+        $this->shops = new ArrayCollection();
         $this->metricParams = new ArrayCollection();
     }
 

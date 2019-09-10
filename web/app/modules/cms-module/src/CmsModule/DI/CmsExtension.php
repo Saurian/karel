@@ -15,9 +15,14 @@ use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\LogEntity;
 use CmsModule\Entities\MediumDataEntity;
+use CmsModule\Entities\MetricEntity;
+use CmsModule\Entities\MetricParamEntity;
+use CmsModule\Entities\ShopEntity;
 use CmsModule\Entities\TargetGroupEntity;
-use CmsModule\Entities\TemplateEntity;
 use CmsModule\Listeners\MediaDataListener;
+use CmsModule\Repositories\MetricParamRepository;
+use CmsModule\Repositories\MetricRepository;
+use CmsModule\Repositories\ShopRepository;
 use CmsModule\Repositories\TargetGroupRepository;
 use Flame\Modules\Providers\IPresenterMappingProvider;
 use Flame\Modules\Providers\IRouterProvider;
@@ -25,7 +30,6 @@ use CmsModule\Entities\UserEntity;
 use Kdyby\Doctrine\DI\IEntityProvider;
 use Kdyby\Doctrine\DI\OrmExtension;
 use Kdyby\Events\DI\EventsExtension;
-use Nette;
 use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
 use Nette\DI\CompilerExtension;
@@ -102,6 +106,18 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             ->setType(TargetGroupRepository::class)
             ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, TargetGroupEntity::class);
 
+        $builder->addDefinition($this->prefix('repository.shop'))
+            ->setType(ShopRepository::class)
+            ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, ShopEntity::class);
+
+        $builder->addDefinition($this->prefix('repository.metric'))
+            ->setType(MetricRepository::class)
+            ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, MetricEntity::class);
+
+        $builder->addDefinition($this->prefix('repository.metricParam'))
+            ->setType(MetricParamRepository::class)
+            ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, MetricParamEntity::class);
+
 
         /*
          * facades
@@ -150,10 +166,6 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             ->setImplement('CmsModule\Controls\ICampaignsControlFactory')
             ->setInject(true);
 
-        $builder->addDefinition($this->prefix('control.templateControlFactory'))
-            ->setImplement('CmsModule\Controls\ITemplateControlFactory')
-            ->setInject(true);
-
         $builder->addDefinition($this->prefix('control.campaignsFilterControlFactory'))
             ->setImplement('CmsModule\Controls\ICampaignsFilterControlFactory')
             ->setInject(true);
@@ -184,10 +196,6 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
 
         $builder->addDefinition($this->prefix('form.campaignForm'))
             ->setImplement('CmsModule\Forms\ICampaignFormFactory')
-            ->setInject(true);
-
-        $builder->addDefinition($this->prefix('form.templateForm'))
-            ->setImplement('CmsModule\Forms\ITemplateFormFactory')
             ->setInject(true);
 
         $builder->addDefinition($this->prefix('form.adminTemplateForm'))
@@ -228,6 +236,14 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
 
         $builder->addDefinition($this->prefix('form.targetGroupParamForm'))
             ->setImplement('CmsModule\Forms\ITargetGroupParamFormFactory')
+            ->setInject(true);
+
+        $builder->addDefinition($this->prefix('form.shopForm'))
+            ->setImplement('CmsModule\Forms\IShopFormFactory')
+            ->setInject(true);
+
+        $builder->addDefinition($this->prefix('form.reachForm'))
+            ->setImplement('CmsModule\Forms\IReachFormFactory')
             ->setInject(true);
 
 

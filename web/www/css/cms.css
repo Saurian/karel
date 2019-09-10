@@ -13,6 +13,20 @@
   }
 }
 
+.form-horizontal .slider.slider-horizontal {
+  width: 100%;
+  height: 38px;
+}
+.form-horizontal .slider-handle {
+  top: 8px;
+}
+.form-horizontal .slider.slider-horizontal .slider-tick-container {
+  top: 8px;
+}
+.form-horizontal .slider .tooltip.top {
+  margin-top: -28px;
+}
+
 .panel .panel-heading {
   padding-top: 6px;
   padding-bottom: 6px;

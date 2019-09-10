@@ -17,7 +17,7 @@ trait UuidV4EntityTrait
      * @ORM\Id
      * @ORM\Column(type="guid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="CmsModule\Doctrine\Id\UuidV4Generator")
+     * @ORM\CustomIdGenerator(class="Devrun\Doctrine\Id\UuidV4Generator")
      */
     protected $id;
 
@@ -28,6 +28,11 @@ trait UuidV4EntityTrait
     final function getId()
     {
         return $this->id;
+    }
+
+    public function __clone()
+    {
+        $this->id = NULL;
     }
 
 }

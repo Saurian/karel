@@ -7,7 +7,7 @@
 			<h1 class="page-title">{_campaignPage.title}</h1>
 			<div n:snippet="campaignLink" class="box-filter">
 				<div class="btn-group">
-					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices > 0" n:href="addCampaign!" class="ajax-modal btn btn-md btn-success m-r-5" data-toggle="_modal" data-backdrop="static" data-target=".addCampaignModal">{_campaignPage.addCampaign}</a>
+					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices > 0" n:href="addCampaign!" class="btn btn-md btn-success m-r-5" data-toggle="ajax-modal" data-backdrop="static" data-target=".addCampaignModal">{_campaignPage.addCampaign}</a>
 					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices == 0" n:href="Device:" class="btn btn-md btn-success">{_campaignPage.addDeviceFirst}</a>
 					{control campaignsFilterControl}
 					<a n:if="$presenter->campaign" n:href="resetSelectCampaign!" data-ajax="false" class="btn btn-md btn-warning">{_campaignPage.filter_delete} <i class="fa fa-close"></i></a>

@@ -177,19 +177,15 @@ forms:
 		min: Vyplňte prosím alespoň %d znak|Vyplňte prosím alespoň %d znaky|Vyplňte prosím alespoň %d znaků
 		max: Vyplňte prosím maximálně %d znaků
 
-	templateForm:
-		name: Název
-		template_name: Název šablony
-		add_template: Přidat šablonu
-
-		filled: Vyplňte prosím toto pole
-		min: Vyplňte prosím alespoň %d znak|Vyplňte prosím alespoň %d znaky|Vyplňte prosím alespoň %d znaků
-		max: Vyplňte prosím maximálně %d znaků
-
-		image: Obrázek
-		video: Video
-		url: Url
-		zip: Statická HMTL
+	shopForm:
+		name: Název prodejny
+		openTime: Čas otevírací doby
+		openDays: Dny otevírací doby
+		save: Uložit úpravy
+		placeholder.name: "Zadejte, prosím název prodejny."
+		ruleFilled: Vyplňte prosím toto pole
+		ruleMinLength: Vyplňte prosím alespoň %d znak|Vyplňte prosím alespoň %d znaky|Vyplňte prosím alespoň %d znaků
+		ruleMaxLength: Vyplňte prosím maximálně %d znaků
 
 
 	loginForm:
@@ -305,6 +301,20 @@ reachPage:
 	title: Cílové skupiny - data z prodejen
 	navigation: Navigace
 	management: Data z prodejen
+
+	shop:
+		management: Správa prodejen
+		not_found: prodejna `%id%` nenalezena
+		add: Přidat prodejnu
+		edit: Upravit prodejnu
+		updated: Prodejna `%name%` upravena
+		removed: Prodejna `%name%` smazána
+
+	reach:
+		management: Správa statistik
+		add: Přidat statistiky
+
+
 
 # campaigns page
 campaignPage:

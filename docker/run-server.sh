@@ -68,6 +68,15 @@ fi
 /etc/init.d/redis-server start
 service cron start
 
+# Run Composer
+echo "application update start"
+if [ $COMPOSER_INTERACTION ]; then
+  composer update --ansi
+else
+  composer update --no-interaction --quiet
+fi
+echo "application update finished"
+
 # Run Apache:
 if [ $LOG_LEVEL == 'debug' ]; then
     /usr/sbin/apachectl -DFOREGROUND -k start -e debug

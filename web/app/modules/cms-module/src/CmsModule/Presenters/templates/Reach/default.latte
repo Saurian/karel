@@ -3,10 +3,10 @@
 <div class="row bg-title">
     <div class="col-md-8 col-xs-12">
         <h1 class="page-title">{_reachPage.management}</h1>
-{*        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addTargetGroup!" class="ajax-modal btn btn-md m-l-15 btn-success" data-toggle="_modal" data-target="#targetGroupFormModal">{_devicePage.add_new_group}</a>*}
+{*        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addTargetGroup!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target="#targetGroupFormModal">{_devicePage.add_new_group}</a>*}
 
-        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="editTargetGroupParams!" class="ajax-modal btn btn-md m-l-15 btn-success" data-toggle="_modal" data-target="#targetGroupParamsFormModal">Správa parametrů cílových skupin</a>
-        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="editMetricParams!" class="ajax-modal btn btn-md m-l-15 btn-success" data-toggle="_modal" data-target="#metricParamFormModal">Správa měřených metrik</a>
+        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="editTargetGroupParams!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target="#targetGroupParamsFormModal">Správa parametrů cílových skupin</a>
+        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="editMetricParams!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target="#metricParamFormModal">Správa měřených metrik</a>
     </div>
     <div class="col-md-4 col-xs-12">
         <ol class="breadcrumb">
@@ -16,20 +16,36 @@
     </div>
 </div>
 
-<div class="panel panel-default">
-    <div class="panel-heading">Cílové skupiny</div>
-    <div class="panel-body">
-        <div class="grido">
-            {control reachGridControl}
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Cílové skupiny</div>
+            <div class="panel-body">
+                <div class="grido">
+                    {control reachGridControl}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Prodejny</div>
+            <div class="panel-body">
+                <div class="grido">
+                    {control shopGridControl}
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+
 <div class="panel panel-default">
     <div class="panel-heading">Data cílových skupin</div>
     <div class="panel-body">
+{*        <a class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target="#reachFormModal">přidat záznam</a>*}
         <div class="grido">
-{*            {control reachGridControl}*}
+{*            {control statisticsGridControl}*}
         </div>
     </div>
 </div>
@@ -37,9 +53,25 @@
 {include targetGroupFormModal}
 {include targetGroupParamsFormModal}
 {include metricParamFormModal}
+{include shopFormModal}
+{*{include "#reachFormModal.latte"}*}
 
-{snippetArea metricParamFormModal}
-{/snippetArea}
+<div n:define="shopFormModal" id="shopFormModal" class="modal fade animated bounceInUp" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">{_reachPage.add_shop}</h4>
+            </div>
+
+            {snippet editShopFormModal}
+            <div class="modal-body">
+                {control shopForm}
+            </div>
+            {/snippet}
+        </div>
+    </div>
+</div>
 
 
 <div n:define="targetGroupFormModal" id="targetGroupFormModal" class="modal fade animated bounceInLeft" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">

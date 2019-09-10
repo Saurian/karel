@@ -7,8 +7,13 @@ use CmsModule\Entities\TargetGroupEntity;
 use CmsModule\Entities\TargetGroupParamEntity;
 use CmsModule\Entities\TargetGroupParamValueEntity;
 use CmsModule\Forms\IMetricParamFormFactory;
+use CmsModule\Forms\IReachFormFactory;
+use CmsModule\Forms\IShopFormFactory;
 use CmsModule\Forms\ITargetGroupFormFactory;
 use CmsModule\Forms\ITargetGroupParamFormFactory;
+use CmsModule\Repositories\MetricParamRepository;
+use CmsModule\Repositories\MetricRepository;
+use CmsModule\Repositories\ShopRepository;
 use CmsModule\Repositories\TargetGroupRepository;
 use Kdyby\Doctrine\EntityManager;
 
@@ -22,30 +27,59 @@ class ReachFacade
     /** @var TargetGroupRepository */
     private $targetGroupRepository;
 
+    /** @var ShopRepository */
+    private $shopRepository;
+
+    /** @var MetricRepository */
+    private $metricRepository;
+
+    /** @var MetricParamRepository */
+    private $metricParamRepository;
+
     /** @var EntityManager */
     private $entityManager;
 
     /** @var ITargetGroupFormFactory */
-    public $targetGroupFormFactory;
+    private $targetGroupFormFactory;
 
     /** @var ITargetGroupParamFormFactory */
-    public $targetGroupParamFormFactory;
+    private $targetGroupParamFormFactory;
 
     /** @var IMetricParamFormFactory */
-    public $metricParamFormFactory;
+    private $metricParamFormFactory;
+
+    /** @var IShopFormFactory */
+    private $shopFormFactory;
+
+    /** @var IReachFormFactory */
+    private $reachFormFactory;
 
 
     /**
      * ReachFacade constructor.
+     *
      * @param TargetGroupRepository $targetGroupRepository
+     * @param ShopRepository $shopRepository
+     * @param ITargetGroupFormFactory $targetGroupFormFactory
+     * @param ITargetGroupParamFormFactory $targetGroupParamFormFactory
+     * @param IMetricParamFormFactory $metricParamFormFactory
+     * @param IShopFormFactory $shopFormFactory
+     * @param IReachFormFactory $reachFormFactory
      */
-    public function __construct(TargetGroupRepository $targetGroupRepository, ITargetGroupFormFactory $targetGroupFormFactory,
-                                ITargetGroupParamFormFactory $targetGroupParamFormFactory, IMetricParamFormFactory $metricParamFormFactory)
+    public function __construct(TargetGroupRepository $targetGroupRepository, ShopRepository $shopRepository,
+                                MetricRepository $metricRepository, MetricParamRepository $metricParamRepository,
+                                ITargetGroupFormFactory $targetGroupFormFactory, ITargetGroupParamFormFactory $targetGroupParamFormFactory,
+                                IMetricParamFormFactory $metricParamFormFactory, IShopFormFactory $shopFormFactory, IReachFormFactory $reachFormFactory)
     {
         $this->targetGroupFormFactory = $targetGroupFormFactory;
         $this->targetGroupParamFormFactory = $targetGroupParamFormFactory;
+        $this->metricRepository = $metricRepository;
         $this->metricParamFormFactory = $metricParamFormFactory;
+        $this->shopFormFactory = $shopFormFactory;
+        $this->reachFormFactory = $reachFormFactory;
         $this->targetGroupRepository = $targetGroupRepository;
+        $this->shopRepository = $shopRepository;
+        $this->metricParamRepository = $metricParamRepository;
         $this->entityManager = $targetGroupRepository->getEntityManager();
     }
 
@@ -55,6 +89,31 @@ class ReachFacade
     public function getTargetGroupRepository(): TargetGroupRepository
     {
         return $this->targetGroupRepository;
+    }
+
+    /**
+     * @return ShopRepository
+     */
+    public function getShopRepository(): ShopRepository
+    {
+        return $this->shopRepository;
+    }
+
+    /**
+     * @return MetricRepository
+     */
+    public function getMetricRepository(): MetricRepository
+    {
+        return $this->metricRepository;
+    }
+
+
+    /**
+     * @return MetricParamRepository
+     */
+    public function getMetricParamRepository(): MetricParamRepository
+    {
+        return $this->metricParamRepository;
     }
 
     /**
@@ -89,6 +148,22 @@ class ReachFacade
         return $this->metricParamFormFactory;
     }
 
+    /**
+     * @return IShopFormFactory
+     */
+    public function getShopFormFactory(): IShopFormFactory
+    {
+        return $this->shopFormFactory;
+    }
+
+    /**
+     * @return IReachFormFactory
+     */
+    public function getReachFormFactory(): IReachFormFactory
+    {
+        return $this->reachFormFactory;
+    }
+
 
 
 
@@ -118,9 +193,6 @@ class ReachFacade
 
         return $entity;
     }
-
-
-
 
 
 }

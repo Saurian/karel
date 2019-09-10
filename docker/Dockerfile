@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 MAINTAINER Vaclav Kalas <vaclav@pixman.cz>
 
-ARG CACHEBUST=15
+ARG CACHEBUST=16
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -45,13 +45,14 @@ RUN apt-get  -o Acquire::Check-Valid-Until=false update \
     	php7.0-recode \
     	php7.0-sqlite3 \
     	php7.0-zip \
-    	php7.0-sybase
+    	php7.0-sybase \
+        php7.0-gd
 
 RUN apt-get install apache2 libapache2-mod-php7.0 -y
 RUN apt-get install mariadb-common mariadb-client -y
 RUN apt-get install nano curl -y
 RUN apt-get install openssl -y
-#RUN apt-get install imagemagick -y
+RUN apt-get install imagemagick -y
 RUN apt-get install -y sendmail
 RUN apt-get install -y php7.0-redis
 RUN apt-get install -y redis
@@ -87,9 +88,13 @@ RUN chmod 0644 -R /etc/cron.d
 RUN touch /var/log/cron.log
 RUN crontab /etc/cron.d/root
 
+#ADD composer/composer.json /var/www/html
+WORKDIR var/www
+
 EXPOSE 80
 EXPOSE 443
 EXPOSE 6379
+
 
 ENTRYPOINT ["/tmp/run-server.sh"]
 #CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]

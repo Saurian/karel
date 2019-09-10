@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 MAINTAINER Vaclav Kalas <vaclav@pixman.cz>
 
-ARG CACHEBUST=15
+ARG CACHEBUST=16
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -48,8 +48,8 @@ RUN apt-get  -o Acquire::Check-Valid-Until=false update \
     	php7.0-sybase
 
 RUN apt-get install apache2 libapache2-mod-php7.0 -y
-RUN apt-get install mysql-server -y
-#RUN apt-get install mariadb-common mariadb-client -y
+#RUN apt-get install mysql-server -y
+RUN apt-get install mariadb-common mariadb-client -y
 RUN apt-get install nano curl -y
 RUN apt-get install openssl -y
 RUN apt-get install imagemagick -y

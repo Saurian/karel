@@ -9,10 +9,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\Attributes\Identifier;
 use Kdyby\Doctrine\Entities\MagicAccessors;
+use Nette\Utils\DateTime;
+use Tracy\Debugger;
 
 /**
  * Class ShopEntity
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="CmsModule\Repositories\ShopRepository")
  * @ORM\Table(name="shop")
  *
  * @package CmsModule\Entities
@@ -30,7 +32,7 @@ class ShopEntity
      * @var string
      * @ORM\Column(type="string")
      */
-    protected $name;
+    protected $name = 'Nová prodejna';
 
 
     /**
@@ -41,13 +43,21 @@ class ShopEntity
 
 
     /**
-     * @var string
+     * @var UsersGroupEntity
+     * @ORM\ManyToOne(targetEntity="UsersGroupEntity", inversedBy="shops")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    protected $usersGroup;
+
+
+    /**
+     * @var DateTime
      * @ORM\Column(type="time")
      */
     protected $openTime;
 
     /**
-     * @var string
+     * @var DateTime
      * @ORM\Column(type="time")
      */
     protected $closeTime;
@@ -56,13 +66,13 @@ class ShopEntity
      * @var int
      * @ORM\Column(type="smallint")
      */
-    protected $openDayOfWeek;
+    protected $openDayOfWeek = 1;
 
     /**
      * @var int
      * @ORM\Column(type="smallint")
      */
-    protected $closeDayOfWeek;
+    protected $closeDayOfWeek = 5;
 
 
     /**
@@ -70,10 +80,111 @@ class ShopEntity
      */
     public function __construct()
     {
-        $this->targets = new ArrayCollection();
         $this->metrics = new ArrayCollection();
-
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return ShopEntity
+     */
+    public function setName(string $name): ShopEntity
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOpenTime()
+    {
+        return $this->openTime ? $this->openTime->format('G') : null;
+    }
+
+    /**
+     * @param DateTime $openTime
+     * @return ShopEntity
+     */
+    public function setOpenTime($openTime): ShopEntity
+    {
+        if (is_numeric($openTime)) {
+            $openTime = DateTime::createFromFormat('H', $openTime);
+        }
+
+        $this->openTime = $openTime;
+        return $this;
+    }
+
+
+
+    /**
+     * @return string
+     */
+    public function getCloseTime()
+    {
+        return $this->closeTime ? $this->closeTime->format('G') : null;
+    }
+
+    /**
+     * @param DateTime $closeTime
+     * @return ShopEntity
+     */
+    public function setCloseTime($closeTime): ShopEntity
+    {
+        if (is_numeric($closeTime)) {
+            $closeTime = DateTime::createFromFormat('H', $closeTime);
+        }
+
+        $this->closeTime = $closeTime;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOpenDayOfWeek(): int
+    {
+        return $this->openDayOfWeek;
+    }
+
+    /**
+     * @param int $openDayOfWeek
+     * @return ShopEntity
+     */
+    public function setOpenDayOfWeek(int $openDayOfWeek): ShopEntity
+    {
+        $this->openDayOfWeek = $openDayOfWeek;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCloseDayOfWeek(): int
+    {
+        return $this->closeDayOfWeek;
+    }
+
+    /**
+     * @param int $closeDayOfWeek
+     * @return ShopEntity
+     */
+    public function setCloseDayOfWeek(int $closeDayOfWeek): ShopEntity
+    {
+        $this->closeDayOfWeek = $closeDayOfWeek;
+        return $this;
+    }
+
+
+
 
 
 }

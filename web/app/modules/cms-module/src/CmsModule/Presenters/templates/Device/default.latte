@@ -3,8 +3,8 @@
 	<div class="row bg-title">
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<h1 class="page-title">{_devicePage.management}</h1>
-			<a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addDeviceGroup!" class="ajax-modal btn btn-md m-l-15 btn-success" data-toggle="_modal" data-target=".addGroupModal">{_devicePage.add_new_group}</a>
-			<a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addDevice!" class="ajax-modal btn btn-md m-l-15 btn-success" data-toggle="_modal" data-target=".addDeviceModal">{_devicePage.addDevice}</a>
+			<a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addDeviceGroup!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target=".addGroupModal">{_devicePage.add_new_group}</a>
+			<a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addDevice!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target=".addDeviceModal">{_devicePage.addDevice}</a>
 		</div>
 		<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
 			<ol class="breadcrumb">

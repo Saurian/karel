@@ -53,9 +53,6 @@ class CampaignPresenter extends BasePresenter
     /** @var ICampaignFilterTagsControlFactory @inject */
     public $campaignFilterTagsControlFactory;
 
-    /** @var ITemplateControlFactory @inject */
-    public $templateControlFactory;
-
     /** @var ICampaignFormFactory @inject */
     public $campaignFormFactory;
 
@@ -708,9 +705,10 @@ class CampaignPresenter extends BasePresenter
             ->setIcon('pencil fa-1x')
             ->setDataAttribute('backdrop', 'static')
             ->setDataAttribute('target', '.addCampaignModal')
+            ->setDataAttribute('toggle', 'ajax-modal')
             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.editDevice'))
             ->setTitle($this->translateMessage()->translate('devicePage.editDevice'))
-            ->setClass('ajax-modal btn btn-xs btn-info');
+            ->setClass('btn btn-xs btn-info');
 
 
         $grid->addAction('delete', '', 'deleteCampaign!')
@@ -873,9 +871,10 @@ class CampaignPresenter extends BasePresenter
             ->setIcon('pencil')
             ->setDataAttribute('backdrop', 'static')
             ->setDataAttribute('target', '.addDeviceModal')
+            ->setDataAttribute('toggle', 'ajax-modal')
             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.editDevice'))
             ->setTitle($this->translateMessage()->translate('devicePage.editDevice'))
-            ->setClass('ajax-modal btn btn-xs btn-info');*/
+            ->setClass('btn btn-xs btn-info');*/
 
 
         $grid->addAction('delete', '', 'deleteMedium!')

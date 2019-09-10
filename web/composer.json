@@ -1,0 +1,52 @@
+{
+  "name": "devrun/carl2",
+  "description": "cms.pixatori.com: karl von bahnhof",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "author's name",
+      "email": "email@example.com"
+    }
+  ],
+  "require": {
+    "php": "^7.0",
+    "nette/nette": "^2.4",
+    "flame/framework": "^6.1",
+    "kdyby/doctrine": "^3.3",
+    "kdyby/translation": "^2.4",
+    "kdyby/nette-session-panel": "^3.4",
+    "kdyby/forms-replicator": "^1.4",
+    "kdyby/fake-session": "^2.0",
+    "kdyby/monolog": "^1.3",
+    "ublaboo/datagrid": "^5.7",
+    "ublaboo/image-storage": "^1.1",
+    "zenify/doctrine-behaviors": "^4.2",
+    "janmarek/webloader": "^2.5",
+    "oyejorge/less.php": "v1.7.0.14",
+    "leafo/scssphp": "^0.7.7",
+    "joseki/webloader-filters": "^1.1",
+    "vladkens/autoprefixer": "^0.1.0",
+    "nextras/migrations": "^3.1",
+    "phpoffice/phpspreadsheet": "^1.8"
+  },
+  "require-dev": {
+    "nette/tester": "^2.0",
+    "phpunit/phpunit": "^5.0",
+    "phpunit/phpunit-dom-assertions": "^2.0",
+    "contributte/codeception": "^0.7.7"
+
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "@clearCache",
+      "php www/index.php migrations:continue"
+    ],
+    "post-update-cmd": [
+      "@clearCache",
+      "php www/index.php migrations:continue"
+    ],
+    "clearCache": "rm -rf temp/cache/latte/* temp/cache/Nette.Configurator/* temp/cache/Nette.RobotLoader/*"
+  }
+
+}

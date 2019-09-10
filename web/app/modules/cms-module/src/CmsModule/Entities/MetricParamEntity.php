@@ -12,7 +12,7 @@ use Kdyby\Doctrine\Entities\MagicAccessors;
 
 /**
  * Class MetricParamEntity
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="CmsModule\Repositories\MetricParamRepository")
  * @ORM\Table(name="metric_param")
  *
  * @package CmsModule\Entities

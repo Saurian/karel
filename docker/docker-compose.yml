@@ -37,6 +37,7 @@ services:
       MYSQL_DATABASE: cms2pixatori
       MYSQL_USER: cms2pixatori
       MYSQL_PASSWORD: aI#UzlQ49Jw91B
+      COMPOSER_INTERACTION: "yes"
 
 
   mailer:

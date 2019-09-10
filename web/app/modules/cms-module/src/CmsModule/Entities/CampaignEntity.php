@@ -79,6 +79,12 @@ class CampaignEntity implements IDeviceEntity
      */
     protected $mediaData;
 
+    /**
+     * @var CalendarEntity[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="CalendarEntity", mappedBy="campaign")
+     */
+    protected $calendars;
+
 
     /**
      * @var string
@@ -122,6 +128,7 @@ class CampaignEntity implements IDeviceEntity
         $this->defaultDevices = new ArrayCollection();
         $this->loopDevices = new ArrayCollection();
         $this->mediaData = new ArrayCollection();
+        $this->calendars = new ArrayCollection();
     }
 
 

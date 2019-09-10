@@ -463,9 +463,71 @@ $.nette.ext('bs-modal', {
 });
 
 
+/**
+ * init slider on bootstrap shown
+ *
+ * data-custom-input-min="inputName"
+ * data-custom-input-max="inputName"
+ *
+ */
+$(".modal").on('shown.bs.modal', function(){
+
+    customInputSet = function(el) {
+        var values = $(el).val().split(",");
+        var inputMin = $(el).data('custom-input-min');
+        var inputMax = $(el).data('custom-input-max');
+
+        if (inputMin) {
+            $('input[name="' + inputMin + '"]').val(values[0]);
+        }
+        if (inputMax) {
+            $('input[name="' + inputMax + '"]').val(values[1]);
+        }
+    };
+
+    $("[data-provide='slider-range']").on('slide', function (e) {
+        customInputSet(this);
+
+    }).slider({
+        // tooltip: 'always',
+        _formatter: function(value) {
+            var days = ['pondělí', 'úterý', 'středa', ];
 
 
 
+
+            console.log($(this));
+            // console.log($(this).data('custom-titles'));
+
+            return value;
+
+            return 'Current value: ' + value;
+        }
+    }).each(function () {
+        customInputSet(this);
+    });
+
+});
+
+
+
+
+$.nette.ext('bs-slider', {
+    init: function () {
+        var self = this;
+
+
+    }
+}, {
+    open: function (el) {
+        var content = el.find('.modal-content');
+        if (!content.length) {
+            return; // ignore empty modal
+        }
+
+        el.modal({});
+    }
+});
 
 
 /**
@@ -796,7 +858,7 @@ $(function(){
         /**
          * send ajax before modal open
          */
-    }).on("click", ".ajax-modal", function(e){
+    }).on("click", "[data-toggle='ajax-modal']", function(e){
         e.preventDefault();
 
         var target = $(this).data('target');

@@ -885,21 +885,21 @@ class DevicePresenter extends BasePresenter
             })
             ->setIcon('plus')
             ->setDataAttribute('target', '.addGroupModal')
+            ->setDataAttribute('toggle', 'ajax-modal')
             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.add_new_group'))
             ->setTitle('Přidat novou skupinu zařízení')
-            ->setClass('ajax-modal btn btn-xs btn-success')
+            ->setClass('btn btn-xs btn-success')
             ;
 
         $grid->addAction('edit', '', 'editDeviceGroup!')
             ->setClass(function (DeviceGroupEntity $row) {
-                return $row->isUnPlace() ? 'ajax-modal m-l-50 btn btn-xs btn-info' : 'ajax-modal btn btn-xs btn-info';
+                return $row->isUnPlace() ? 'm-l-50 btn btn-xs btn-info' : 'btn btn-xs btn-info';
             })
             ->setIcon('pencil')
             ->setTitle('Editace skupiny zařízení')
             ->setDataAttribute('target', '.addGroupModal')
-            ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.edit_device_group'))
-//            ->setClass('ajax-modal btn btn-xs btn-info');
-        ;
+            ->setDataAttribute('toggle', 'ajax-modal')
+            ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.edit_device_group'));
 
 
 
@@ -917,9 +917,10 @@ class DevicePresenter extends BasePresenter
         $grid->addToolbarButton('addDeviceGroup!', 'Přidat skupinu')
             ->addAttributes([
                 'data-target' => '.addGroupModal',
+                'data-toggle' => 'ajax-modal',
                 'data-title' => $this->translateMessage()->translate('devicePage.add_new_group'),
             ])
-            ->setClass('ajax-modal btn btn-xs btn-success btn-secondary')
+            ->setClass('btn btn-xs btn-success btn-secondary')
             ->setIcon('fa fa-plus');
 
 
@@ -1162,9 +1163,10 @@ class DevicePresenter extends BasePresenter
         $grid->addAction('edit', '', 'editDevice!')
             ->setIcon('pencil')
             ->setDataAttribute('target', '.addDeviceModal')
+            ->setDataAttribute('toggle', 'ajax-modal')
             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.editDevice'))
             ->setTitle($this->translateMessage()->translate('devicePage.editDevice'))
-            ->setClass('ajax-modal btn btn-xs btn-info');
+            ->setClass('btn btn-xs btn-info');
 
 
         $grid->addAction('delete', '', 'deleteDevice!')
@@ -1236,9 +1238,10 @@ class DevicePresenter extends BasePresenter
         $grid->addToolbarButton('addDevice!', 'Přidat zařízení')
             ->addAttributes([
                 'data-target' => '.addDeviceModal',
+                'data-toggle' => 'ajax-modal',
                 'data-title' => $this->translateMessage()->translate('devicePage.edit_device_group'),
             ])
-            ->setClass('ajax-modal btn btn-xs btn-success btn-secondary')
+            ->setClass('btn btn-xs btn-success btn-secondary')
             ->setIcon('fa fa-plus');
 
 
