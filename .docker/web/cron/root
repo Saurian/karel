@@ -1,2 +1,0 @@
-#merlin cron
-#*/15 * * * * /usr/bin/php /var/www/html/admin/cron.php > /dev/null
