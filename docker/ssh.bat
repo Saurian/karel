@@ -1,0 +1,1 @@
+docker exec -i -t vyvoj_webserver /bin/bash
