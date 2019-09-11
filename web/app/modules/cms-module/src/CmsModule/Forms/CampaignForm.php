@@ -290,19 +290,6 @@ class CampaignForm extends BaseForm
         return $this;
     }
 
-    /**
-     * @param TemplateEntity[] $templates
-     *
-     * @return $this
-     */
-    public function setTemplates($templates)
-    {
-        $this->templates = $templates;
-        return $this;
-    }
-
-
-
 
 
 }

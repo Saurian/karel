@@ -19,5 +19,3 @@ web/vendor/*
 #!web/www/media/_storage_no_image/
 !web/www/media/_storage_no_image/8f/no-images-placeholder.png
 !/composer.json
-!/start*.sh
-!/stop*.sh
