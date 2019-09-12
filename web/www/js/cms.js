@@ -289,7 +289,7 @@ $.nette.ext('deviceForm', {
 
             console.log("deviceDetailForm success");
 
-            if (payload._success && payload._success == true) {
+            if (payload._success && payload._success === true) {
                 $('.modal.addDeviceModal').modal('hide')
             }
         }
@@ -428,7 +428,16 @@ $.nette.ext('modalForm', {
         // if (settings.nette && settings.nette.isSubmit && settings.nette.form.data('name') == 'userForm') {
         if (settings.nette && settings.nette.el.is("[data-dismiss='modal']")) {
             // $(settings.nette.el.closest('.modal')).modal('hide');
-            $('.modal.in').modal('hide');
+
+            if(typeof(payload.success) != "undefined" && payload.success !== null) {
+                if (payload.success) {
+                    $('.modal.in').modal('hide');
+                }
+
+            } else {
+                $('.modal.in').modal('hide');
+            }
+
         }
     }
 });
@@ -463,69 +472,54 @@ $.nette.ext('bs-modal', {
 });
 
 
-/**
- * init slider on bootstrap shown
- *
- * data-custom-input-min="inputName"
- * data-custom-input-max="inputName"
- *
- */
-$(".modal").on('shown.bs.modal', function(){
-
-    customInputSet = function(el) {
-        var values = $(el).val().split(",");
-        var inputMin = $(el).data('custom-input-min');
-        var inputMax = $(el).data('custom-input-max');
-
-        if (inputMin) {
-            $('input[name="' + inputMin + '"]').val(values[0]);
-        }
-        if (inputMax) {
-            $('input[name="' + inputMax + '"]').val(values[1]);
-        }
-    };
-
-    $("[data-provide='slider-range']").on('slide', function (e) {
-        customInputSet(this);
-
-    }).slider({
-        // tooltip: 'always',
-        _formatter: function(value) {
-            var days = ['pondělí', 'úterý', 'středa', ];
-
-
-
-
-            console.log($(this));
-            // console.log($(this).data('custom-titles'));
-
-            return value;
-
-            return 'Current value: ' + value;
-        }
-    }).each(function () {
-        customInputSet(this);
-    });
-
-});
-
-
-
 
 $.nette.ext('bs-slider', {
-    init: function () {
+    load: function () {
         var self = this;
 
-
+        this.initModalSlider('.modal');
     }
-}, {
-    open: function (el) {
-        var content = el.find('.modal-content');
-        if (!content.length) {
-            return; // ignore empty modal
-        }
 
-        el.modal({});
+    }, {
+
+    /**
+     * init slider on bootstrap shown
+     * https://seiyria.com/bootstrap-slider/
+     *
+     * data-custom-input-min="inputName"
+     * data-custom-input-max="inputName"
+     *
+     * @param selector
+     */
+    initModalSlider: function (selector) {
+
+        $(selector).on('shown.bs.modal', function(){
+
+            customInputSet = function(el) {
+                var values = $(el).val().split(",");
+                var inputMin = $(el).data('custom-input-min');
+                var inputMax = $(el).data('custom-input-max');
+
+                if (inputMin) {
+                    $('input[name="' + inputMin + '"]').val(values[0]);
+                }
+                if (inputMax) {
+                    $('input[name="' + inputMax + '"]').val(values[1]);
+                }
+            };
+
+            $("[data-provide='slider-range']").on('slide', function (e) {
+                customInputSet(this);
+
+            }).slider({
+                // tooltip: 'always',
+
+            }).each(function () {
+                customInputSet(this);
+            });
+
+        });
+
     }
 });
 

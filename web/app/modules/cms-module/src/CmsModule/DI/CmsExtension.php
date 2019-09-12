@@ -17,11 +17,13 @@ use CmsModule\Entities\LogEntity;
 use CmsModule\Entities\MediumDataEntity;
 use CmsModule\Entities\MetricEntity;
 use CmsModule\Entities\MetricParamEntity;
+use CmsModule\Entities\MetricStatisticEntity;
 use CmsModule\Entities\ShopEntity;
 use CmsModule\Entities\TargetGroupEntity;
 use CmsModule\Listeners\MediaDataListener;
 use CmsModule\Repositories\MetricParamRepository;
 use CmsModule\Repositories\MetricRepository;
+use CmsModule\Repositories\MetricStatisticRepository;
 use CmsModule\Repositories\ShopRepository;
 use CmsModule\Repositories\TargetGroupRepository;
 use Flame\Modules\Providers\IPresenterMappingProvider;
@@ -117,6 +119,10 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
         $builder->addDefinition($this->prefix('repository.metricParam'))
             ->setType(MetricParamRepository::class)
             ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, MetricParamEntity::class);
+
+        $builder->addDefinition($this->prefix('repository.metricStatistic'))
+            ->setType(MetricStatisticRepository::class)
+            ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, MetricStatisticEntity::class);
 
 
         /*

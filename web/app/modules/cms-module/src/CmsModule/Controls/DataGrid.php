@@ -63,6 +63,14 @@ class DataGrid extends \Ublaboo\DataGrid\DataGrid
     }
 
 
+    public function validResponse($message = null)
+    {
+        header("HTTP/1.1 200 OK");
+        header('Content-Type: application/json; charset=UTF-8');
+        die(json_encode(array('message' => 'OK ' . $message)));
+    }
+
+
     public function handleResetFilter()
     {
         parent::handleResetFilter();

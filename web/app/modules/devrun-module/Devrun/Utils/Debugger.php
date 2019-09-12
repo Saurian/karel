@@ -27,4 +27,17 @@ class Debugger extends \Tracy\Debugger
         return $_SERVER["HTTP_X_REAL_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["HTTP_CLIENT_IP"] ?? $_SERVER["REMOTE_ADDR"] ?? 'UNKNOWN';
     }
 
+    /**
+     * return true if docker environment is set
+     * VIRTUAL_HOST | HOST
+     *
+     * @return bool
+     */
+    public static function isDocker()
+    {
+        return isset($_SERVER['VIRTUAL_HOST']);
+    }
+
+
+
 }

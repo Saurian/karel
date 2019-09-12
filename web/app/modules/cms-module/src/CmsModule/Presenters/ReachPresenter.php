@@ -12,10 +12,13 @@ use CmsModule\Entities\TargetGroupEntity;
 use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Facades\ReachFacade;
 use CmsModule\Forms\BaseForm;
+use Devrun\CmsModule\Controls\DataGrid;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Nette\Application\UI\Multiplier;
 use Nette\Forms\Container;
-use Nette\Forms\Form;
+use Nette\Utils\DateTime;
+use Nette\Utils\Validators;
 use Tracy\Debugger;
-use Ublaboo\DataGrid\DataGrid;
 
 class ReachPresenter extends BasePresenter
 {
@@ -32,7 +35,8 @@ class ReachPresenter extends BasePresenter
     /** @var integer @persistent */
     public $editShop;
 
-
+    /** @var MetricEntity[] */
+    private $metrics;
 
 
     public function renderDefault()
@@ -165,7 +169,7 @@ class ReachPresenter extends BasePresenter
      * @return DataGrid
      * @throws \Ublaboo\DataGrid\Exception\DataGridException
      */
-    protected function createComponentReachGridControl()
+    protected function createComponentTargetGroupGridControl()
     {
         $grid = new DataGrid();
         $grid->setTranslator($this->translator);
@@ -176,24 +180,25 @@ class ReachPresenter extends BasePresenter
         $grid->setDataSource($query);
 
         $grid->addColumnText('id', 'ID')
+            ->setTranslatableHeader(false)
             ->setSortable()
             ->setFitContent();
 
-        $grid->addColumnText('name', 'Název')
+        $grid->addColumnText('name', 'messages.reachPage.targetGroup.name')
             ->setSortable()
             ->setFilterText();
 
 
-        $grid->addAction('edit', 'Upravit', 'editTargetGroup!')
+        $grid->addAction('edit', 'messages.reachPage.targetGroup.update', 'editTargetGroup!')
             ->setIcon('pencil')
             ->setDataAttribute('target', '#targetGroupFormModal')
-            ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.editDevice'))
+            ->setDataAttribute('title', $this->translateMessage()->translate('reachPage.targetGroup.edit'))
             ->setDataAttribute('toggle', 'ajax-modal')
-            ->setTitle($this->translateMessage()->translate('devicePage.editDevice'))
+            ->setTitle('messages.reachPage.targetGroup.update')
             ->setClass('btn btn-xs btn-info');
 
 
-        $grid->addAction('delete', 'Smazat', 'deleteTargetGroup!')
+        $grid->addAction('delete', 'messages.reachPage.targetGroup.delete', 'deleteTargetGroup!')
             ->setIcon('trash')
             ->setClass('ajax btn btn-xs btn-danger')
             ->setConfirm(function ($item) {
@@ -201,11 +206,11 @@ class ReachPresenter extends BasePresenter
             });
 
 
-        $grid->addToolbarButton('addTargetGroup!', 'Přidat cílovou skupinu')
+        $grid->addToolbarButton('addTargetGroup!', 'messages.reachPage.targetGroup.add')
             ->addAttributes([
                 'data-target' => '#targetGroupFormModal',
                 'data-toggle' => 'ajax-modal',
-                'data-title' => $this->translateMessage()->translate('devicePage.edit_device_group'),
+                'data-title' => $this->translateMessage()->translate('reachPage.targetGroup.add'),
             ])
             ->setClass('btn btn-xs btn-success')
             ->setIcon('fa fa-plus');
@@ -231,24 +236,25 @@ class ReachPresenter extends BasePresenter
         $grid->setDataSource($query);
 
         $grid->addColumnText('id', 'ID')
+            ->setTranslatableHeader(false)
             ->setSortable()
             ->setFitContent();
 
-        $grid->addColumnText('name', 'Název')
+        $grid->addColumnText('name', 'messages.reachPage.shop.name')
             ->setSortable()
             ->setFilterText();
 
 
-        $grid->addAction('edit', 'Upravit', 'editShop!')
+        $grid->addAction('edit', 'messages.reachPage.shop.update', 'editShop!')
             ->setIcon('pencil')
             ->setDataAttribute('target', '#shopFormModal')
             ->setDataAttribute('toggle', 'ajax-modal')
             ->setDataAttribute('title', $this->translateMessage()->translate('reachPage.shop.edit'))
-            ->setTitle($this->translateMessage()->translate('reachPage.shop.edit'))
+            ->setTitle('messages.reachPage.shop.edit')
             ->setClass('btn btn-xs btn-info');
 
 
-        $grid->addAction('delete', 'Smazat', 'deleteShop!')
+        $grid->addAction('delete', 'messages.reachPage.shop.delete', 'deleteShop!')
             ->setIcon('trash')
             ->setClass('ajax btn btn-xs btn-danger')
             ->setConfirm(function ($item) {
@@ -256,7 +262,7 @@ class ReachPresenter extends BasePresenter
             });
 
 
-        $grid->addToolbarButton('addShop!', 'Přidat prodejnu')
+        $grid->addToolbarButton('addShop!', 'messages.reachPage.shop.add')
             ->addAttributes([
                 'data-target' => '#shopFormModal',
                 'data-toggle' => 'ajax-modal',
@@ -273,135 +279,71 @@ class ReachPresenter extends BasePresenter
 
     protected function createComponentStatisticsGridControl()
     {
-        $grid = new DataGrid();
-        $grid->setTranslator($this->translator);
+        $metricEntities = $this->getMetrics();
 
-        $query = $this->reachFacade->getShopRepository()->createQueryBuilder()
-            ->from(MetricEntity::class, 'e')
-            ->select('e');
+        return new Multiplier(function ($index) use ($metricEntities) {
 
-        $metricEntity = $this->reachFacade->getMetricRepository()->find(1);
+            $grid = new DataGrid();
+            $grid->setTranslator($this->translator);
+            $grid->setPagination(false);
 
+            /** @var MetricEntity $metricEntity */
+            $metricEntity = $metricEntities[$index];
 
-        $data = [
-            ['id' => 1, 'blockDay' => 1, 't700' => 3, 't800' => 8],
-            ['id' => 2, 'blockDay' => 2, 't700' => 5, 't800' => 9],
+            $data = [
+                ['id' => 1, 7 => null, 8 => null, 9 => null, 10 => null, 11 => null, 12 => null, 13 => null, 14 => null, 15 => null, 16 => null, 17 => null, 18 => null, 19 => null, 20 => null, 21 => null, 22 => null],
+                ['id' => 2, 7 => null, 8 => null, 9 => null, 10 => null, 11 => null, 12 => null, 13 => null, 14 => null, 15 => null, 16 => null, 17 => null, 18 => null, 19 => null, 20 => null, 21 => null, 22 => null],
+                ['id' => 3, 7 => null, 8 => null, 9 => null, 10 => null, 11 => null, 12 => null, 13 => null, 14 => null, 15 => null, 16 => null, 17 => null, 18 => null, 19 => null, 20 => null, 21 => null, 22 => null],
+                ['id' => 4, 7 => null, 8 => null, 9 => null, 10 => null, 11 => null, 12 => null, 13 => null, 14 => null, 15 => null, 16 => null, 17 => null, 18 => null, 19 => null, 20 => null, 21 => null, 22 => null],
+                ['id' => 5, 7 => null, 8 => null, 9 => null, 10 => null, 11 => null, 12 => null, 13 => null, 14 => null, 15 => null, 16 => null, 17 => null, 18 => null, 19 => null, 20 => null, 21 => null, 22 => null],
+                ['id' => 6, 7 => null, 8 => null, 9 => null, 10 => null, 11 => null, 12 => null, 13 => null, 14 => null, 15 => null, 16 => null, 17 => null, 18 => null, 19 => null, 20 => null, 21 => null, 22 => null],
+                ['id' => 7, 7 => null, 8 => null, 9 => null, 10 => null, 11 => null, 12 => null, 13 => null, 14 => null, 15 => null, 16 => null, 17 => null, 18 => null, 19 => null, 20 => null, 21 => null, 22 => null],
+            ];
 
-        ];
-
-
-        $grid->setDataSource($data);
-
-        $grid->addColumnText('id', 'ID')
-            ->setSortable()
-            ->setFitContent();
-
-        $grid->addColumnText('blockDay', 'den')
-            ->setSortable()
-            ->setFitContent()
-            ->setReplacement([1 => 'pondělí', 2 => 'úterý', 3 => 'středa', 4 => 'čtvrtek', 5 => 'pátek', 6 => 'sobota', 7 => 'neděle' ]);
-
-        $grid->addColumnText('t700', '7:00')
-            ->setSortable()
-            ->setFitContent();
-
-
-        $grid->addColumnNumber('t800', '8:00')
-            ->setSortable()
-            ->setFitContent();
-
-//        $grid->addColumnText('name', 'Název')
-//            ->setSortable()
-//            ->setFilterText();
-
-
-        $presenter = $this;
-
-        /*
-         * edit
-         * __________________________________________________
-         */
-        $grid->addInlineEdit()->setText('Edit')
-            ->onControlAdd[] = function (Container $container) {
-
-            $container->addText('t700')
-                ->setAttribute('placeholder', 'user code')
-                ->addCondition(Form::FILLED)
-                ->addRule(Form::NUMERIC);
-
-//                ->addRule(Form::FILLED)
-//                ->addRule(Form::MIN_LENGTH, null, 4);
-
-        };
-
-        $grid->getInlineEdit()->onSetDefaults[] = function (Container $container, $item) {
-
-            $container->setDefaults([
-                'id'       => $item['id'],
-                't700' => $item['t700'],
-            ]);
-        };
-
-        /** @var MetricEntity $metricEntity */
-        $grid->getInlineEdit()->onSubmit[] = function ($id, $values) use ($presenter, $metricEntity) {
-
-            $em = $this->reachFacade->getEntityManager();
-
-            /** @var MetricStatisticEntity $entity */
-            if (!$entity = $em->getRepository(MetricStatisticEntity::class)->find($id)) {
-                $entity = new MetricStatisticEntity($metricEntity);
-
-                $entity->blockTime = 10;
-                $entity->blockDay = 10;
-
-
+            foreach ($metricEntity->getMetricStatistics() as $metricStatistic) {
+                $data[$metricStatistic->getBlockDay() - 1][$metricStatistic->getBlockTime()->format('G')] = $metricStatistic->getValue();
             }
 
+            $grid->setDataSource($data);
 
-            try {
+            $grid->addColumnText('id', 'den')
+                ->setTranslatableHeader(false)
+                ->setSortable()
+//                ->setFitContent()
+                ->setReplacement([1 => 'pondělí', 2 => 'úterý', 3 => 'středa', 4 => 'čtvrtek', 5 => 'pátek', 6 => 'sobota', 7 => 'neděle' ]);
 
-                foreach ($values as $key => $value) {
-                    $entity->$key = $value;
-                }
-                Debugger::barDump($values);
-                Debugger::barDump($entity);
+            foreach (range(7, 22) as $item) {
+                $grid->addColumnNumber($item, "$item:00")
+                    ->setTranslatableHeader(false)
+                    ->setFormat(0, '.', '')
+                    ->setSortable()
+                    ->setFitContent()
+                    ->setEditableInputType('number', ['class' => 'form-control'])
+//                    ->setEditableValueCallback(function ($row) use ($item) {
+//                        return $row[$item];
+//                    })
+                    ->setEditableCallback(function ($id, $value) use ($item, $metricEntity, $grid) {
 
+                        if (Validators::is($value, 'numeric:-32768..32767|string:0')) {
+                            /** @var MetricStatisticEntity $entity */
+                            if (!$entity = $this->reachFacade->getMetricStatisticRepository()->findOneBy(['metric' => $metricEntity, 'blockDay' => $id, 'blockTime' => DateTime::createFromFormat('G', $item)])) {
+                                $entity = new MetricStatisticEntity($metricEntity);
+                                $entity->setBlockDay($id);
+                            }
+                            $entity->setBlockTime($item);
+                            $entity->setValue($value);
 
-                $em->persist($entity)->flush();
+                            $this->reachFacade->getMetricStatisticRepository()->getEntityManager()->persist($entity)->flush();
+                            $grid->validResponse();
+                        }
 
-                $message = "Uživatelský přístup [{$values->username}] upraven";
-                $presenter->flashMessage($message, FlashMessageControl::TOAST_TYPE, 'Správa uživatelských přístupů', FlashMessageControl::TOAST_INFO);
-//                $this['usersGridControl']->redrawItem($id);
-//                $this->ajaxRedirect('this', null, ['flash']);
-
-            } catch (UniqueConstraintViolationException $e) {
-                $message = "Uživatelský přístup `{$values->username}` exist, [error code {$e->getErrorCode()}]";
-                $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, "Account update error", FlashMessageControl::TOAST_DANGER);
-                $this->ajaxRedirect('this', null, ['flash']);
-                return;
+                        $message = "input not valid";
+                        $grid->invalidResponse($message);
+                    });
             }
-        };
 
-
-        $grid->addAction('delete', 'Smazat', 'deleteShop!')
-            ->setIcon('trash')
-            ->setClass('ajax btn btn-xs btn-danger')
-            ->setConfirm(function ($item) {
-                return "Opravdu chcete smazat prodejnu `{$item['id']}`?";
-            });
-
-
-        $grid->addToolbarButton('addShop!', 'Přidat prodejnu')
-            ->addAttributes([
-                'data-target' => '#shopFormModal',
-                'data-toggle' => 'ajax-modal',
-                'data-title' => $this->translateMessage()->translate('reachPage.shop.add'),
-            ])
-            ->setClass('btn btn-xs btn-success')
-            ->setIcon('fa fa-plus');
-
-
-        return $grid;
+            return $grid;
+        });
     }
 
 
@@ -413,6 +355,7 @@ class ReachPresenter extends BasePresenter
         /** @var TargetGroupEntity $entity */
         if (!$this->editTargetGroup || !$entity = $this->reachFacade->getTargetGroupRepository()->find($this->editTargetGroup)) {
             $entity = new TargetGroupEntity("Nová skupina");
+            $entity->setUsersGroup($this->userEntity->getGroup());
         }
 
 
@@ -546,10 +489,10 @@ class ReachPresenter extends BasePresenter
      *
      * @return \CmsModule\Forms\ShopForm
      */
-    protected function createComponentShopForm()
+    protected function createComponentShopForm($name)
     {
         $form = $this->reachFacade->getShopFormFactory()->create();
-        $form->setTranslator($this->translator->domain("messages.forms.shopForm"));
+        $form->setTranslator($this->translator->domain("messages.forms.$name"));
 
         $entity = null;
         if ($this->editShop) {
@@ -558,6 +501,7 @@ class ReachPresenter extends BasePresenter
 
         if (!$entity) {
             $entity = new ShopEntity();
+            $entity->setUsersGroup($this->userEntity->getGroup());
         }
 
         $form->setEntity($entity);
@@ -584,39 +528,63 @@ class ReachPresenter extends BasePresenter
      *
      * @return \CmsModule\Forms\ReachForm
      */
-    protected function createComponentReachForm()
+    protected function createComponentReachForm($name)
     {
         $form = $this->reachFacade->getReachFormFactory()->create();
-
-        $targetGroups = $this->reachFacade->getTargetGroupRepository()->findPairs([], 'name');
-        $shops = $this->reachFacade->getShopRepository()->findPairs([], 'name');
-        $metricParams = $this->reachFacade->getMetricParamRepository()->findPairs([], 'name');
-
-        dump($targetGroups);
-        dump($shops);
-        dump($metricParams);
+        $form->setTranslator($this->translator->domain("messages.forms.$name"));
 
         $entity = new MetricEntity();
-
+        $entity->setUsersGroup($this->userEntity->getGroup());
 
         $form
-            ->setShops($shops)
-            ->setTargetGroups($targetGroups)
-            ->setMetricParams($metricParams)
+//            ->setShops($shops = $this->reachFacade->getShopRepository()->findPairs([], 'name'))
+//            ->setTargetGroups($targetGroups = $this->reachFacade->getTargetGroupRepository()->findPairs([], 'name'))
+//            ->setMetricParams($metricParams = $this->reachFacade->getMetricParamRepository()->findPairs([], 'name'))
+            ->setUserGroup($this->userEntity->getGroup())
             ->create()
             ->bootstrap3Render()
-            ->bindEntity($entity)
-            ->onSuccess[] = function (BaseForm $form, $values) {
+            ->bindEntity($entity);
 
-            $title   = $this->translateMessage()->translate('reachPage.shop.management');
-            $message = $this->translateMessage()->translate('reachPage.shop.updated', null, ['name' => $form->getEntity()->id]);
+        $form->onError[] = function (BaseForm $form) {
+            $this->ajaxRedirect('this', null, ['reachFormModal', 'editReachFormModal']);
+            $this->payload->success = false;
+        };
+
+        $form->onSuccess[] = function (BaseForm $form, $values) {
+
+            $title   = $this->translateMessage()->translate('reachPage.targetGroup.management');
+            $message = $this->translateMessage()->translate('reachPage.targetGroup.updated', null, ['name' => $form->getEntity()->id]);
 
             $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
-            $this->ajaxRedirect('this', null, ['flash']);
+            $this->ajaxRedirect('this', null, ['statistics', 'reachFormModal', 'editReachFormModal', 'flash']);
+            $this->payload->success = true;
         };
 
         return $form;
     }
 
+
+
+
+
+
+    /**
+     * -----------------------------------------------------------------------------------------
+     * GETTERS SETTERS
+     * -----------------------------------------------------------------------------------------
+     */
+
+
+    /**
+     * @return MetricEntity[]
+     */
+    public function getMetrics(): array
+    {
+        if (null === $this->metrics) {
+            $this->metrics = $this->reachFacade->getMetricRepository()->getUserGroupMetrics($this->userEntity->getGroup());
+        }
+
+        return $this->metrics;
+    }
 
 }

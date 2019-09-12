@@ -44,7 +44,7 @@ grids:
 logout: Odhlásit
 profile: Můj profil
 password: Správa hesla
-copyright: 2018 &copy; Pixman.cz
+copyright: 2019 &copy; CMS.Pixatori.com
 menu:
 	base: Hlavní menu
 	campaigns: Kampaně
@@ -187,6 +187,18 @@ forms:
 		ruleMinLength: Vyplňte prosím alespoň %d znak|Vyplňte prosím alespoň %d znaky|Vyplňte prosím alespoň %d znaků
 		ruleMaxLength: Vyplňte prosím maximálně %d znaků
 
+	reachForm:
+		shop: Prodejna
+		name: Název statistiky
+		placeholder.name: "Matky 35+, děti už jsou pryč"
+		targetGroup: Cílová skupina
+		metricParam: Parametr metriky
+		send: Uložit úpravy
+		ruleFilled: Vyplňte prosím toto pole
+		ruleMinLength: Vyplňte prosím alespoň %d znak|Vyplňte prosím alespoň %d znaky|Vyplňte prosím alespoň %d znaků
+		ruleMaxLength: Vyplňte prosím maximálně %d znaků
+		uniqueRecord: "Statistiky parametru `%metricParam%` prodejny `%shop%` a cílové skupiny `%targetGroup%` jsou již zaznamenány"
+
 
 	loginForm:
 		remember: Zapamatovat si
@@ -305,10 +317,23 @@ reachPage:
 	shop:
 		management: Správa prodejen
 		not_found: prodejna `%id%` nenalezena
+		name: Název prodejny
 		add: Přidat prodejnu
 		edit: Upravit prodejnu
+		delete: Smazat
+		update: Upravit
 		updated: Prodejna `%name%` upravena
 		removed: Prodejna `%name%` smazána
+
+	targetGroup:
+		management: Správa statistik cílové skupiny
+		name: Název
+		add: Přidat cílovou skupinu
+		update: Upravit
+		updated: Cílová skupina `%name%` upravena
+		delete: Smazat
+		edit: Upravit cílovou skupinu
+
 
 	reach:
 		management: Správa statistik

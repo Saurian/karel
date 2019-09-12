@@ -5,13 +5,15 @@ namespace CmsModule\Entities;
 
 use Devrun\Doctrine\Entities\BlameableTrait;
 use Devrun\Doctrine\Entities\DateTimeTrait;
+use Devrun\Doctrine\Entities\UuidV4EntityTrait;
+use Devrun\Utils\Debugger;
 use Doctrine\ORM\Mapping as ORM;
-use Kdyby\Doctrine\Entities\Attributes\Identifier;
 use Kdyby\Doctrine\Entities\MagicAccessors;
+use Nette\Utils\DateTime;
 
 /**
  * Class MetricDataEntity
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="CmsModule\Repositories\MetricStatisticRepository")
  * @ORM\Table(name="metric_statistic",
  *  uniqueConstraints={
  *      @ORM\UniqueConstraint(name="metric_block_idx", columns={"metric_id", "block_day", "block_time"}),
@@ -21,17 +23,11 @@ use Kdyby\Doctrine\Entities\MagicAccessors;
  * })
  *
  * @package CmsModule\Entities
- * @method getT600()
- * @method getT700()
- * @method getT800()
- * @method setT600()
- * @method setT700()
- * @method setT800()
  */
 class MetricStatisticEntity
 {
 
-    use Identifier;
+    use UuidV4EntityTrait;
     use DateTimeTrait;
     use MagicAccessors;
     use BlameableTrait;
@@ -39,36 +35,30 @@ class MetricStatisticEntity
 
     /**
      * @var MetricEntity
-     * @ORM\ManyToOne(targetEntity="MetricEntity", inversedBy="metricStatistics")
+     * @ORM\ManyToOne(targetEntity="MetricEntity", inversedBy="metricStatistics", cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     protected $metric;
 
 
     /**
-     * @var string
-     * @ORM\Column(type="time")
-     */
-    protected $blockTime;
-
-    /**
-     * @var string
+     * @var integer
      * @ORM\Column(type="smallint")
      */
     protected $blockDay;
 
-    /** @var int @ORM\Column(type="smallint", nullable=true) */
-    protected $t600;
 
-    /** @var int @ORM\Column(type="smallint", nullable=true) */
-    protected $t700;
+    /**
+     * @var DateTime
+     * @ORM\Column(type="time")
+     */
+    protected $blockTime;
 
-    /** @var int @ORM\Column(type="smallint", nullable=true) */
-    protected $t800;
+
 
 
     /**
-     * @var int
+     * @var int|null
      * @ORM\Column(type="smallint", nullable=true)
      */
     protected $value;
@@ -81,6 +71,74 @@ class MetricStatisticEntity
     {
         $this->metric = $metric;
     }
+
+    /**
+     * @return DateTime
+     */
+    public function getBlockTime()
+    {
+        return $this->blockTime;
+//        return $this->blockTime ? $this->blockTime->format('H') : null;
+    }
+
+
+    /**
+     * @param DateTime|integer $blockTime
+     * @return MetricStatisticEntity
+     */
+    public function setBlockTime($blockTime): MetricStatisticEntity
+    {
+        if (is_numeric($blockTime)) {
+            $blockTime = DateTime::createFromFormat('H', $blockTime);
+        }
+
+        $blockTime->setDate(1970, 1, 1);
+
+        if ($this->blockTime != $blockTime) $this->blockTime = $blockTime;
+        return $this;
+    }
+
+    /**
+     * @param int $blockDay
+     * @return MetricStatisticEntity
+     */
+    public function setBlockDay(int $blockDay): MetricStatisticEntity
+    {
+        $this->blockDay = $blockDay;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBlockDay(): int
+    {
+        return $this->blockDay;
+    }
+
+    /**
+     * @param int $value
+     * @return MetricStatisticEntity
+     */
+    public function setValue($value): MetricStatisticEntity
+    {
+        $this->value = $value ? intval($value) : null;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+
+
+
+
+
 
 
 }

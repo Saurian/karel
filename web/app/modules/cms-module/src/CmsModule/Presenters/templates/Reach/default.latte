@@ -5,8 +5,8 @@
         <h1 class="page-title">{_reachPage.management}</h1>
 {*        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addTargetGroup!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target="#targetGroupFormModal">{_devicePage.add_new_group}</a>*}
 
-        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="editTargetGroupParams!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target="#targetGroupParamsFormModal">Správa parametrů cílových skupin</a>
-        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="editMetricParams!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target="#metricParamFormModal">Správa měřených metrik</a>
+        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="editTargetGroupParams!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-title="Správa parametrů cílových skupin" data-target="#targetGroupParamsFormModal">Správa parametrů cílových skupin</a>
+        <a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="editMetricParams!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-title="Správa měřených metrik" data-target="#metricParamFormModal">Správa měřených metrik</a>
     </div>
     <div class="col-md-4 col-xs-12">
         <ol class="breadcrumb">
@@ -16,13 +16,13 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row animated fadeIn">
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Cílové skupiny</div>
             <div class="panel-body">
                 <div class="grido">
-                    {control reachGridControl}
+                    {control targetGroupGridControl}
                 </div>
             </div>
         </div>
@@ -40,12 +40,19 @@
 </div>
 
 
-<div class="panel panel-default">
-    <div class="panel-heading">Data cílových skupin</div>
-    <div class="panel-body">
-{*        <a class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target="#reachFormModal">přidat záznam</a>*}
-        <div class="grido">
-{*            {control statisticsGridControl}*}
+<div class="panel panel-primary" style="animation-delay: 200ms">
+    <div class="panel-heading">
+        Data cílových skupin
+        <button class="pull-right btn btn-success btn-xs" data-toggle="modal" data-target="#reachFormModal"><span class="fa fa-fa fa-plus"></span> Přidat záznam</button>
+    </div>
+    <div n:snippet="statistics" class="panel-body">
+        <div class="panel panel-info animated fadeIn" n:foreach="$presenter->getMetrics() as $metric" style="animation-delay: {$iterator->counter * 200}ms">
+            <div class="panel-heading">{$metric->name}</div>
+            <div class="panel-body p-0">
+                <div class="grido">
+                    {control statisticsGridControl-$metric->id}
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -54,14 +61,15 @@
 {include targetGroupParamsFormModal}
 {include metricParamFormModal}
 {include shopFormModal}
-{*{include "#reachFormModal.latte"}*}
+{snippetArea reachFormModal}{include "#reachFormModal.latte"}{/snippetArea}
+
 
 <div n:define="shopFormModal" id="shopFormModal" class="modal fade animated bounceInUp" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">{_reachPage.add_shop}</h4>
+                <h4 class="modal-title">{_reachPage.shop.add}</h4>
             </div>
 
             {snippet editShopFormModal}

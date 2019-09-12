@@ -183,6 +183,16 @@ class ShopEntity
         return $this;
     }
 
+    /**
+     * @param UsersGroupEntity $usersGroup
+     * @return ShopEntity
+     */
+    public function setUsersGroup(UsersGroupEntity $usersGroup): ShopEntity
+    {
+        $this->usersGroup = $usersGroup;
+        return $this;
+    }
+
 
 
 

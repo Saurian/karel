@@ -18,7 +18,7 @@
 
 	<div class="row well">
 		<div class="col-md-6">
-			<div class="panel panel-default">
+			<div class="panel panel-default animated fadeIn">
 				<div class="panel-heading">Skupiny zařízení</div>
 				<div class="panel-body">
 					<div class="grido grido-tree">
@@ -31,7 +31,7 @@
 		</div>
 		<div class="col-md-6">
 			<div class="grido">
-				<div class="panel panel-default">
+				<div class="panel panel-default animated fadeIn">
 					<div n:snippet="deviceInGroupName" class="panel-heading">{if $selectDeviceGroup}{_devicePage.filter.devicesOnGroup, null, ['name' => $selectDeviceGroupEntity->name]|noescape}{else}{_devicePage.title}{/if}</div>
 					<div class="panel-body">
 						{control deviceGridControl}

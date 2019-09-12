@@ -1,0 +1,5 @@
+ALTER TABLE metric ADD users_group_id INT DEFAULT NULL;
+ALTER TABLE metric ADD CONSTRAINT FK_87D62EE38515F29D FOREIGN KEY (users_group_id) REFERENCES users_group (id) ON DELETE CASCADE;
+CREATE INDEX IDX_87D62EE38515F29D ON metric (users_group_id);
+CREATE INDEX name_idx ON metric (name);
+ALTER TABLE metric_statistic DROP t600, DROP t700, DROP t800, CHANGE id id CHAR(36) NOT NULL COMMENT '(DC2Type:guid)';

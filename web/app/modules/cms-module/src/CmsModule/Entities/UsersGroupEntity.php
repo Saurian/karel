@@ -59,6 +59,12 @@ class UsersGroupEntity
      */
     protected $shops;
 
+    /**
+     * @var MetricEntity[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="MetricEntity", mappedBy="usersGroup", cascade={"persist"})
+     */
+    protected $metrics;
+
 
 
     /**

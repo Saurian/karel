@@ -121,6 +121,16 @@ class TargetGroupEntity
         }
     }
 
+    /**
+     * @param UsersGroupEntity $usersGroup
+     * @return TargetGroupEntity
+     */
+    public function setUsersGroup(UsersGroupEntity $usersGroup): TargetGroupEntity
+    {
+        $this->usersGroup = $usersGroup;
+        return $this;
+    }
+
 
 
 }
