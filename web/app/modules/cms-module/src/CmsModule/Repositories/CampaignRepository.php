@@ -9,9 +9,12 @@
 
 namespace CmsModule\Repositories;
 
+use CmsModule\Entities\CampaignEntity;
+use CmsModule\Repositories\Campaign\CampaignStatistic;
 use CmsModule\Repositories\Queries\CampaignQuery;
 use Kdyby\Doctrine\EntityRepository;
 use Nette\Security\User;
+use Tracy\Debugger;
 
 class CampaignRepository extends EntityRepository implements IFilter
 {
@@ -20,6 +23,9 @@ class CampaignRepository extends EntityRepository implements IFilter
 
     use FilterRepositoryTrait;
     use PostProcessingTrait;
+
+    /** @var CampaignStatistic[] */
+    private $testStatistics = [];
 
 
     public function getActiveRowsCount()
@@ -85,6 +91,35 @@ class CampaignRepository extends EntityRepository implements IFilter
         return $query;
     }
 
+
+    /**
+     * @param \DateTime $time
+     * @param CampaignEntity $campaignEntity
+     * @return bool
+     */
+    public function isTimeInMetricsTimeRange(\DateTime $time, CampaignEntity $campaignEntity)
+    {
+        if (!isset($this->testStatistics[$campaignEntity->getId()])) {
+            $this->testStatistics[$campaignEntity->getId()] = new CampaignStatistic($campaignEntity);
+        }
+
+        return $this->testStatistics[$campaignEntity->getId()]->isTimeInMetricsTimeRange($time);
+    }
+
+
+    /**
+     * @param \DateTime $time
+     * @param CampaignEntity $campaignEntity
+     * @return int
+     */
+    public function getPercentageUse(\DateTime $time, CampaignEntity $campaignEntity)
+    {
+        if (!isset($this->testStatistics[$campaignEntity->getId()])) {
+            $this->testStatistics[$campaignEntity->getId()] = new CampaignStatistic($campaignEntity);
+        }
+
+        return $this->testStatistics[$campaignEntity->getId()]->getPercentageUse($time);
+    }
 
 
 }

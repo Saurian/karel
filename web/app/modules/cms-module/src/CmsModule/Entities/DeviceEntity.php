@@ -115,13 +115,6 @@ class DeviceEntity
      */
     protected $defaultCampaign;
 
-    /**
-     * @var CampaignEntity
-     * @ORM\ManyToOne(targetEntity="CampaignEntity", inversedBy="loopDevices")
-     * @ORM\JoinColumn(onDelete="CASCADE")
-     */
-    protected $loopCampaign;
-
 
 
     /**

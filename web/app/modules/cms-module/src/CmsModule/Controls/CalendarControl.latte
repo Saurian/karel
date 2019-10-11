@@ -1,0 +1,206 @@
+<div class="modal fade calendarModal" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">{_campaignPage.addCampaign}</h4>
+            </div>
+
+            <div n:snippet="calendarFormModal" class="modal-body">
+
+                <div id='calendar-container' style="min-height: 100px">
+                    <div id='calendar'></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="newEventModal" class="modal fade newEventModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog modal-md">
+        <div n:snippet="newEventModal" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Nový event</h4>
+            </div>
+
+            <div class="modal-body">
+
+                {control newEvent}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script n:snippet="calendarFormScript">
+
+    $('.calendarModal').on('shown.bs.modal', function () {
+
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+            timeZone: 'UTC',
+            height: 'parent',
+            handleWindowResize: false,
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+            },
+            dateClick: function(info) {
+                // alert('Clicked on: ' + info.dateStr);
+                console.log('Clicked on: ' + info.dateStr);
+
+                // $('#frm-calendarControl-newEvent').find('[name="datetime"]').val(info.dateStr);
+                // $('#newEventModal').modal({ show: 'true' });
+
+                // change the day's background color just for fun
+                // info.dayEl.style.backgroundColor = 'red';
+            },
+            eventClick: function(info) {
+                // alert('Event: ' + info.event.title);
+                // console.log('Event: ' + info.event.title);
+
+                // change the border color just for fun
+                // info.el.style.borderColor = 'red';
+            },
+            eventDrop: function (info) {
+
+                // alert(info.event.title + " was dropped on " + info.event.start.toISOString());
+
+                // alert('Event: ' + info.event.title);
+                console.log(info);
+                console.log(info.event.start);
+
+                $.nette.ajax({
+                    type: "POST",
+                    url: {link moveEvent!},
+                    data: {
+                        {$control->getParameterId('id')}: info.event.id,
+                        {$control->getParameterId('time')}: info.event.start.toISOString(),
+                    },
+                    success: function (payload) {
+
+                        // snippets
+                        if (payload.snippets) {
+                            $.nette.ext('snippets').updateSnippets(payload.snippets);
+                            if (backdrop) {
+                                targetEl.modal({
+                                    show: true
+                                    // backdrop: 'static'
+                                });
+
+                            } else {
+                                targetEl.modal('show');
+                            }
+
+                        }
+
+                    },
+                    fail: function (payload) {
+                        console.log(payload);
+                    }
+                });
+
+
+            },
+            defaultView: 'dayGridMonth',
+            defaultDate: '2019-08-12',
+            minTime: '07:00',
+            maxTime: '22:00',
+            slotDuration: '01:00',
+            locale: 'cs',
+            navLinks: true, // can click day/week names to navigate views
+            editable: true,
+            eventDurationEditable: false,
+            allDaySlot: false,
+            eventLimit: true, // allow "more" link when too many events
+            events: {
+                {*url: '{link getEvents!}',*}
+                url: '?do=calendarControl-getEvents',
+                failure: function() {
+                    // document.getElementById('script-warning').style.display = 'block'
+                }
+            },
+            loading: function(bool) {
+                // document.getElementById('loading').style.display =
+                //     bool ? 'block' : 'none';
+            },
+            neevents: [
+
+
+                {
+                    title: 'All Day Event',
+                    start: '2019-08-01',
+                },
+                {
+                    title: 'Long Event',
+                    rendering: 'background',
+                    color: '#ff9f89',
+                    start: '2019-08-07',
+                    end: '2019-08-10'
+                },
+                {
+                    groupId: 999,
+                    title: 'Repeating Event',
+                    start: '2019-08-09T16:00:00'
+                },
+                {
+                    groupId: 999,
+                    title: 'Repeating Event',
+                    start: '2019-08-16T16:00:00'
+                },
+                {
+                    title: 'Conference',
+                    start: '2019-08-11',
+                    end: '2019-08-13'
+                },
+                {
+                    title: 'Meeting',
+                    start: '2019-08-12T10:30:00',
+                    end: '2019-08-12T12:30:00'
+                },
+                {
+                    title: 'Lunch',
+                    start: '2019-08-12T12:00:00'
+                },
+                {
+                    title: 'Meeting',
+                    start: '2019-08-12T14:30:00'
+                },
+                {
+                    title: 'Happy Hour',
+                    start: '2019-08-12T17:30:00'
+                },
+                {
+                    title: 'Dinner',
+                    start: '2019-08-12T20:00:00'
+                },
+                {
+                    title: 'Birthday Party',
+                    start: '2019-08-13T07:00:00'
+                },
+                {
+                    title: 'Click for Google',
+                    url: 'http://google.com/',
+                    start: '2019-08-28'
+                }
+            ]
+        });
+
+        calendar.render();
+    });
+
+
+
+</script>

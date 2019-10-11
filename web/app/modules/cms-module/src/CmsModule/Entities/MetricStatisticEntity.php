@@ -81,6 +81,11 @@ class MetricStatisticEntity
 //        return $this->blockTime ? $this->blockTime->format('H') : null;
     }
 
+    public function getBlockHour()
+    {
+        return intval($this->blockTime->format('G'));
+    }
+
 
     /**
      * @param DateTime|integer $blockTime

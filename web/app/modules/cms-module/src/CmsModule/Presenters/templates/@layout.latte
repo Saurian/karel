@@ -79,6 +79,14 @@
 		<link href="{$basePath}/assets/owl.carousel/dist/assets/owl.carousel.css" rel="stylesheet" type="text/css" />
 		{*<link href="{$basePath}/plugins/bower_components/owl.carousel/owl.theme.default.css" rel="stylesheet" type="text/css" />*}
 		<link href="{$basePath}/assets/owl.carousel/dist/assets/owl.theme.default.css" rel="stylesheet" type="text/css" />
+
+		{* calendar *}
+		<link href="{$basePath}/assets/fullcalendar/packages/core/main.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/assets/fullcalendar/packages/daygrid/main.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/assets/fullcalendar/packages/timegrid/main.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/assets/fullcalendar/packages/list/main.css" rel="stylesheet" type="text/css" />
+		{* calendar *}
+
 		<!-- Custom CSS -->
 		<link href="{$basePath}/css/spinners.css" rel="stylesheet">
 		<link href="{$basePath}/css/style.css" rel="stylesheet">
@@ -313,6 +321,15 @@
 		<script type="application/javascript" src="{$basePath}/assets/ublaboo-datagrid-5/datagrid-spinners.js"></script>
 		<script type="application/javascript" src="{$basePath}/assets/jquery-ui-sortable/jquery-ui-sortable.js"></script>
 
+		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/core/main.js"></script>
+		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/core/locales/cs.js"></script>
+		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/interaction/main.js"></script>
+		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/daygrid/main.js"></script>
+		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/timegrid/main.js"></script>
+		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/list/main.js"></script>
+
+
+
 
 		<script type="application/javascript" src="{$basePath}/js/popupDialogExtension.js"></script>
 
@@ -331,7 +348,7 @@
 
 
 <script data-pf-placeholder="scripts">
-    (function($, undefined) {
+	(function($, undefined) {
         $(function () {
             $.nette.init();
         });

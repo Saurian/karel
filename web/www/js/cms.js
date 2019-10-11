@@ -443,6 +443,31 @@ $.nette.ext('modalForm', {
 });
 
 
+$.nette.ext('calendarForm', {
+    success: function(payload, status, xhr, settings) {
+
+        console.log(payload);
+        console.log(settings);
+
+
+        // if (settings.nette && settings.nette.isSubmit && settings.nette.form.data('name') == 'userForm') {
+        if (settings.nette && settings.nette.el.is("[data-dismiss='modal']")) {
+            // $(settings.nette.el.closest('.modal')).modal('hide');
+
+            if(typeof(payload.success) != "undefined" && payload.success !== null) {
+                if (payload.success) {
+                    $('.modal.in').modal('hide');
+                }
+
+            } else {
+                $('.modal.in').modal('hide');
+            }
+
+        }
+    }
+});
+
+
 
 $.nette.ext('bs-modal', {
     init: function () {
@@ -520,6 +545,32 @@ $.nette.ext('bs-slider', {
 
         });
 
+    }
+});
+
+
+$.nette.ext('bs-popover', {
+    load: function () {
+        var self = this;
+
+        this.initModalSlider('[data-toggle="popover"]');
+        // this.initModalSlider('[data-toggle="tooltip"]');
+    }
+
+    }, {
+
+    /**
+     * init slider on bootstrap shown
+     * https://seiyria.com/bootstrap-slider/
+     *
+     * data-custom-input-min="inputName"
+     * data-custom-input-max="inputName"
+     *
+     * @param selector
+     */
+    initModalSlider: function (selector) {
+        // $(selector).popover();
+        $(selector).tooltip()
     }
 });
 

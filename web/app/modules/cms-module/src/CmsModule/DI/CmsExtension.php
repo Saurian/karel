@@ -9,6 +9,7 @@
 
 namespace CmsModule\DI;
 
+use CmsModule\Entities\CalendarEntity;
 use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceLogEntity;
 use CmsModule\Entities\DeviceEntity;
@@ -20,7 +21,9 @@ use CmsModule\Entities\MetricParamEntity;
 use CmsModule\Entities\MetricStatisticEntity;
 use CmsModule\Entities\ShopEntity;
 use CmsModule\Entities\TargetGroupEntity;
+use CmsModule\Facades\CalendarFacade;
 use CmsModule\Listeners\MediaDataListener;
+use CmsModule\Repositories\CalendarRepository;
 use CmsModule\Repositories\MetricParamRepository;
 use CmsModule\Repositories\MetricRepository;
 use CmsModule\Repositories\MetricStatisticRepository;
@@ -124,6 +127,10 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             ->setType(MetricStatisticRepository::class)
             ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, MetricStatisticEntity::class);
 
+        $builder->addDefinition($this->prefix('repository.calendar'))
+            ->setType(CalendarRepository::class)
+            ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, CalendarEntity::class);
+
 
         /*
          * facades
@@ -145,6 +152,9 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
 
         $builder->addDefinition($this->prefix('facade.reach'))
             ->setType('CmsModule\Facades\ReachFacade');
+
+        $builder->addDefinition($this->prefix('facade.calendar'))
+            ->setType(CalendarFacade::class);
 
 
 //        $builder->addDefinition($this->prefix('control.environment'))
@@ -183,10 +193,17 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
         $builder->addDefinition($this->prefix('control.flashMessageControlFactory'))
             ->setImplement('CmsModule\Controls\IFlashMessageControlFactory');
 
+        $builder->addDefinition($this->prefix('control.calendarControlFactory'))
+            ->setImplement('CmsModule\Controls\ICalendarControlFactory')
+            ->setInject(true);
+
 
         /*
          * forms
          */
+        $builder->addDefinition($this->prefix('form.baseForm'))
+            ->setImplement('CmsModule\Forms\IBaseForm');
+
         $builder->addDefinition($this->prefix('form.loginForm'))
             ->setImplement('CmsModule\Forms\ILoginFormFactory')
             ->setInject(true);
@@ -202,10 +219,6 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
 
         $builder->addDefinition($this->prefix('form.campaignForm'))
             ->setImplement('CmsModule\Forms\ICampaignFormFactory')
-            ->setInject(true);
-
-        $builder->addDefinition($this->prefix('form.adminTemplateForm'))
-            ->setImplement('CmsModule\Forms\IAdminTemplateFormFactory')
             ->setInject(true);
 
         $builder->addDefinition($this->prefix('form.userForm'))

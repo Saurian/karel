@@ -3,7 +3,11 @@
 
 namespace CmsModule\Entities;
 
-
+/**
+ * Trait TagsTrait
+ * @package CmsModule\Entities
+ * @property   int $tag
+ */
 trait TagsTrait
 {
 
@@ -47,6 +51,15 @@ trait TagsTrait
         $this->tag = in_array($tag, self::$tags) ? $tag : $this->default_tag;
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getTag()
+    {
+        return $this->tag;
+    }
+
 
 
 }

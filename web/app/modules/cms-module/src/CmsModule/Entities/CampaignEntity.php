@@ -17,6 +17,7 @@ use Devrun\Doctrine\Entities\BlameableTrait;
 use Devrun\Doctrine\Entities\DateTimeTrait;
 use Kdyby\Doctrine\Entities\Attributes\Identifier;
 use Kdyby\Doctrine\Entities\MagicAccessors;
+use Nette\SmartObject;
 use Nette\Utils\DateTime;
 
 /**
@@ -68,10 +69,19 @@ class CampaignEntity implements IDeviceEntity
     protected $defaultDevices;
 
     /**
-     * @var DeviceEntity[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity="DeviceEntity", mappedBy="loopCampaign")
+     * @var MetricEntity[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="MetricEntity", inversedBy="campaigns")
+     * @ORM\JoinTable(name="campaigns_metrics")
      */
-    protected $loopDevices;
+    protected $metrics;
+
+    /**
+     * @var UsersGroupEntity
+     * @ORM\ManyToOne(targetEntity="UsersGroupEntity", inversedBy="campaigns")
+     */
+    protected $usersGroups;
+
+
 
     /**
      * @var MediumDataEntity[]|ArrayCollection
@@ -126,7 +136,7 @@ class CampaignEntity implements IDeviceEntity
         $this->devices = new ArrayCollection();
         $this->devicesGroups = new ArrayCollection();
         $this->defaultDevices = new ArrayCollection();
-        $this->loopDevices = new ArrayCollection();
+        $this->metrics = new ArrayCollection();
         $this->mediaData = new ArrayCollection();
         $this->calendars = new ArrayCollection();
     }
@@ -204,6 +214,13 @@ class CampaignEntity implements IDeviceEntity
     }
 
 
+    /**
+     * @return \DateInterval|false
+     */
+    public function getRealizedInterval()
+    {
+        return $this->getRealizedFrom()->diff($this->getRealizedTo());
+    }
 
 
 
@@ -277,6 +294,30 @@ class CampaignEntity implements IDeviceEntity
     {
         if ($this->devicesGroups->contains($deviceGroupEntity)) {
             $this->devicesGroups->removeElement($deviceGroupEntity);
+        }
+    }
+
+
+    public function addMetric(MetricEntity $metricEntity)
+    {
+        if (!$this->metrics->contains($metricEntity)) {
+            $this->metrics->add($metricEntity);
+        }
+    }
+
+    /**
+     * @return MetricEntity[]|ArrayCollection
+     */
+    public function getMetrics()
+    {
+        return $this->metrics;
+    }
+
+
+    public function removeMetric(MetricEntity $metricEntity)
+    {
+        if ($this->metrics->contains($metricEntity)) {
+            $this->metrics->removeElement($metricEntity);
         }
     }
 
@@ -367,27 +408,6 @@ class CampaignEntity implements IDeviceEntity
         return $this->devicesGroups;
     }
 
-    /**
-     * @param TemplateEntity $template
-     *
-     * @return $this
-     */
-    public function setTemplate($template)
-    {
-        $this->template = $template;
-        return $this;
-    }
-
-
-
-
-    /**
-     * @return TemplateEntity
-     */
-    public function getTemplate()
-    {
-        return $this->template;
-    }
 
     /**
      * @return bool

@@ -137,11 +137,7 @@ class DeviceForm extends BaseForm
             ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
             ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
 
-        $this->addCheckbox('active', 'active')
-            ->setDisabled($disAllowed)
-            ->setAttribute('class', 'js-switch')
-            ->setAttribute('data-size', 'small');
-
+        $this->addHidden('active');
 
         $this->addSubmit('sendSubmit', 'save')
             ->setDisabled($disAllowed)

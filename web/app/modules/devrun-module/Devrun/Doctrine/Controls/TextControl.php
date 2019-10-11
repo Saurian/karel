@@ -319,7 +319,12 @@ class TextControl implements IComponentMapper
             /** @var $targetEntity PersistentCollection */
             if ((!($targetEntity = $this->accessor->getValue($entity, $name)) instanceof PersistentCollection) &&
                 (!$targetEntity instanceof ArrayCollection)) {
-                throw new InvalidStateException('Set getter "' . $name . '" in ' . get_class($entity) . " to ArrayCollection");
+
+//                Debugger::barDump($targetEntity);
+//                Debugger::barDump($entity);
+//                Debugger::barDump($name);
+
+//                throw new InvalidStateException('Set getter "' . $name . '" in ' . get_class($entity) . " to ArrayCollection");
             }
 
             $relations = $repository->findAssoc(array());

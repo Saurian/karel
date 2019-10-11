@@ -3,8 +3,8 @@
 namespace CmsModule\Forms;
 
 use CmsModule\Entities\ShopEntity;
+use Devrun\Doctrine\DoctrineForms\IComponentMapper;
 use Nette\Forms\Form;
-use Tracy\Debugger;
 
 interface IShopFormFactory
 {
@@ -33,8 +33,11 @@ class ShopForm extends BaseForm
             ->addRule(Form::MIN_LENGTH, 'ruleMinLength', 4)
             ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 32);
 
-        $this->addHidden('openTime');
-        $this->addHidden('closeTime');
+        $this->addHidden('openTime')
+            ->setOption(IComponentMapper::FIELD_IGNORE, true);
+
+        $this->addHidden('closeTime')
+            ->setOption(IComponentMapper::FIELD_IGNORE, true);
 
         $this->addText('openCloseTimeRange', 'openTime')
             ->setAttribute('data-provide', "slider-range")
@@ -86,11 +89,11 @@ class ShopForm extends BaseForm
         /** @var ShopEntity $entity */
         $entity = $this->getEntity();
 
-        $from = ($entity && $open =$entity->getOpenDayOfWeek())
+        $from = ($entity && $open = $entity->getOpenDayOfWeek())
             ? $open
             : 1;
 
-        $to = ($entity && $close =$entity->getCloseDayOfWeek())
+        $to = ($entity && $close = $entity->getCloseDayOfWeek())
             ? $close
             : 5;
 
@@ -103,16 +106,14 @@ class ShopForm extends BaseForm
      */
     private function getValueTime()
     {
+        $from = 7;
+        $to = 18;
+
         /** @var ShopEntity $entity */
-        $entity = $this->getEntity();
-
-        $from = ($entity && $open =$entity->getOpenTime())
-            ? $open
-            : 7;
-
-        $to = ($entity && $close =$entity->getCloseTime())
-            ? $close
-            : 18;
+        if ($entity = $this->getEntity()) {
+            $from = $entity->getOpenTime() ? $entity->getOpenHour() : $from;
+            $to = $entity->getCloseTime() ? $entity->getCloseHour() : $to;
+        }
 
         return "[$from,$to]";
     }

@@ -361,3 +361,18 @@ select[multiple], select[size] {
   left: 0;
   top: 33px;
 }
+
+.fc th.fc-widget-header {
+  background: #2c5ca9;
+}
+
+.fc-unthemed .fc-today {
+  /*background: #008efa !important;*/
+}
+
+
+
+
+.fc th.fc-widget-header a {
+  color: #fff;
+}

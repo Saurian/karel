@@ -73,6 +73,7 @@ forms:
 		keywordsToggle: více možností
 		template: Vyberte šablonu
 		select: -- vyberte prosím --
+		targetGroups: Cílové skupiny
 
 		ruleMaxLength: vyplňte nejvýše %d znaků
 		ruleRequired: vyplňte prosím toto pole
@@ -359,7 +360,7 @@ campaignPage:
 	add_link: Přidejte link
 	sound: zvuk
 	time: čas
-	template_not_set: šablona není nastavena
+	plan_generated: Plán kampaní byl úspěšně vygenerován do kalendáře
 	recommendation: Doporučení
 	select_template_ready: "Vyberte prosím správně nastavenou šablonu, nebo vytvořte novou."
 	server_uploading: Nahrávání dat
@@ -367,8 +368,6 @@ campaignPage:
 	campaign_updated: "Kampaň `%name%` upravena"
 	campaign_active: kampaň `%name%` je nyní aktivní
 	campaign_non_active: kampaň `%name%` je nyní neaktivní
-	template_added: Vytvořena nová šablona `%name%`
-	template_data_deleted: Smazána data pro šablonu
 	file_deleted: Soubor `%name%` odstraněn
 	upload_error: "Zdá se, že velikost všech nahrávaných souborů přesáhl limit pro přesun dat na server v jednom požadavku.<br>Nahrejte prosím soubory na server ve více požadavcích."
 	max_upload_limit_info: "Nahrejte prosím v jednom požadavku méně souborů najednou. Limit je stanoven na %count%"

@@ -63,15 +63,14 @@ class CampaignForm extends BaseForm
     /** @var DeviceGroupEntity[] */
     private $devicesGroups = [];
 
-    /** @var TemplateEntity[] */
-    private $templates = [];
-
 
     public function create()
     {
 //        if (!$this->campaignEntity) throw new InvalidArgumentException('setCampaignEntity($campaign) first');
 
         $disAllowed = $this->user->isAllowed(CampaignForm::class, 'edit') == false;
+
+        $this->addHidden('active');
 
         $this->addSubmit('sendSubmit', 'save')
             ->setAttribute('class', 'btn btn-success box-list__settings__close js-settingsClose')
@@ -102,12 +101,6 @@ class CampaignForm extends BaseForm
 //            ->setMaxDate($dateTo)
             ->addRule(Form::FILLED, 'ruleCampaignRealization')
             ->addRule(BootstrapDateRangePicker::DATETIME_RANGE, new Phrase('ruleCampaignRealizationRange', NULL, ["from"=> $dateFrom->format('j. n. Y'), 'to' => $dateTo->format('j. n. Y') ]), array($dateFrom, $dateTo));
-
-
-        $this->addCheckbox('active', 'active')
-            ->setDisabled($disAllowed)
-            ->setAttribute('class', 'js-switch')
-            ->setAttribute('data-size', 'small');
 
 
         $devices = $this->addCheckboxList('devices', $this->getTranslator()->translate('devicesLabel'), $this->devices)
@@ -142,6 +135,14 @@ class CampaignForm extends BaseForm
             ->addCondition(Form::BLANK)
             ->addConditionOn($this['devices'], Form::BLANK)
             ->addRule(Form::FILLED, 'ruleDeviceOrGroup');
+
+
+        $this->addCheckboxList('metrics', $this->getTranslator()->translate('targetGroups'))
+            ->setTranslator(null)
+            ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
+            ->setOption(IComponentMapper::ITEMS_FILTER, ['usersGroup' => 1])
+//            ->setAttribute('class', 'tagColor')
+            ->setDisabled($disAllowed);
 
 
 

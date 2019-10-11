@@ -14,11 +14,12 @@ use CmsModule\Controls\CampaignsFilterControl;
 use CmsModule\Controls\FlashMessageControl;
 use CmsModule\Controls\ICampaignFilterTagsControlFactory;
 use CmsModule\Controls\ICampaignsFilterControlFactory;
-use CmsModule\Controls\ITemplateControlFactory;
 use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\MediumDataEntity;
+use CmsModule\Entities\UsersGroupEntity;
+use CmsModule\Facades\CalendarFacade;
 use CmsModule\Facades\CampaignFacade;
 use CmsModule\Facades\DeviceFacade;
 use CmsModule\Facades\MediaDataFacade;
@@ -28,7 +29,6 @@ use CmsModule\Forms\ICampaignFormFactory;
 use CmsModule\Repositories\DeviceGroupRepository;
 use CmsModule\Repositories\DeviceRepository;
 use CmsModule\Repositories\Queries\CampaignQuery;
-use CmsModule\Repositories\TemplateRepository;
 use Devrun\CmsModule\Controls\DataGrid;
 use Devrun\Php\PhpInfo;
 use Kdyby\Doctrine\QueryBuilder;
@@ -57,6 +57,9 @@ class CampaignPresenter extends BasePresenter
     public $campaignFormFactory;
 
 
+    /** @var CalendarFacade @inject */
+    public $calendarFacade;
+
     /** @var CampaignFacade @inject */
     public $campaignFacade;
 
@@ -84,6 +87,27 @@ class CampaignPresenter extends BasePresenter
 
 
     private $editCampaign;
+
+
+    /**
+     * @throws \Nette\Application\AbortException
+     */
+    public function handleGenerateTest()
+    {
+        $usersGroup = $this->userRepository->getEntityManager()->getRepository(UsersGroupEntity::class)->findOneBy(['name' => 'develop-cms.pixatori.com']);
+
+        $this->calendarFacade->generate($usersGroup);
+
+        $translator = $this->translateMessage();
+        $title      = $translator->translate('campaignPage.management');
+        $this->flashMessage($translator->translate("campaignPage.plan_generated"), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+        $this->ajaxRedirect('this', 'calendarControl', 'flash');
+
+        /**
+         * @todo prevent redirect
+         */
+        $this->redirect('this');
+    }
 
 
     /**
@@ -211,6 +235,11 @@ class CampaignPresenter extends BasePresenter
     }
 
 
+    public function handleCalendarCalc()
+    {
+        dump("ASDD");
+        die(__METHOD__);
+    }
 
 
     public function actionInit()
@@ -385,7 +414,7 @@ class CampaignPresenter extends BasePresenter
      *
      * @return \CmsModule\Forms\CampaignForm
      */
-    protected function createComponentCampaignForm($name)
+    protected function createComponentCampaignForm()
     {
         $devices       = $this->getDevices();
         $devicesGroups = $this->getDevicesGroups();
@@ -458,7 +487,13 @@ class CampaignPresenter extends BasePresenter
                         $entity->removeDeviceGroup($devicesGroup);
                     }
                 }
+                foreach ($entity->getMetrics() as $metricEntity) {
+                    if (! in_array($metricEntity->getId(), (array) $values->metrics)) {
+                        $entity->removeMetric($metricEntity);
+                    }
+                }
 
+//                Debugger::barDump($values);
 //                Debugger::barDump($entity);
 
                 $this->campaignFacade->getEntityManager()->persist($entity)->flush();
@@ -742,7 +777,8 @@ class CampaignPresenter extends BasePresenter
             ->addSelect('c')
             ->join('e.campaign', 'c')
             ->where('c.id = :campaign')->setParameter('campaign', $this->campaign)
-            ->addOrderBy('e.position');
+//            ->addOrderBy('e.position')
+        ;
 
         $grid->setDataSource($model);
 
@@ -919,9 +955,18 @@ class CampaignPresenter extends BasePresenter
     }
 
 
+    /**
+     * @param $name
+     * @return \CmsModule\Controls\CalendarControl
+     */
+    protected function createComponentCalendarControl()
+    {
+        $control = $this->calendarFacade->getCalendarControl()->create();
 
+        $control->setUsersGroupEntity($this->userEntity->getGroup());
 
-
+        return $control;
+    }
 
 
     protected function createComponentMediaForm()

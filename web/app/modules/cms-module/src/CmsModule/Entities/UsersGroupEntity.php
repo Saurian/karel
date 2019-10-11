@@ -65,6 +65,19 @@ class UsersGroupEntity
      */
     protected $metrics;
 
+    /**
+     * @var CalendarEntity[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="CalendarEntity", mappedBy="usersGroups", cascade={"persist"})
+     */
+    protected $calendars;
+
+    /**
+     * @var CampaignEntity[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="CampaignEntity", mappedBy="usersGroups", cascade={"persist"})
+     */
+    protected $campaigns;
+
+
 
 
     /**
@@ -75,6 +88,8 @@ class UsersGroupEntity
         $this->users = new ArrayCollection();
         $this->targets = new ArrayCollection();
         $this->shops = new ArrayCollection();
+        $this->campaigns = new ArrayCollection();
+        $this->calendars = new ArrayCollection();
         $this->metricParams = new ArrayCollection();
     }
 

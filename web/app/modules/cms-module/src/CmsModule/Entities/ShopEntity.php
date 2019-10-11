@@ -102,11 +102,20 @@ class ShopEntity
     }
 
     /**
-     * @return string
+     * @return \DateTime
      */
     public function getOpenTime()
     {
-        return $this->openTime ? $this->openTime->format('G') : null;
+        return $this->openTime;
+//        return $this->openTime ? $this->openTime->format('G') : null;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOpenHour()
+    {
+        return intval($this->openTime->format('G'));
     }
 
     /**
@@ -126,11 +135,20 @@ class ShopEntity
 
 
     /**
-     * @return string
+     * @return \DateTime
      */
     public function getCloseTime()
     {
-        return $this->closeTime ? $this->closeTime->format('G') : null;
+        return $this->closeTime;
+//        return $this->closeTime ? $this->closeTime->format('G') : null;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCloseHour()
+    {
+        return intval($this->closeTime->format('G'));
     }
 
     /**

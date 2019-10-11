@@ -75,11 +75,19 @@ class MetricEntity
     protected $metricStatistics;
 
     /**
+     * @var CampaignEntity[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="CampaignEntity", mappedBy="metrics")
+     */
+    protected $campaigns;
+
+
+    /**
      * MetricEntity constructor.
      * @param MetricStatisticEntity[]|ArrayCollection $metricStatistics
      */
     public function __construct()
     {
+        $this->campaigns = new ArrayCollection();
         $this->metricStatistics = new ArrayCollection();
     }
 
