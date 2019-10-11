@@ -429,6 +429,24 @@ class CampaignEntity implements IDeviceEntity
         return $this;
     }
 
+    /**
+     * @return UsersGroupEntity
+     */
+    public function getUsersGroups(): UsersGroupEntity
+    {
+        return $this->usersGroups;
+    }
+
+    /**
+     * @param UsersGroupEntity $usersGroups
+     * @return CampaignEntity
+     */
+    public function setUsersGroups(UsersGroupEntity $usersGroups): CampaignEntity
+    {
+        $this->usersGroups = $usersGroups;
+        return $this;
+    }
+
 
 
 

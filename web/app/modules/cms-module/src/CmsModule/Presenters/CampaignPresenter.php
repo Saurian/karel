@@ -420,36 +420,24 @@ class CampaignPresenter extends BasePresenter
      */
     protected function createComponentCampaignForm()
     {
+        $entity        = null;
         $devices       = $this->getDevices();
         $devicesGroups = $this->getDevicesGroups();
-//        $templates     = $this->templateRepository->getTemplates($this->user);
 
-        $entity = $this->campaign
-            ? $this->campaignFacade->getRepository()->find($this->campaign)
-            : new CampaignEntity();
-
-/*        $devicesSelect= [];
-
-        foreach ($entity->getDevices() as $device) {
-            $devicesSelect[] = $device->getId();
+        if ($this->campaign) {
+            $entity = $this->campaignFacade->getRepository()->find($this->campaign);
         }
-
-        $devicesGroupsSelect= [];
-
-        foreach ($entity->getDevicesGroups() as $devicesGroup) {
-            $devicesGroupsSelect[] = $devicesGroup->getId();
-        }*/
-
-
+        if (!$entity) {
+            $entity = new CampaignEntity();
+            $entity->setUsersGroups($this->userEntity->getGroup());
+        }
 
 
         $form = $this->campaignFormFactory->create();
         $form
             ->setTranslator($this->translator->domain("messages.forms.campaignsDetailForm"))
             ->setFormName("campaignForm")
-//            ->setCampaignEntity($entity)
             ->setUserEntity($this->userEntity)
-//            ->setTemplates($templates)
             ->setDevices($devices)
             ->setDevicesGroups($devicesGroups);
 
@@ -496,9 +484,6 @@ class CampaignPresenter extends BasePresenter
                         $entity->removeMetric($metricEntity);
                     }
                 }
-
-//                Debugger::barDump($values);
-//                Debugger::barDump($entity);
 
                 $this->campaignFacade->getEntityManager()->persist($entity)->flush();
 
