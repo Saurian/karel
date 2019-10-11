@@ -11,6 +11,7 @@ use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Repositories\CalendarRepository;
 use CmsModule\Repositories\CampaignRepository;
 use CmsModule\Repositories\ShopRepository;
+use Exception;
 use Kdyby\Doctrine\EntityManager;
 use Nette\DateTime;
 use Nette\SmartObject;
@@ -49,6 +50,7 @@ class CalendarFacade
      * @param CalendarRepository $calendarRepository
      * @param ShopRepository $shopRepository
      * @param CampaignRepository $campaignRepository
+     * @param ICalendarControlFactory $calendarControl
      */
     public function __construct(EntityManager $entityManager, CalendarRepository $calendarRepository, ShopRepository $shopRepository,
                                 CampaignRepository $campaignRepository, ICalendarControlFactory $calendarControl)
@@ -95,7 +97,7 @@ class CalendarFacade
 
     /**
      * @param UsersGroupEntity $usersGroupEntity
-     * @throws \Exception
+     * @throws Exception
      */
     public function generate(UsersGroupEntity $usersGroupEntity)
     {
@@ -140,7 +142,7 @@ class CalendarFacade
 
     /**
      * @param UsersGroupEntity $usersGroupEntity
-     * @throws \Exception
+     * @throws Exception
      */
     public function clearCalendar(UsersGroupEntity $usersGroupEntity)
     {

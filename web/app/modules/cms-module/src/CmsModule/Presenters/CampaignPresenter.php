@@ -94,14 +94,20 @@ class CampaignPresenter extends BasePresenter
      */
     public function handleGenerateTest()
     {
-        $usersGroup = $this->userRepository->getEntityManager()->getRepository(UsersGroupEntity::class)->findOneBy(['name' => 'develop-cms.pixatori.com']);
-
-        $this->calendarFacade->generate($usersGroup);
-
         $translator = $this->translateMessage();
-        $title      = $translator->translate('campaignPage.management');
-        $this->flashMessage($translator->translate("campaignPage.plan_generated"), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
-        $this->ajaxRedirect('this', 'calendarControl', 'flash');
+
+        if ($usersGroup = $this->userEntity->getGroup()) {
+            $this->calendarFacade->generate($usersGroup);
+
+            $title      = $translator->translate('campaignPage.management');
+            $this->flashMessage($translator->translate("campaignPage.plan_generated"), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+            $this->ajaxRedirect('this', 'calendarControl', 'flash');
+
+        } else {
+            $title      = $translator->translate('campaignPage.management');
+            $this->flashMessage($translator->translate("campaignPage.user_group_not_found"), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_WARNING);
+            $this->ajaxRedirect('this', 'calendarControl', 'flash');
+        }
 
         /**
          * @todo prevent redirect

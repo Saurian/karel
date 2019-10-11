@@ -373,6 +373,7 @@ campaignPage:
 	max_upload_limit_info: "Nahrejte prosím v jednom požadavku méně souborů najednou. Limit je stanoven na %count%"
 	form_has_error: "Formulář kampaně <strong class='text-bold'>%name%:</strong><br> obsahuje chyby:<br>%errors%"
 	device_not_found: "Před vytvořením kampaně je potřeba nejdříve vytvořit zařízení, na kterém se bude kampaň zobrazovat."
+	user_group_not_found: Váš uživatelský účet nemá přiřazenu skupinu uživatelů
 
 	medium:
 	    unsupported: "Médium `%media%` se nepodařilo nahrát, ověřte prosím typ souboru.|Média `%media%` se nepodařilo nahrát, ověřte prosím jejich typ."
