@@ -366,8 +366,10 @@ campaignPage:
 	server_uploading: Nahrávání dat
 	campaign_added: "Nová kampaň %name% vytvořena"
 	campaign_updated: "Kampaň `%name%` upravena"
+	campaign_removed: "Kampaň `%name%` smazána"
 	campaign_active: kampaň `%name%` je nyní aktivní
 	campaign_non_active: kampaň `%name%` je nyní neaktivní
+	campaign_not_found: kampaň `%id%` nenalezena
 	file_deleted: Soubor `%name%` odstraněn
 	upload_error: "Zdá se, že velikost všech nahrávaných souborů přesáhl limit pro přesun dat na server v jednom požadavku.<br>Nahrejte prosím soubory na server ve více požadavcích."
 	max_upload_limit_info: "Nahrejte prosím v jednom požadavku méně souborů najednou. Limit je stanoven na %count%"

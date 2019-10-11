@@ -18,7 +18,6 @@ use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\MediumDataEntity;
-use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Facades\CalendarFacade;
 use CmsModule\Facades\CampaignFacade;
 use CmsModule\Facades\DeviceFacade;
@@ -39,7 +38,6 @@ use Nette\Http\FileUpload;
 use Nette\Utils\DateTime;
 use Nette\Utils\Html;
 use Nette\Utils\Validators;
-use Tracy\Debugger;
 use Ublaboo\ImageStorage\ImageStoragePresenterTrait;
 
 class CampaignPresenter extends BasePresenter
@@ -1127,8 +1125,24 @@ class CampaignPresenter extends BasePresenter
 
     public function handleDeleteCampaign($id)
     {
+        $translator = $this->translateMessage();
 
+        /** @var CampaignEntity $entity */
+        if (!$entity = $this->campaignFacade->getRepository()->find($id)) {
+            $title = $translator->translate('campaignPage.management');
+            $message = $translator->translate('campaignPage.campaign_not_found', null, ['id' => $id]);
+            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_WARNING);
+            $this->ajaxRedirect('this', null, 'flash');
 
+        } else {
+            $this->campaignFacade->removeMediaFromCampaign($entity);
+            $this->campaignFacade->getEntityManager()->remove($entity)->flush();
+
+            $title = $translator->translate('campaignPage.management');
+            $message = $translator->translate('campaignPage.campaign_removed', null, ['name' => $entity->getName()]);
+            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
+            $this->ajaxRedirect('this', 'campaignGridControl', ['flash']);
+        }
     }
 
 
