@@ -383,6 +383,12 @@ campaignPage:
 	    not_found: médium nenalezeno
 	    removed: médium %name% smazáno
 
+	calendar:
+		title: Naplánované kampaně
+		newEvent: Přídat do kalendáře
+		removeEvent: Odstranit kampaň z kalendáře
+		moved: položka %name% upravena
+
 	filter:
 		set: Nastaven filtr
 		setActives: Nastaven filtr `Správa aktivních kampaní`

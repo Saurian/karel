@@ -99,12 +99,12 @@ class CampaignPresenter extends BasePresenter
 
             $title      = $translator->translate('campaignPage.management');
             $this->flashMessage($translator->translate("campaignPage.plan_generated"), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
-            $this->ajaxRedirect('this', 'calendarControl', 'flash');
+            $this->ajaxRedirect('this', null, 'flash');
 
         } else {
             $title      = $translator->translate('campaignPage.management');
             $this->flashMessage($translator->translate("campaignPage.user_group_not_found"), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_WARNING);
-            $this->ajaxRedirect('this', 'calendarControl', 'flash');
+            $this->ajaxRedirect('this', null, 'flash');
         }
 
         /**

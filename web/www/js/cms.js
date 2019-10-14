@@ -443,31 +443,145 @@ $.nette.ext('modalForm', {
 });
 
 
-$.nette.ext('calendarForm', {
-    success: function(payload, status, xhr, settings) {
+$.nette.ext('calendar', {
 
-        console.log(payload);
-        console.log(settings);
+    /**
+     * autoload calendar
+     */
+    load: function() {
+        if ($(this.selector).length > 0) {
 
-
-        // if (settings.nette && settings.nette.isSubmit && settings.nette.form.data('name') == 'userForm') {
-        if (settings.nette && settings.nette.el.is("[data-dismiss='modal']")) {
-            // $(settings.nette.el.closest('.modal')).modal('hide');
-
-            if(typeof(payload.success) != "undefined" && payload.success !== null) {
-                if (payload.success) {
-                    $('.modal.in').modal('hide');
-                }
-
-            } else {
-                $('.modal.in').modal('hide');
+            if (!this.calendarIsLoaded()) {
+                this.initCalendar();
             }
+        }
+    },
 
+    /**
+     * refresh calendar after ajax send calendar_refresh in payload
+     *
+     * @param payload
+     * @param status
+     * @param xhr
+     * @param settings
+     */
+    success: function(payload, status, xhr, settings) {
+        if ($(this.selector).length > 0 && this.calendarIsLoaded()) {
+            if (settings.nette && settings.nette.isSubmit) {
+                if (payload.calendar_refresh && payload.calendar_refresh === true) {
+                    this.calendar.refetchEvents();
+                }
+                if (payload.modal_hide) {
+                    $(payload.modal_hide).modal('hide');
+                }
+            }
         }
     }
+
+}, {
+
+    selector: '#calendar',
+    calendar: null,
+    eventsLink: null,
+    moveEventLink: null,
+    moveParamIdName: null,
+    moveParamTimeName: null,
+
+    calendarIsLoaded: function () {
+        return $(this.selector).children().length > 0;
+    },
+    initCalendar: function () {
+        var calendarEl = $('#calendar').get(0);
+        var self = this;
+
+        this.calendar = new FullCalendar.Calendar(calendarEl, {
+            plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+            timeZone: 'UTC',
+            height: 'parent',
+            handleWindowResize: false,
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+            },
+
+            /**
+             * click to empty calendar item (new event)
+             *
+             * @param info
+             */
+            dateClick: function(info) {
+                $('#frm-calendarControl-newEvent').find('[name="datetime"]').val(info.dateStr);
+                $('#newEventModal').modal({ show: 'true' });
+            },
+
+            /**
+             * click to existing calendar item (edit event)
+             *
+             * @param info
+             */
+            eventClick: function(info) {
+                var form = $('#frm-calendarControl-editEvent');
+
+                $(form).find('[name="id"]').val(info.event.id);
+                $(form).find('[name="name"]').val(info.event.title);
+                $(form).find('[name="time"]').val(info.event.start.toDateString() + " " + info.event.start.toLocaleTimeString());
+
+                $('#editEventModal').modal({ show: 'true' });
+            },
+
+            /**
+             * move event
+             *
+             * @param info
+             */
+            eventDrop: function (info) {
+                var data = {};
+                data[self.moveParamIdName] = info.event.id;
+                data[self.moveParamTimeName] = info.event.start.toISOString();
+
+                $.nette.ajax({
+                    type: "POST",
+                    url: self.moveEventLink,
+                    data: data,
+                    success: function (payload) {
+                        // snippets
+                        if (payload.snippets) {
+                            // $.nette.ext('snippets').updateSnippets(payload.snippets);
+                        }
+                    },
+                    fail: function (payload) {
+                        console.log(payload);
+                    }
+                });
+            },
+
+            defaultView: 'dayGridMonth',
+            defaultDate: '2019-08-12',
+            minTime: '07:00',
+            maxTime: '22:00',
+            slotDuration: '01:00',
+            locale: 'cs',
+            navLinks: true, // can click day/week names to navigate views
+            editable: true,
+            eventDurationEditable: false,
+            allDaySlot: false,
+            eventLimit: true, // allow "more" link when too many events
+            events: {
+                url: this.eventsLink,
+                failure: function() {
+                    // document.getElementById('script-warning').style.display = 'block'
+                }
+            },
+            loading: function(bool) {
+                // document.getElementById('loading').style.display = bool ? 'block' : 'none';
+            }
+
+        });
+
+        this.calendar.render();
+    }
 });
-
-
 
 $.nette.ext('bs-modal', {
     init: function () {
