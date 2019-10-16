@@ -312,7 +312,7 @@ userPage:
 
 reachPage:
 	title: Cílové skupiny - data z prodejen
-	navigation: Navigace
+	navigation: Cílové skupiny - data z prodejen
 	management: Data z prodejen
 
 	shop:
@@ -352,7 +352,7 @@ campaignPage:
 	newDevice: Nové zařízení
 	newDeviceGroup: Nová skupina
 	filter_delete: Smazat filtr kampaně
-	navigation: Navigace
+	navigation: Kampaně
 	active: Aktivní
 	plan_from: Naplánováno od %from% - %to%
 	add_new_template: Přidat novou šablonu
@@ -385,6 +385,8 @@ campaignPage:
 
 	calendar:
 		title: Naplánované kampaně
+		linkName: Kalendář
+		generateLinkName: Generovat plán
 		newEvent: Přídat do kalendáře
 		removeEvent: Odstranit kampaň z kalendáře
 		moved: položka %name% upravena
@@ -395,13 +397,21 @@ campaignPage:
 		setNonActives: Nastaven filtr `Správa neaktivních kampaní`
 		setAll: Nastaven filtr `Správa všech kampaní`
 
+calendarPage:
+	title: Kalendář
+	management: Správa kalendáře
+	campaignsLink: Kampaně
+	navigation: Kalendář
+
+
+
 
 
 # devices page
 devicePage:
 	title: Zařízení - skupiny zařízení
 	management: Správa zařízení
-	navigation: Navigace
+	navigation: Zařízení - skupiny zařízení
 	active: Aktivní
 	addDevice: Přidat zařízení
 	addNewDevice: Přidat nové zařízení
@@ -473,41 +483,3 @@ apiPage:
 		title: wifi přístupy
 		text: "log id: %id% smazán"
 
-# template page/control
-template:
-	templates: Šablony
-	management: Správa šablon
-	editing_media_templates: Editace médií šablony
-	create_a_new_media_template: Vytvoření nové šablony médií
-	cancel_add: Zrušit přidání
-
-	mediaCount: Celkem jedno médium|Celkem %count% média|Celkem %count% médií
-	campaignCount: Celkem jedna kampaň|Celkem %count% kampaně|Celkem %count% kmapaní
-
-	template_not_found: Šablona nenalezena
-	media_type_not_found: Typ media nenalezen
-	template_deleted: Šablona smazána
-	medium_deleted: Medium smazáno
-
-	detail:
-	 	title: detail šablony
-	 	record_inserted: Záznam vložen
-	 	medium_type: Typ média
-
-	templateGrid:
-		id: ID
-		inserted: Vytvořena
-		name: Název
-		createdBy: Uživatelem
-		media: Media
-		campaigns: Kampaně
-		delete_confirmation: "Opravdu chcete smazat šablonu [id: %d%]?"
-
-	mediaGrid:
-		type: Typ
-		name: Popis
-		image: " obrázek formátu jpg, png, gif"
-		zip: " soubor formátu zip"
-		url: " url adresa"
-		video: " video mp4, quicktime, msvideo, wmv"
-		delete_confirmation: "Opravdu chcete smazat medium [id: %d%]?"

@@ -40,11 +40,27 @@ class CalendarControl extends Control
     private $usersGroupEntity;
 
 
+    /**
+     * render modal
+     */
     public function render()
     {
         $template = $this->getTemplate();
+        $template->renderType = 'modal';
         $template->render();
     }
+
+    /**
+     * render normal
+     */
+    public function renderNormal()
+    {
+        $template = $this->getTemplate();
+        $template->renderType = 'normal';
+        $template->campaigns = $this->campaignRepository->findBy(['usersGroups' => $this->usersGroupEntity]);
+        $template->render();
+    }
+
 
     /**
      * @param $start
@@ -69,11 +85,58 @@ class CalendarControl extends Control
                 'title' => $record->getCampaign()->getName(),
                 'start' => $record->getDatetime()->format('Y-m-d H:i'),
 //                'end' => $record->getDatetime()->format('Y-m-d'),
+                'classNames' => [$record->getCampaign()->getTag() ? $record->getCampaign()->getTag() : 'tagNo'],
             ];
         }
 
         $this->getPresenter()->sendResponse(new \Nette\Application\Responses\JsonResponse($result));
     }
+
+    /**
+     * add campaign event
+     *
+     * @param CampaignEntity $id
+     * @param string $time
+     * @throws \Nette\Application\AbortException
+     */
+    public function handleNewEvent($id, $time)
+    {
+        /** @var BasePresenter $presenter */
+        $presenter = $this->getPresenter();
+
+        if (!$id || !$time) {
+            if ($this->presenter->isAjax()) {
+                $presenter->payload->move_event = false;
+                $presenter->sendPayload();
+            }
+
+            return;
+        }
+
+        /** @var CampaignEntity $campaignEntity */
+        if ($campaignEntity = $this->campaignRepository->find($id)) {
+
+            try {
+                $calendarEntity = $this->createCalendarEntity($campaignEntity, $time);
+                $this->calendarRepository->getEntityManager()->persist($calendarEntity)->flush();
+
+                $translator = $presenter->translateMessage();
+                $title      = $translator->translate('campaignPage.management');
+                $message    = $translator->translate('campaignPage.calendar.moved', null, ['name' => $campaignEntity->getName()]);
+                $presenter->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_CAMPAIGN_EDIT_SUCCESS);
+
+                $presenter->payload->calendar_refresh = true;
+                $presenter->sendPayload();
+
+
+            } catch (\Exception $e) {
+                Debugger::log($e, ILogger::WARNING);
+            }
+        }
+
+        $presenter->ajaxRedirect('this', null, 'flash');
+    }
+
 
     /**
      * @param $id
@@ -136,13 +199,7 @@ class CalendarControl extends Control
 
             /** @var CampaignEntity $campaignEntity */
             if ($campaignEntity = $this->campaignRepository->find($values->campaign)) {
-                $datetime = new \DateTime($values->datetime);
-
-                if ($datetime->format('H:i') == '00:00') {
-                    $datetime->setTime(7, 0);
-                }
-
-                $calendarEntity = new CalendarEntity($campaignEntity, $this->usersGroupEntity, $datetime);
+                $calendarEntity = $this->createCalendarEntity($campaignEntity, $values->datetime);
                 $this->calendarRepository->getEntityManager()->persist($calendarEntity)->flush();
             }
 
@@ -157,6 +214,26 @@ class CalendarControl extends Control
         };
 
         return $form;
+    }
+
+
+    /**
+     * @param CampaignEntity $campaignEntity
+     * @param $dt
+     * @throws \Exception
+     *
+     * @return CalendarEntity
+     */
+    private function createCalendarEntity(CampaignEntity $campaignEntity, $dt)
+    {
+        $datetime = new \DateTime($dt);
+
+        if ($datetime->format('H:i') == '00:00') {
+            $datetime->setTime(7, 0);
+        }
+
+        $calendarEntity = new CalendarEntity($campaignEntity, $this->usersGroupEntity, $datetime);
+        return $calendarEntity;
     }
 
 

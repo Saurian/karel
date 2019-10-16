@@ -4,167 +4,6 @@
  * copy from coffee generated
  */
 
-$.nette.ext('toggle_detail', {
-    init: function () {
-
-        $("body").on("click", ".dd-item-backgroundWrap, .item-detail-content button.close", function(e){
-
-            // console.log("Detail close");
-
-            root = $('.dd-item.open-detail');
-            head_detail = root.find('.box-list');
-            row_detail = root.find('.item-detail-content');
-
-//            row_detail.toggleClass('toggled');
-
-//            row_detail.slideToggle('fast');
-//            head_detail.slideToggle('fast');
-
-            // $(this).fadeOut("fast");
-            root.removeClass("open-detail").removeClass("opening-detail");
-            $('#wrapper').removeClass('modal-detail-open').removeClass('modal-detail-open');
-        });
-
-
-        $(".js-settingsClose, .dd-item-backgroundWrap").click(function(){
-        });
-
-    },
-
-    before: function(xhr, settings) {
-
-        var id, row_detail, root;
-        if (settings.nette && settings.nette.el.attr('data-toggle-item-detail')) {
-            var el = settings.nette.el;
-
-            // console.log("before");
-
-            /*
-             * hide all previous opened details
-             */
-            $('.dd-item.open-detail').each(function (index) {
-
-                var head_detail = $(this).find('.box-list');
-                var row_detail = $(this).find('.item-detail-content');
-
-                // row_detail.slideUp('fast').toggleClass('toggled');
-                // head_detail.slideDown('fast');
-                // $(this).find('.dd-item-backgroundWrap').fadeOut("fast");
-
-                // self.fadeOut("fast");
-                $(this).removeClass("open-detail").removeClass('opening-detail');
-                return;
-
-                // $(this).find('.row-item-detail').slideUp();
-                // $(this).find('.activ-controler').fadeIn();
-
-                // $(this).find('.dd-handle').fadeIn();
-                // $(this).find('.js-preview').slideDown();
-                // $(this).find('.dd-item-backgroundWrap').fadeOut("fast");
-                $(this).removeClass('open-detail').removeClass('opening-detail');
-            });
-
-            id = el.attr('data-toggle-item-detail');
-            root = el.closest('.dd-item');
-            row_detail = $(root).find('.item-detail-' + id);
-
-            // $('#wrapper').removeClass('modal-detail-open');
-
-            // console.log(row_detail);
-            // console.log(el);
-            // console.log(root);
-
-
-
-
-            // console.log(el.next('.js-preview'));
-
-
-            // $(el).next('.js-preview').slideToggle();
-            // $(el).closest(".dd-item").find(".activ-controler").fadeToggle();
-            // $(el).closest(".dd-item").find(".dd-handle").fadeToggle();
-
-
-            // $(this).parent().find(".js-settings").slideToggle();
-
-            // $(this).closest(".dd-item").toggleClass("active");
-            // $(this).closest(".dd-item").find(".activ-controler").fadeToggle();
-            // $(this).closest(".dd-item").find(".dd-handle").fadeToggle();
-            // $(this).closest(".dd-item").find(".dd-item-backgroundWrap").fadeToggle("fast");
-
-
-
-
-
-            // row_detail.show();
-
-
-            if (row_detail.hasClass('_loaded')) {
-                console.log("Je loaded");
-
-
-
-                if (!row_detail.find('.item-detail-content').length) {
-                    row_detail.closest('.dd-item').removeClass('open-detail');
-                    row_detail.removeClass('toggled');
-                    return true;
-                }
-                if (row_detail.hasClass('toggled')) {
-                    row_detail.find('.item-detail-content').slideToggle('fast', (function(_this) {
-                        return function() {
-                            row_detail.closest('.dd-item').toggleClass('open-detail');
-                            return row_detail.toggleClass('toggled');
-                        };
-                    })(this));
-                } else {
-                    row_detail.toggleClass('toggled');
-                    row_detail.closest('.dd-item').toggleClass('open-detail');
-                    row_detail.find('.item-detail-content').slideToggle('fast');
-                }
-                return false;
-            } else {
-                // console.log("Není load class");
-
-                // console.log(row_detail.closest('.dd-item'));
-
-                $('#wrapper').addClass('modal-detail-opening');
-
-                root.addClass('opening-detail');
-                return row_detail.addClass('loading');
-            }
-
-        }
-    },
-    success: function(payload, status, xhr, settings) {
-        // console.log(settings);
-
-        if (payload._toggle_detail) {
-
-            console.log("success detail");
-
-            id = payload._toggle_detail;
-            row_detail = $('.item-detail-' + id);
-            root = row_detail.closest('.dd-item');
-            head_detail = root.find('.box-list');
-
-
-            $('#wrapper').addClass('modal-detail-open').removeClass('modal-detail-opening');
-            root.addClass("open-detail").removeClass('opening-detail');
-            row_detail.removeClass('loading').addClass('loaded').toggleClass('toggled');
-
-            $('html, body').animate({
-                scrollTop: $(root).offset().top-50
-            }, 800);
-
-        }
-        if (payload._filter_toggle) {
-            $('.dd-item.open-detail').removeClass("open-detail");
-            $('#wrapper').removeClass('modal-detail-open');
-        }
-    }
-});
-
-
 
 /**
  * scroll to item id
@@ -483,14 +322,31 @@ $.nette.ext('calendar', {
     selector: '#calendar',
     calendar: null,
     eventsLink: null,
+    newEventLink: null,
     moveEventLink: null,
-    moveParamIdName: null,
-    moveParamTimeName: null,
+    paramIdName: null,
+    paramTimeName: null,
 
     calendarIsLoaded: function () {
         return $(this.selector).children().length > 0;
     },
     initCalendar: function () {
+        var Calendar = FullCalendar.Calendar;
+        var Draggable = FullCalendarInteraction.Draggable;
+
+        /* initialize the external events
+        -----------------------------------------------------------------*/
+        var containerEl = document.getElementById('calendar-events');
+        new Draggable(containerEl, {
+            itemSelector: '.fc-event',
+            eventData: function(eventEl) {
+                return {
+                    title: eventEl.innerText.trim()
+                }
+            }
+        });
+
+
         var calendarEl = $('#calendar').get(0);
         var self = this;
 
@@ -537,8 +393,8 @@ $.nette.ext('calendar', {
              */
             eventDrop: function (info) {
                 var data = {};
-                data[self.moveParamIdName] = info.event.id;
-                data[self.moveParamTimeName] = info.event.start.toISOString();
+                data[self.paramIdName] = info.event.id;
+                data[self.paramTimeName] = info.event.start.toISOString();
 
                 $.nette.ajax({
                     type: "POST",
@@ -556,6 +412,50 @@ $.nette.ext('calendar', {
                 });
             },
 
+
+            /**
+             * remove add event will be refresh from db
+             *
+             * @param info
+             */
+            eventReceive: function (info) {
+                info.event.remove();
+            },
+
+
+            /**
+             * add event
+             *
+             * @param info
+             */
+            drop: function(info) {
+
+                var data = {};
+                data[self.paramIdName] = $(info.draggedEl).data('id');
+                data[self.paramTimeName] = info.dateStr;
+
+                $.nette.ajax({
+                    type: "POST",
+                    url: self.newEventLink,
+                    data: data,
+                    success: function (payload) {
+
+                        if (payload.calendar_refresh && payload.calendar_refresh === true) {
+                            self.calendar.refetchEvents();
+                        }
+
+                        // snippets
+                        if (payload.snippets) {
+                            // $.nette.ext('snippets').updateSnippets(payload.snippets);
+                        }
+                    },
+                    fail: function (payload) {
+                        console.log(payload);
+                    }
+                });
+            },
+
+
             defaultView: 'dayGridMonth',
             defaultDate: '2019-08-12',
             minTime: '07:00',
@@ -565,6 +465,7 @@ $.nette.ext('calendar', {
             navLinks: true, // can click day/week names to navigate views
             editable: true,
             eventDurationEditable: false,
+            droppable: true, // this allows things to be dropped onto the calendar
             allDaySlot: false,
             eventLimit: true, // allow "more" link when too many events
             events: {

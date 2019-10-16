@@ -11,9 +11,9 @@ namespace CmsModule\DI;
 
 use CmsModule\Entities\CalendarEntity;
 use CmsModule\Entities\CampaignEntity;
-use CmsModule\Entities\DeviceLogEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
+use CmsModule\Entities\DeviceLogEntity;
 use CmsModule\Entities\LogEntity;
 use CmsModule\Entities\MediumDataEntity;
 use CmsModule\Entities\MetricEntity;
@@ -21,6 +21,7 @@ use CmsModule\Entities\MetricParamEntity;
 use CmsModule\Entities\MetricStatisticEntity;
 use CmsModule\Entities\ShopEntity;
 use CmsModule\Entities\TargetGroupEntity;
+use CmsModule\Entities\UserEntity;
 use CmsModule\Facades\CalendarFacade;
 use CmsModule\Listeners\MediaDataListener;
 use CmsModule\Repositories\CalendarRepository;
@@ -31,7 +32,6 @@ use CmsModule\Repositories\ShopRepository;
 use CmsModule\Repositories\TargetGroupRepository;
 use Flame\Modules\Providers\IPresenterMappingProvider;
 use Flame\Modules\Providers\IRouterProvider;
-use CmsModule\Entities\UserEntity;
 use Kdyby\Doctrine\DI\IEntityProvider;
 use Kdyby\Doctrine\DI\OrmExtension;
 use Kdyby\Events\DI\EventsExtension;
@@ -406,9 +406,10 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             'action'    => [
                 Route::VALUE        => 'default',
                 Route::FILTER_TABLE => array(
+                    'kalendar'         => 'calendar',
                     'novy-uzivatel'    => 'newUser',
                     'zapomenute-heslo' => 'forgottenPassword',
-                    'zmena-hesla' => 'changePassword',
+                    'zmena-hesla'      => 'changePassword',
                 ),
             ]
         ));

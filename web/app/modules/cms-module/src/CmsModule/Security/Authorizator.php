@@ -70,7 +70,7 @@ class Authorizator extends Permission
         $this->allow('watcher', 'Cms:Users', ['default', 'listThisUsers', 'listByDevicesUser']);
         $this->allow('watcher', 'Cms:Device', ['default']);
         $this->allow('watcher', 'Cms:DeviceGroup', ['default']);
-        $this->allow('watcher', 'Cms:Campaign', ['default']);
+        $this->allow('watcher', 'Cms:Campaign', ['default', 'calendar']);
         $this->allow('watcher', 'Cms:Error4xx', Permission::ALL);
 
         // privileges editor
@@ -102,7 +102,7 @@ class Authorizator extends Permission
         $this->deny('master', 'Cms:Users', ['listAllUsers', 'nestable']);
 //        $this->allow('master', 'Cms:Users', ['changeRoleEditor', 'changeRoleWatcher',]);
 
-        $this->allow('master', 'Cms:Campaign', ['default']);
+        $this->allow('master', 'Cms:Campaign', ['default', 'calendar']);
         $this->allow('master', 'Cms:Device', ['default', 'nestable']);
         $this->allow('master', 'Cms:DeviceGroup', ['default', 'nestable']);
         $this->allow('master', $userFormResource, ['selfEdit']);

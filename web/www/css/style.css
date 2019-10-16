@@ -4421,6 +4421,7 @@ table.focus-on tbody tr.focused td {
 .form-material .form-control,
 .form-material .form-control.focus,
 .form-material .form-control:focus {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#2c5ca9), to(#2c5ca9)), -webkit-gradient(linear, left top, left bottom, from(rgba(120, 130, 140, 0.21)), to(rgba(120, 130, 140, 0.21)));
   background-image: -webkit-linear-gradient(#2c5ca9, #2c5ca9), -webkit-linear-gradient(rgba(120, 130, 140, 0.21), rgba(120, 130, 140, 0.21));
   background-image: linear-gradient(#2c5ca9, #2c5ca9), linear-gradient(rgba(120, 130, 140, 0.21), rgba(120, 130, 140, 0.21));
   border: 0 none;
@@ -4637,7 +4638,7 @@ table.focus-on tbody tr.focused td {
 /* Login- register pages */
 
 .login-register {
-  background: url(../images/light_background.jpg) no-repeat center center / cover !important;
+  background: url(../plugins/images/login-register.jpg) no-repeat center center / cover !important;
   height: 100%;
   position: fixed;
 }
@@ -5000,7 +5001,7 @@ table.focus-on tbody tr.focused td {
 }
 
 .right-sidebar .rpanel-title span:hover {
-  color: #3e4d6c;Calen
+  color: #3e4d6c;
 }
 
 .right-sidebar .r-panel-body {
@@ -5113,6 +5114,7 @@ ul#themecolors li:first-child {
   /* FF3.6-15 */
   background: -webkit-linear-gradient(left, #4f5467 0%, #4f5467 23%, #f75b36 23%, #f75b36 99%);
   /* Chrome10-25,Safari5.1-6 */
+  background: -webkit-gradient(linear, left top, right top, from(#4f5467), color-stop(23%, #4f5467), color-stop(23%, #f75b36), color-stop(99%, #f75b36));
   background: linear-gradient(to right, #4f5467 0%, #4f5467 23%, #f75b36 23%, #f75b36 99%);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4f5467', endColorstr='#f75b36', GradientType=1);
@@ -5125,6 +5127,7 @@ ul#themecolors li:first-child {
   /* FF3.6-15 */
   background: -webkit-linear-gradient(left, #4f5467 0%, #4f5467 23%, #00c292 23%, #00c292 99%);
   /* Chrome10-25,Safari5.1-6 */
+  background: -webkit-gradient(linear, left top, right top, from(#4f5467), color-stop(23%, #4f5467), color-stop(23%, #00c292), color-stop(99%, #00c292));
   background: linear-gradient(to right, #4f5467 0%, #4f5467 23%, #00c292 23%, #00c292 99%);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4f5467', endColorstr='#00c292', GradientType=1);
@@ -5137,6 +5140,7 @@ ul#themecolors li:first-child {
   /* FF3.6-15 */
   background: -webkit-linear-gradient(left, #4f5467 0%, #4f5467 23%, #a0aec4 23%, #a0aec4 99%);
   /* Chrome10-25,Safari5.1-6 */
+  background: -webkit-gradient(linear, left top, right top, from(#4f5467), color-stop(23%, #4f5467), color-stop(23%, #a0aec4), color-stop(99%, #a0aec4));
   background: linear-gradient(to right, #4f5467 0%, #4f5467 23%, #a0aec4 23%, #a0aec4 99%);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4f5467', endColorstr='#a0aec4', GradientType=1);
@@ -5149,6 +5153,7 @@ ul#themecolors li:first-child {
   /* FF3.6-15 */
   background: -webkit-linear-gradient(left, #4f5467 0%, #4f5467 23%, #008efa 23%, #008efa 99%);
   /* Chrome10-25,Safari5.1-6 */
+  background: -webkit-gradient(linear, left top, right top, from(#4f5467), color-stop(23%, #4f5467), color-stop(23%, #008efa), color-stop(99%, #008efa));
   background: linear-gradient(to right, #4f5467 0%, #4f5467 23%, #008efa 23%, #008efa 99%);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4f5467', endColorstr='@info', GradientType=1);
@@ -5161,6 +5166,7 @@ ul#themecolors li:first-child {
   /* FF3.6-15 */
   background: -webkit-linear-gradient(left, #4f5467 0%, #4f5467 23%, #2c5ca9 23%, #2c5ca9 99%);
   /* Chrome10-25,Safari5.1-6 */
+  background: -webkit-gradient(linear, left top, right top, from(#4f5467), color-stop(23%, #4f5467), color-stop(23%, #2c5ca9), color-stop(99%, #2c5ca9));
   background: linear-gradient(to right, #4f5467 0%, #4f5467 23%, #2c5ca9 23%, #2c5ca9 99%);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4f5467', endColorstr='@purple', GradientType=1);
@@ -5173,6 +5179,7 @@ ul#themecolors li:first-child {
   /* FF3.6-15 */
   background: -webkit-linear-gradient(left, #4f5467 0%, #4f5467 23%, #00b5c2 23%, #00b5c2 99%);
   /* Chrome10-25,Safari5.1-6 */
+  background: -webkit-gradient(linear, left top, right top, from(#4f5467), color-stop(23%, #4f5467), color-stop(23%, #00b5c2), color-stop(99%, #00b5c2));
   background: linear-gradient(to right, #4f5467 0%, #4f5467 23%, #00b5c2 23%, #00b5c2 99%);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4f5467', endColorstr='@megna', GradientType=1);
@@ -6111,23 +6118,21 @@ ul.list-icons li i {
   margin: 0px;
 }
 
+/*!
+ *  Font Awesome 4.5.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
 
 /* FONT PATH
  * -------------------------- */
 
-
 @font-face {
   font-family: 'FontAwesome';
-  src: url('../fonts/font-awesome/fonts/fontawesome-webfont.eot?v=4.5.0');
-  src: url('../fonts/font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'),
-  url('../fonts/font-awesome/fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'),
-  url('../fonts/font-awesome/fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'),
-  url('../fonts/font-awesome/fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'),
-  url('../fonts/font-awesome/fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
+  src: url('../less/icons/font-awesome/fonts/fontawesome-webfont.eot?v=4.5.0');
+  src: url('../less/icons/font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'), url('../less/icons/font-awesome/fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('../less/icons/font-awesome/fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('../less/icons/font-awesome/fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('../less/icons/font-awesome/fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
-
 
 .fa {
   display: inline-block;
@@ -8850,11 +8855,8 @@ ul.list-icons li i {
 
 @font-face {
   font-family: 'themify';
-  src: url('../fonts/icons/themify-icons/fonts/themify.eot?-fvbane');
-  src: url('../fonts/icons/themify-icons/fonts/themify.eot?#iefix-fvbane') format('embedded-opentype'),
-  url('../fonts/icons/themify-icons/fonts/themify.woff?-fvbane') format('woff'),
-  url('../fonts/icons/themify-icons/fonts/themify.ttf?-fvbane') format('truetype'),
-  url('../fonts/icons/themify-icons/fonts/themify.svg?-fvbane#themify') format('svg');
+  src: url('../less/icons/themify-icons/fonts/themify.eot?-fvbane');
+  src: url('../less/icons/themify-icons/fonts/themify.eot?#iefix-fvbane') format('embedded-opentype'), url('../less/icons/themify-icons/fonts/themify.woff?-fvbane') format('woff'), url('../less/icons/themify-icons/fonts/themify.ttf?-fvbane') format('truetype'), url('../less/icons/themify-icons/fonts/themify.svg?-fvbane#themify') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -19589,6 +19591,10 @@ table.dataTable.order-column.stripe tbody tr.even > .sorting_1 {
   line-height: 18px;
 }
 
+.tagNo {
+  background-color: #888888 !important;
+}
+
 .tagColor1 {
   background-color: #DB1B1B !important;
 }
@@ -19615,6 +19621,10 @@ table.dataTable.order-column.stripe tbody tr.even > .sorting_1 {
 
 .tagColor7 {
   background-color: #FF24E3 !important;
+}
+
+.tagNo-color {
+  color: #333333 !important;
 }
 
 .tagColor1-color {

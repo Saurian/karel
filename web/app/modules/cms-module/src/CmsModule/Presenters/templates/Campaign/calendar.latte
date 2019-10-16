@@ -1,0 +1,29 @@
+{block title}{_calendarPage.title}{/block}
+{block content}
+
+<div class="row bg-title">
+    <div class="col-sm-10 col-xs-12">
+        <h1 class="page-title">{_calendarPage.title}</h1>
+        <div n:snippet="campaignLink" class="box-filter">
+            <div class="btn-group m-r-5">
+                <a n:href="Campaign:" class="ajax btn btn-md btn-info"><i class="fa fa-calendar"></i> {_calendarPage.campaignsLink}</a>
+            </div>
+        </div>
+
+        <div class="box-filter">
+            {control campaignFilterTagsControl}
+        </div>
+    </div>
+
+    <div class="col-sm-2 col-xs-12">
+        <ol class="breadcrumb">
+            <li><a n:href="Campaign:" class="ajax">{_campaignPage.title}</a></li>
+{*            <li><a n:href="Campaign:calendar">{_calendarPage.title}</a></li>*}
+            <li class="active">{_calendarPage.navigation}</li>
+        </ol>
+    </div>
+</div>
+
+<div class="dd-item-backgroundWrap"></div>
+
+{control calendarControl:normal}

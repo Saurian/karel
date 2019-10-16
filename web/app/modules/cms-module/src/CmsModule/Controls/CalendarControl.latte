@@ -1,4 +1,4 @@
-<div id="calendarModal" class="modal fade" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="false">
+<div n:if="$renderType==modal" id="calendarModal" class="modal fade" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,6 +11,27 @@
                     <div id='calendar'></div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div n:if="$renderType==normal" style="height: calc(100vh - 220px)">
+    <div id='calendar-container' class="row-flex">
+        <div class="col-lg-2 col-md-3">
+            <div id="calendar-events">
+                <div class="fc-toolbar fc-header-toolbar">
+                    <h2>Drag & Drop kampaň</h2>
+                </div>
+                <div class="fc-view">
+                    <div n:foreach="$campaigns as $campaign" class="calendar-events fc-event {if $campaign->tag}{$campaign->tag}{else}tagNo{/if}" data-id="{$campaign->id}">
+                        <i class="fa fa-circle text-success"></i>
+                        {$campaign->name}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-10 col-md-9">
+            <div id='calendar'></div>
         </div>
     </div>
 </div>
@@ -54,9 +75,10 @@
     $(function() {
         var calendar = $.nette.ext('calendar');
 
-        calendar.eventsLink = {link getEvents!}
-        calendar.moveEventLink = {link moveEvent!}
-        calendar.moveParamIdName = {$control->getParameterId('id')}
-        calendar.moveParamTimeName = {$control->getParameterId('time')}
+        calendar.eventsLink = {link getEvents!};
+        calendar.newEventLink = {link newEvent!};
+        calendar.moveEventLink = {link moveEvent!};
+        calendar.paramIdName = {$control->getParameterId('id')};
+        calendar.paramTimeName = {$control->getParameterId('time')};
     });
 </script>

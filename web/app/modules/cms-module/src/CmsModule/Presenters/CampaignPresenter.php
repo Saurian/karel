@@ -622,7 +622,7 @@ class CampaignPresenter extends BasePresenter
             ->setRenderer(function (CampaignEntity $row) {
                 $html = $row->tag
                     ? Html::el('div')->addAttributes(['class' => "{$row->tag}", 'style' => "width: 60px; height: 25px; "])
-                    : Html::el('div')->addAttributes(['style' => "background-color: #F2F2F2; width: 60px; height: 25px; "]);
+                    : Html::el('div')->addAttributes(['class' => 'tagNo', 'style' => "width: 60px; height: 25px; "]);
                 return $html;
             });
 
