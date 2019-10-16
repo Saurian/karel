@@ -24,7 +24,7 @@
                 </div>
                 <div class="fc-view">
                     <div n:foreach="$campaigns as $campaign" class="calendar-events fc-event {if $campaign->tag}{$campaign->tag}{else}tagNo{/if}" data-id="{$campaign->id}">
-                        <i class="fa fa-circle text-success"></i>
+                        <i n:class="$campaign->active ? text-success : text-inverse ,'fa fa-circle'"></i>
                         {$campaign->name}
                     </div>
                 </div>
