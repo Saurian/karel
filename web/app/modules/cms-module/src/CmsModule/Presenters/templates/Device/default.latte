@@ -17,12 +17,14 @@
 
 	<div class="dd-item-backgroundWrap"></div>
 
+{*	{control playListControl}*}
+
 	<div class="row well">
 		<div class="col-md-6">
 			<div class="panel panel-default animated fadeIn">
 				<div class="panel-heading">Skupiny zařízení</div>
 				<div class="panel-body">
-					<div class="grido grido-tree">
+					<div class="grido">
 						{control deviceGroupGridControl}
 					</div>
 				</div>
@@ -147,7 +149,7 @@
 						{/form}
 
 					</div>
-					<div n:if="$editDevice" class="col-md-6">
+					<div n:if="$editDevice" class="col-md-6 grido">
 						{control deviceGroupListGridControl}
 					</div>
 				</div>

@@ -332,6 +332,14 @@ class CampaignEntity implements IDeviceEntity
     }
 
 
+    /**
+     * @return bool
+     */
+    public function hasMediaData()
+    {
+        return !$this->mediaData->isEmpty();
+    }
+
 
     public function addMediumData(MediumDataEntity $mediumDataEntity)
     {

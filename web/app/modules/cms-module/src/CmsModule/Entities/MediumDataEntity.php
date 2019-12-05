@@ -13,6 +13,7 @@ use Devrun\Doctrine\Entities\PositionTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\Attributes\Identifier;
 use Kdyby\Doctrine\Entities\MagicAccessors;
+use Tracy\Debugger;
 
 
 /**
@@ -26,6 +27,8 @@ use Kdyby\Doctrine\Entities\MagicAccessors;
  */
 class MediumDataEntity
 {
+
+    const TIME_PATTERN = "%^(\d+)\s*(\w+)$%";
 
     use Identifier;
     use PositionTrait;
@@ -48,16 +51,10 @@ class MediumDataEntity
 
 
     /**
-     * @var integer
-     * @ORM\Column(type="smallint", nullable=true)
+     * @var string
+     * @ORM\Column(type="string", length=32, nullable=true)
      */
     protected $time;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=10, nullable=true)
-     */
-    protected $timeType;
 
 
     /**
@@ -114,9 +111,8 @@ class MediumDataEntity
         $this->medium   = $mediumEntity;
         $this->campaign = $campaignEntity;
 
-        if (in_array($mediumEntity->getType(), ['image', 'url', 'zip'])) {
-            $this->time     = 10;
-            $this->timeType = 's';
+        if (in_array($mediumEntity->getType(), MediumEntity::getTypes())) {
+            $this->time = "10 seconds";
         }
 
     }
@@ -129,13 +125,85 @@ class MediumDataEntity
         return $this->time;
     }
 
+
+
+    /**
+     * 20 seconds
+     *
+     * @return int from pattern [20 seconds]
+     */
+    public function getTimeNumeric(): int
+    {
+        if (preg_match("%^(\d+)\s*(\w+)$%", $this->time, $matches)) {
+            return $matches[1];
+        }
+
+        return 0;
+    }
+
+
+    /**
+     * @param int $time
+     * @return MediumDataEntity
+     */
+    public function setTimeNumeric(string $time): MediumDataEntity
+    {
+        if (preg_match("%^(\d+)\s*(\w+)$%", $this->time, $matches)) {
+            $this->time = "$time {$matches[2]}";
+        }
+
+        return $this;
+    }
+
+
     /**
      * @return string
      */
     public function getTimeType()
     {
-        return $this->timeType;
+        if (preg_match("%^(\d+)\s*(\w+)$%", $this->time, $matches)) {
+            return $matches[2];
+        }
+
+        return null;
     }
+
+
+    /**
+     * @param string $timeType
+     * @return MediumDataEntity
+     */
+    public function setTimeType(string $timeType): MediumDataEntity
+    {
+        if (preg_match("%^(\d+)\s*(\w+)$%", $this->time, $matches)) {
+            $this->time = "{$matches[1]} $timeType";
+        }
+
+        return $this;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @return bool

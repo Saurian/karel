@@ -9,16 +9,29 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{$basePath}/favicon.png">
 
     <title>{ifset title}{include title|striptags} | {/ifset}{_title}</title>
+
+{*	{var $production = true}*}
+
+
+
 	{*================== BEGIN BASE CSS ==================*}
-    <link href="{$basePath}/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{$basePath}/assets/toast-master/css/jquery.toast.css" rel="stylesheet">
-    <link href="{$basePath}/css/animate.css" rel="stylesheet">
-    <link href="{$basePath}/css/style.css" rel="stylesheet">
-    <link href="{$basePath}/css/colors/blue.css" id="theme" rel="stylesheet">
+	{if $production}
+	{control css}
+	{else}
+		{*<!-- build:css {$basePath}/css/front-style.min.css -->*}
+		<link href="{$basePath}/resources/cmsModule/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+		<link href="{$basePath}/resources/cmsModule/font-awesome/css/font-awesome.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/toast-master/css/jquery.toast.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/animate.css/animate.css" rel="stylesheet">
+		<link href="{$basePath}/css/style.css" rel="stylesheet">
+		<link href="{$basePath}/css/colors/blue.css" id="theme" rel="stylesheet">
+		{*<!-- endbuild -->*}
+	{/if}
 	{*================== END BASE CSS ==================*}
 
     {*================== BEGIN BASE JS ==================*}
-    <script type="application/javascript" src="{$basePath}/assets/jquery/dist/jquery.js"></script>
+    <script type="application/javascript" src="{$basePath}/resources/cmsModule/jquery/dist/jquery.js"></script>
     {*================== END BASE JS ==================*}
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -37,13 +50,12 @@
 		{include content}
 	</section>
 	{*================== BEGIN BASE JS ==================*}
-	<script type="application/javascript" src="{$basePath}/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script type="application/javascript" src="{$basePath}/assets/metisMenu/dist/metisMenu.js"></script>
-	<script type="application/javascript" src="{$basePath}/assets/jquery-slimscroll/jquery.slimscroll.js"></script>
-	<script type="application/javascript" src="{$basePath}/assets/switchery/dist/switchery.js"></script>
-	<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/nette.ajax.js"></script>
-	<script type="application/javascript" src="{$basePath}/assets/nette-live-form-validation/live-form-validation.js"></script>
-	<script type="application/javascript" src="{$basePath}/assets/toast-master/js/jquery.toast.js"></script>
+	<script type="application/javascript" src="{$basePath}/resources/cmsModule/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script type="application/javascript" src="{$basePath}/resources/cmsModule/metisMenu/dist/metisMenu.js"></script>
+	<script type="application/javascript" src="{$basePath}/resources/cmsModule/jquery-slimscroll/jquery.slimscroll.js"></script>
+	<script type="application/javascript" src="{$basePath}/resources/cmsModule/nette.ajax.js/nette.ajax.js"></script>
+	<script type="application/javascript" src="{$basePath}/resources/cmsModule/nette-live-form-validation/live-form-validation.js"></script>
+	<script type="application/javascript" src="{$basePath}/resources/cmsModule/toast-master/js/jquery.toast.js"></script>
 	<script type="application/javascript" src="{$basePath}/js/waves.js"></script>
 	<script type="application/javascript" src="{$basePath}/js/custom.min.js"></script>
 	{*================== END BASE JS ==================*}

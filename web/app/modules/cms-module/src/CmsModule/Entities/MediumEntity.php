@@ -26,6 +26,11 @@ use Kdyby\Doctrine\Entities\MagicAccessors;
 class MediumEntity
 {
 
+    const TYPE_IMAGE = 'image';
+    const TYPE_VIDEO = 'video';
+    const TYPE_URL = 'url';
+    const TYPE_ZIP = 'zip';
+
     use Identifier;
     use DateTimeTrait;
     use BlameableTrait;
@@ -69,7 +74,15 @@ class MediumEntity
         return $this->type;
     }
 
-
+    static public function getTypes()
+    {
+        return [
+            self::TYPE_IMAGE,
+            self::TYPE_VIDEO,
+            self::TYPE_URL,
+            self::TYPE_ZIP,
+        ];
+    }
 
 
 }

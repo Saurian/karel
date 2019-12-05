@@ -30,6 +30,7 @@ use CmsModule\Repositories\DeviceRepository;
 use CmsModule\Repositories\Queries\CampaignQuery;
 use Devrun\CmsModule\Controls\DataGrid;
 use Devrun\Php\PhpInfo;
+use Devrun\Utils\Debugger;
 use Kdyby\Doctrine\QueryBuilder;
 use Kdyby\Translation\Phrase;
 use Nette\Application\UI\Form;
@@ -766,22 +767,22 @@ class CampaignPresenter extends BasePresenter
             ->addSelect('c')
             ->join('e.campaign', 'c')
             ->where('c.id = :campaign')->setParameter('campaign', $this->campaign)
-//            ->addOrderBy('e.position')
+            ->addOrderBy('e.position')
         ;
 
         $grid->setDataSource($model);
 
 
-        $wwwDir = $this->context->getParameters()['wwwDir'];
 
         $grid->addColumnText('identifier', '')
             ->setFitContent()
-            ->setRenderer(function (MediumDataEntity $entity) use ($wwwDir) {
+            ->setRenderer(function (MediumDataEntity $entity) {
                 $link = $this->imageStorage->fromIdentifier([ $entity->getIdentifier()]);
                 $img = $this->imageStorage->fromIdentifier([ $entity->getIdentifier(), '80x50', 'exact']);
 
-                $a = Html::el('a')->href(DIRECTORY_SEPARATOR . $link->createLink())->addAttributes(['data-lightbox' => $entity->getCategory(), 'data-title' => $entity->getFileName()]);
-                $img = Html::el('img')->addAttributes(['src' => DIRECTORY_SEPARATOR . $img->createLink()]);
+                $wwwDir = $this->getHttpRequest()->getUrl()->getBasePath();
+                $a = Html::el('a')->href($wwwDir . $link->createLink())->addAttributes(['data-lightbox' => $entity->getCategory(), 'data-title' => $entity->getFileName()]);
+                $img = Html::el('img')->addAttributes(['src' => $wwwDir . $img->createLink()]);
 
                 $a->addHtml($img);
                 return $a;
@@ -790,11 +791,12 @@ class CampaignPresenter extends BasePresenter
         $presenter = $this;
 
 
-        $grid->addColumnNumber($column = 'time', 'čas')
+        $grid->addColumnNumber($column = 'timeNumeric', 'čas')
+            ->setFitContent(false)
             ->setEditableInputType('number', ['class' => 'form-control'])
-            ->setEditableOnConditionCallback(function (MediumDataEntity $mediumDataEntity) {
-                return $mediumDataEntity->getType() == 'image/jpeg';
-            })
+//            ->setEditableOnConditionCallback(function (MediumDataEntity $mediumDataEntity) {
+//                return $mediumDataEntity->getType() == 'image/jpeg';
+//            })
             ->setEditableCallback(function($id, $value) use ($grid, $presenter, $column) {
                 if (Validators::is($value, $validate = 'numericint:0..65000')) {
 
@@ -823,11 +825,11 @@ class CampaignPresenter extends BasePresenter
 
 
         $grid->addColumnText($column = 'timeType', '')
-            ->setFitContent(false)
-            ->setEditableInputTypeSelect(['s' => 'sec', 'min' => 'minut'], ['class' => 'form-control'])
-            ->setEditableOnConditionCallback(function (MediumDataEntity $mediumDataEntity) {
-                return $mediumDataEntity->getType() == 'image/jpeg';
-            })
+            ->setFitContent(true)
+            ->setEditableInputTypeSelect(['seconds' => 'seconds', 'minutes' => 'minutes'], ['class' => 'form-control'])
+//            ->setEditableOnConditionCallback(function (MediumDataEntity $mediumDataEntity) {
+//                return $mediumDataEntity->getType() == 'image/jpeg';
+//            })
             ->setEditableCallback(function($id, $value) use ($grid, $presenter, $column) {
                 if (Validators::is($value, $validate = 'string')) {
 

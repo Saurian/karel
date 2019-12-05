@@ -9,14 +9,16 @@ INSERT INTO `campaign` (`id`, `created_by_id`, `updated_by_id`, `deleted_by_id`,
 (2,	2,	2,	NULL, 1,	'Lékárny Rokycany',	'2019-08-13 08:11:00',	'2019-08-13 10:11:00',	0,	'tagColor5',	NULL,	'2019-08-13 08:11:43',	'2019-08-16 13:55:55',	2,	'',	2),
 (3,	2,	2,	NULL, 1,	'Kampaň barev',	'2019-09-14 08:12:00',	'2019-09-30 08:12:00',	1,	'tagColor2',	NULL,	'2019-08-13 08:12:38',	'2019-08-13 08:13:03',	3,	'',	3),
 (4,	2,	2,	NULL, 1,	'Leto2019',	'2019-08-13 08:10:00',	'2019-08-13 12:15:00',	0,	'tagColor3',	NULL,	'2019-08-13 08:13:34',	'2019-08-13 09:43:42',	4,	'',	4),
-(5,	2,	2,	NULL, 1,	'Derby pražských s',	'2019-10-05 08:18:00',	'2019-10-06 08:18:00',	1,	'tagColor1',	NULL,	'2019-08-13 08:19:40',	'2019-08-13 09:45:11',	5,	'',	7),
-(6,	2,	2,	NULL, 1,	'Hokus pokus',	'2019-08-13 16:50:00',	'2019-08-13 16:50:00',	0,	NULL,	NULL,	'2019-08-13 16:51:12',	'2019-08-13 16:51:12',	6,	'',	1);
+(5,	2,	2,	NULL, 1,	'Derby pražských S',	'2019-10-03 08:15:00',	'2019-10-04 08:15:00',	1,	'tagColor1',	NULL,	'2019-08-13 08:19:40',	'2019-08-13 09:45:11',	5,	'',	7),
+(6,	2,	2,	NULL, 1,	'Hokus pokus',	'2019-08-13 16:50:00',	'2019-08-13 16:50:00',	0,	NULL,	NULL,	'2019-08-13 16:51:12',	'2019-08-13 16:51:12',	6,	'',	1),
+(7,	2,	2,	NULL, 1,	'Děkovačka',	'2019-10-03 16:00:00',	'2019-10-03 18:50:00',	1,	'tagColor1', NULL, '2019-08-13 16:51:12', '2019-08-13 16:51:12', 7,	'',	1);
 
 INSERT INTO `campaigns_devices` (`campaign_entity_id`, `device_entity_id`) VALUES
 (1,	1),
 (4,	5),
 (4,	6),
-(5,	6);
+(5,	6),
+(7,	6);
 
 INSERT INTO `campaigns_devices_groups` (`campaign_entity_id`, `device_group_entity_id`) VALUES
 (2,	7),
@@ -39,8 +41,8 @@ INSERT INTO `device` (`id`, `default_campaign_id`, `device_group_id`, `created_b
 (2,	NULL,	NULL,	2,	2,	NULL,	'bb-01',	NULL,	NULL,	'Bilovice letáky 1',	'',	NULL,	'',	'',	0,	NULL,	'2019-08-13 08:03:36',	'2019-08-13 08:03:36',	2,	'',	1,	NULL),
 (3,	NULL,	NULL,	2,	2,	NULL,	'KKol-01',	NULL,	NULL,	'Kaufland Kolín',	'',	NULL,	'',	'',	0,	NULL,	'2019-08-13 08:04:22',	'2019-08-13 08:04:22',	3,	'',	1,	NULL),
 (4,	NULL,	NULL,	2,	2,	NULL,	'BIL-01',	NULL,	NULL,	'Billa Rokycanská',	'',	NULL,	'',	'',	1,	NULL,	'2019-08-13 08:04:50',	'2019-08-15 20:46:33',	4,	'',	2,	NULL),
-(5,	NULL,	NULL,	2,	2,	NULL,	'SKL-Pr01',	NULL,	NULL,	'Sklárny',	'',	NULL,	'',	'',	1,	NULL,	'2019-08-13 08:05:33',	'2019-08-15 20:46:08',	5,	'',	2,	NULL),
-(6,	NULL,	NULL,	2,	2,	NULL,	'SLA-01',	NULL,	NULL,	'Na Slávii',	'',	NULL,	'',	'',	1,	NULL,	'2019-08-13 08:05:59',	'2019-08-15 20:46:23',	6,	'',	2,	NULL);
+(5,	NULL,	NULL,	2,	2,	NULL,	'SkLArny-110',	NULL,	NULL,	'Sklárny',	'',	NULL,	'',	'',	1,	NULL,	'2019-08-13 08:05:33',	'2019-08-15 20:46:08',	5,	'',	2,	NULL),
+(6,	NULL,	NULL,	2,	2,	NULL,	'SLA-0100110',	NULL,	NULL,	'Na Slávii',	'',	NULL,	'',	'',	1,	NULL,	'2019-08-13 08:05:59',	'2019-08-15 20:46:23',	6,	'',	2,	NULL);
 
 INSERT INTO `devices_groups` (`device_group_entity_id`, `device_entity_id`) VALUES
 (1,	2),

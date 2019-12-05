@@ -75,7 +75,7 @@ class CalendarControl extends Control
         $end = $end ? $end : $this->getPresenter()->getParameter('end');
 
         /** @var CalendarEntity[] $records */
-        $records = $this->calendarRepository->findBy(['datetime >=' => $start, 'datetime <=' => $end], null);
+        $records = $this->calendarRepository->findBy(['from >=' => $start, 'to <=' => $end], null);
 
         $result = [];
         foreach ($records as $record) {
@@ -83,7 +83,7 @@ class CalendarControl extends Control
             [
                 'id' => $record->getId(),
                 'title' => $record->getCampaign()->getName(),
-                'start' => $record->getDatetime()->format('Y-m-d H:i'),
+                'start' => $record->getFrom()->format('Y-m-d H:i'),
 //                'end' => $record->getDatetime()->format('Y-m-d'),
                 'classNames' => [$record->getCampaign()->getTag() ? $record->getCampaign()->getTag() : 'tagNo'],
             ];

@@ -124,7 +124,10 @@ class CalendarFacade
 
                         $percentage = $this->campaignRepository->getPercentageUse($time, $campaign);
 
-                        $this->addRecord($campaign, $usersGroupEntity, DateTime::from($time), $percentage);
+                        $toTime = clone $time;
+                        $toTime->modify('+1 hour');
+
+                        $this->addRecord($campaign, $usersGroupEntity, DateTime::from($time), DateTime::from($toTime), $percentage);
                         $recorded = true;
                     }
                 }
@@ -154,9 +157,12 @@ class CalendarFacade
     }
 
 
-    public function addRecord(CampaignEntity $campaignEntity, UsersGroupEntity $usersGroupEntity, DateTime $dateTime, int $percentage = 0)
+    public function addRecord(CampaignEntity $campaignEntity, UsersGroupEntity $usersGroupEntity, DateTime $dateTime, DateTime $length = null, int $percentage = 0)
     {
         $entity = new CalendarEntity($campaignEntity, $usersGroupEntity, $dateTime, $percentage);
+        if ($length) {
+            $entity->setTo($length);
+        }
         $this->entityManager->persist($entity);
     }
 

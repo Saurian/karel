@@ -12,7 +12,10 @@ namespace FrontModule\Presenters;
 use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\MediumDataEntity;
+use CmsModule\Entities\MediumEntity;
+use CmsModule\Facades\Calendar\PlayList;
 use CmsModule\Facades\DeviceLogFacade;
+use CmsModule\Repositories\CalendarRepository;
 use CmsModule\Repositories\CampaignRepository;
 use CmsModule\Repositories\DeviceRepository;
 use CmsModule\Repositories\MediaRepository;
@@ -23,6 +26,9 @@ use Ublaboo\ImageStorage\ImageStorage;
 
 class ApiPresenter extends BasePresenter
 {
+
+    /** @var CalendarRepository @inject */
+    public $calendarRepository;
 
     /** @var CampaignRepository @inject */
     public $campaignRepository;
@@ -126,6 +132,133 @@ class ApiPresenter extends BasePresenter
         dump(array_reverse($result));
 
         die("END");
+    }
+
+
+    /**
+     * @param $did
+     * @param null $ssid
+     * @param null $p
+     * @param null $realizedFrom
+     * @param null $realizedTo
+     * @param null $activeDevice
+     * @param null $activeCampaigns
+     * @throws \Nette\Application\AbortException
+     * @throws \Exception
+     */
+    public function handleGimmePlayList($did, $ssid = null, $p = null, $realizedFrom = null, $realizedTo = null, $activeDevice = true, $activeCampaigns = true)
+    {
+        $validParams = true;
+        $result      = ["result" => false, "reason" => "unexpected params"];
+
+        if ($validParams && $activeDevice && !$this->checkValidActive($activeDevice)) {
+            $result      = ["result" => false, "reason" => "activeDevice param is not valid [expect 0,1,ignore]"];
+            $validParams = false;
+        }
+        if ($validParams && $activeCampaigns && !$this->checkValidActive($activeCampaigns)) {
+            $result      = ["result" => false, "reason" => "activeCampaigns param is not valid [expect 0,1,ignore]"];
+            $validParams = false;
+        }
+        if ($validParams && $realizedFrom && !$this->checkValidDateTime($realizedFrom)) {
+            $result      = ["result" => false, "reason" => "realizedFrom param is not valid [expect yyyy-mm-dd, yyyy-mm-dd hh:ii]"];
+            $validParams = false;
+        }
+        if ($validParams && $realizedTo && !$this->checkValidDateTime($realizedTo)) {
+            $result      = ["result" => false, "reason" => "realizedTo param is not valid [expect yyyy-mm-dd, yyyy-mm-dd hh:ii]"];
+            $validParams = false;
+        }
+        if ($validParams && $realizedTo && $realizedFrom && ($realizedFrom > $realizedTo) ) {
+            $result      = ["result" => false, "reason" => "realizedFrom param is bigger then realizedTo"];
+            $validParams = false;
+        }
+
+        if ($validParams) {
+
+            $query = $this->calendarRepository
+                ->getQuery()
+                ->byDeviceSn($did)
+                ->deviceActive(true)
+                ->campaignActive(true)
+                ->inCampaignTimeRange()
+                ->withCampaigns()
+                ->orderByFromTo()
+                ->orderByCampaign()
+            ;
+
+            if (!$realizedFrom) {
+                $realizedFrom = date('Y-m-d H:i');
+            }
+
+            if ($realizedTo) {
+                if ($realizedFrom > $realizedTo) $realizedTo = $realizedFrom;
+            }
+
+            if ($realizedFrom) {
+                $query->realizedFrom($realizedFrom);
+            }
+            if ($realizedTo) {
+                $query->realizedTo($realizedTo);
+            }
+
+
+            $playList  = new PlayList($this->calendarRepository->fetch($query)->getIterator()->getArrayCopy());
+            $mediaList = $playList->createList();
+
+            if ($mediaList) {
+                $result = [];
+
+                foreach ($mediaList as $item) {
+
+                    $campaign = $item->getMediumDataEntity()->getCampaign();
+                    $medium = $item->getMediumDataEntity();
+
+                    $out = [
+                        'id'   => $medium->getId(),
+                        'from' => $item->getFrom(),
+                        'to'   => $item->getTo(),
+
+                        //                    'name'              => $campaign->getName(),
+                        //                    'realizedFrom'      => $campaign->getRealizedFrom()->format('Y-m-d H:i'),
+                        //                    'realizedTo'        => $campaign->getRealizedTo()->format('Y-m-d H:i'),
+                        //                    'realizedFromHuman' => $campaign->getRealizedFrom()->format('j. n. Y H:i'),
+                        //                    'realizedToHuman'   => $campaign->getRealizedTo()->format('j. n. Y H:i'),
+                        //                    'active'            => $campaign->isActive(),
+                        //                    'keywords'          => $campaign->getKeywords(),
+                        //                    'mediaKeywords'     => implode(' ', $this->getMediaDataKeywords($campaign)),
+                        //                    'version'           => $campaign->getVersion(),
+                    ];
+
+                    if ($item->getMediumDataEntity()->getMedium()->getType() == MediumEntity::TYPE_IMAGE) {
+
+                        $absoluteUrl = $this->url->getUrl()->baseUrl . $medium->getFilePath();
+                        $image       = $this->imageStorage->fromIdentifier([$medium->getIdentifier(), '190x150']);
+
+                        $previewPath        = $image->data_dir . DIRECTORY_SEPARATOR . $image->identifier;
+                        $absolutePreviewUrl = $this->url->getUrl()->baseUrl . $previewPath;
+
+                        if (!file_exists($medium->getFilePath())) {
+                            $absoluteUrl        = false;
+                            $absolutePreviewUrl = false;
+                        }
+
+                        $out += [
+                            'type'        => 'image',
+                            'mimeType'    => $medium->getType(),
+                            'length'      => $medium->getTime(),
+                            'path'        => $absoluteUrl,
+                            'previewPath' => $absolutePreviewUrl,
+                        ];
+                    }
+
+                    $result[] = $out;
+                }
+
+            } else {
+                $result = ["result" => false, "reason" => "playlist is empty"];
+            }
+        }
+
+        $this->sendJson($result);
     }
 
 

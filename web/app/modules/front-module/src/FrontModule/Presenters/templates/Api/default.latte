@@ -1,20 +1,23 @@
 {block title}api{/block}
 {block content}
 
-	<ul class="list-group">
-		<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => 5, activeDevice=>'ignore'" class="btn btn-link">GimmeAllActiveCampaignsData</a></li>
-		<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! 29" class="btn btn-link">GimmeAllActiveCampaignsData</a></li>
-		<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => 25" class="btn btn-link">GimmeAllActiveCampaignsData</a></li>
-		<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => 25, realizedFrom => '2018-07-01' " class="btn btn-link">GimmeAllActiveCampaignsData from '2018-07-01'</a></li>
-		<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => 25, realizedTo => '2018-08-01' " class="btn btn-link">GimmeAllActiveCampaignsData to '2018-08-01'</a></li>
-		<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => 25, realizedFrom => '2018-07-01', realizedTo => '2018-08-01' " class="btn btn-link">GimmeAllActiveCampaignsData from '2018-07-01' - '2018-08-01' </a></li>
-	</ul>
+	<div class="api-links">
+		<ul class="list-group">
+			<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => 5, activeDevice=>'ignore'" class="btn btn-link">GimmeAllActiveCampaignsData</a></li>
+			<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! 29" class="btn btn-link">GimmeAllActiveCampaignsData</a></li>
+			<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => 25" class="btn btn-link">GimmeAllActiveCampaignsData</a></li>
+			<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => 25, realizedFrom => '2018-07-01' " class="btn btn-link">GimmeAllActiveCampaignsData from '2018-07-01'</a></li>
+			<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => 25, realizedTo => '2018-08-01' " class="btn btn-link">GimmeAllActiveCampaignsData to '2018-08-01'</a></li>
+			<li class="list-group-item"><a n:href="gimmeAllActiveCampaignsData! did => 25, realizedFrom => '2018-07-01', realizedTo => '2018-08-01' " class="btn btn-link">GimmeAllActiveCampaignsData from '2018-07-01' - '2018-08-01' </a></li>
+		</ul>
 
-	<ul class="list-group">
-		<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => 25" class="btn btn-link">GimmeAllActiveCampaigns</a></li>
-		<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => 25, realizedFrom => '2018-07-01'" class="btn btn-link">GimmeAllActiveCampaigns from</a></li>
-		<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => 25, realizedTo => '2018-08-01'" class="btn btn-link">GimmeAllActiveCampaigns to</a></li>
-		<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => 25, realizedFrom => '2018-07-01', realizedTo => '2018-08-01'" class="btn btn-link">GimmeAllActiveCampaigns from to</a></li>
-	</ul>
+		<ul class="list-group">
+			<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => 25" class="btn btn-link">GimmeAllActiveCampaigns</a></li>
+			<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => 25, realizedFrom => '2018-07-01'" class="btn btn-link">GimmeAllActiveCampaigns from</a></li>
+			<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => 25, realizedTo => '2018-08-01'" class="btn btn-link">GimmeAllActiveCampaigns to</a></li>
+			<li class="list-group-item"><a n:href="gimmeAllActiveCampaigns! did => 25, realizedFrom => '2018-07-01', realizedTo => '2018-08-01'" class="btn btn-link">GimmeAllActiveCampaigns from to</a></li>
+		</ul>
+
+	</div>
 
 {/block}

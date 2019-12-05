@@ -74,7 +74,7 @@ webloader:
 #				- @jwlCssMinFilter
 
 			files:
-				- bootstrap/dist/css/bootstrap.min.css
+#				- bootstrap/dist/css/bootstrap.min.css
 				- css/style.css
 				- css/cms.css
 
@@ -88,7 +88,7 @@ webloader:
 #				- @jwlCssMinFilter
 
 			files:
-				- bootstrap/dist/css/bootstrap.min.css
+#				- bootstrap/dist/css/bootstrap.min.css
 				- css/front.css
 
 

@@ -1,0 +1,152 @@
+<div class="well">
+    glightbox
+    {include #glightbox}
+</div>
+
+
+{define glightbox}
+    <script>
+        $(function() {
+
+            var index = 0;
+            var intervals = [2000, 4000, 15000, 17000];
+            var interval = intervals[0];
+            var timer;
+
+            var lightBoxes = $('.glightbox').length;
+
+            var slideTimer = function () {
+                // clearTimeout(timer);
+
+
+
+                var activeIndex = lightboxInlineIframe.getActiveSlideIndex();
+
+                console.log("active = " + activeIndex + " total = " + lightBoxes);
+
+                if ((activeIndex+1) >= lightBoxes) {
+                    lightboxInlineIframe.close();
+
+                    console.log("asi stop");
+                } else {
+
+                    lightboxInlineIframe.nextSlide();
+                    console.log("neco");
+                    timer = setTimeout(slideTimer, interval);
+                }
+
+            };
+
+
+            var lightboxInlineIframe = GLightbox({
+                'selector': 'glightbox',
+                loopAtEnd: true,
+                touchNavigation: true,
+                autoplayVideos: true,
+                onOpen: function () {
+                    console.log('Lightbox opened');
+                },
+
+                plyr: {
+                    css: 'https://cdn.plyr.io/3.5.6/plyr.css', // Default not required to include
+                    js: 'https://cdn.plyr.io/3.5.6/plyr.js', // Default not required to include
+                    ratio: '16:9',
+                    config: {
+                        muted: true,
+                        clickToPlay: false,
+                        hideControls: true,
+                        loadSprite: false
+                        /*
+                                                youtube: {
+                                                    noCookie: true,
+                                                    rel: 0,
+                                                    showinfo: 0,
+                                                    iv_load_policy: 3
+                                                },
+                                                vimeo: {
+                                                    byline: false,
+                                                    portrait: false,
+                                                    title: false,
+                                                    speed: true,
+                                                    transparent: false
+                                                }
+                        */
+                    }
+                },
+
+                afterSlideChange: function(prevSlide, activeSlide) {
+
+
+                    console.log('Lightbox afterSlideChange');
+                    console.log(prevSlide);
+                    console.log(activeSlide);
+
+
+                    clearTimeout(timer);
+                    index = activeSlide.index;
+                    console.log(index);
+                    // return;
+
+                    if (index in intervals) {
+                        interval = intervals[index];
+
+                    } else {
+                        interval = intervals[0];
+                    }
+
+
+                    setTimeout(function() {
+                        slideTimer();
+                    }, interval);
+
+
+                },
+
+                afterSlideLoad: function (slide, data) {
+
+                }
+            });
+
+
+            lightboxInlineIframe.open();
+
+        });
+    </script>
+
+
+    <h3><i class="fa fa-camera-retro heading-icon" aria-hidden="true"></i>Simple Image Gallery</h3>
+
+    <ul class="box-container three-cols">
+        <li class="box">
+            <div class="inner">
+                <a href="http://localhost/pixman/cms2.pixatori.com/web/www/media/1/a1/img_4865.jpg" class="glightbox">
+                    <img src="http://localhost/pixman/cms2.pixatori.com/web/www/media/1/a1/img_4865.jpg" style="max-width: 320px">
+                </a>
+            </div>
+        </li>
+        <li class="box">
+            <div class="inner">
+                <a href="http://localhost/pixman/cms2.pixatori.com/web/www/media/1/da/car.jpg" class="glightbox">
+                    <img src="http://localhost/pixman/cms2.pixatori.com/web/www/media/1/a1/img_4865.jpg" style="max-width: 320px">
+                </a>
+            </div>
+        </li>
+        <li class="box">
+            <div class="inner">
+                <a href="https://upload.wikimedia.org/wikipedia/commons/c/c0/Big_Buck_Bunny_4K.webm" class="glightbox">
+                    <img src="http://localhost/pixman/cms2.pixatori.com/web/www/media/1/a1/img_4865.jpg" style="max-width: 320px">
+                </a>
+            </div>
+        </li>
+        <li class="box">
+            <div class="inner">
+                <a href="https://archive.org/download/Sintel/sintel-2048-surround.mp4" class="glightbox">
+                    <img src="http://localhost/pixman/cms2.pixatori.com/web/www/media/1/a1/img_4865.jpg" style="max-width: 320px">
+                </a>
+            </div>
+        </li>
+    </ul>
+
+
+
+{/define}

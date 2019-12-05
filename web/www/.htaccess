@@ -12,7 +12,7 @@ php_value upload_max_filesize 128M
 php_value post_max_size 128M
 
 # Disable opcache, not work correctly
-php_flag opcache.enable Off
+#php_flag opcache.enable Off
 
 # enable cool URL
 <IfModule mod_rewrite.c>
@@ -29,7 +29,7 @@ php_flag opcache.enable Off
 	# front controller
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule !\.(pdf|js|ico|gif|jpg|png|css|rar|zip|tar\.gz|map)$ index.php [L]
+	RewriteRule !\.(pdf|js|ico|gif|jpg|png|css|ttf|woff|woff2|rar|zip|tar\.gz|map)$ index.php [L]
 </IfModule>
 
 # enable gzip compression

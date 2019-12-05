@@ -3,10 +3,7 @@
  * @param array    $flashes  flash messages
  *}
 <!DOCTYPE html>
-<!DOCTYPE html>
-<!--[if lte IE 8 ]><html class="ie ie8 lte8 lte9 oldie" lang="cs"><![endif]-->
-<!--[if IE 9 ]><html class="ie ie9 lte9" lang="cs"><![endif]-->
-<!--[if !(IE)]><!--><html class="not-ie" lang="cs"><!--<![endif]-->
+<html lang="cs">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -24,91 +21,82 @@
 	{*================== BEGIN BASE CSS STYLE ==================*}
 	<script type="application/javascript">var dataLayer = dataLayer || []; // Google Tag Manager</script>
 
-	{var $production = false}
+{*	{var $production = true}*}
 
 
 
 
 	{**}
 	{if $production}
-		{*<link rel="stylesheet" type="text/css" media="screen" href="{$basePath}/css/screen.min.css?rel=1571233505586">*}
-		{control css}
+		<link rel="stylesheet" type="text/css" media="screen" href="{$basePath}/css/cms-screen.min.css?rel=1575577431310">
+{*		{control css}*}
 
 	{else}
-		{*<!-- build:css {$basePath}/css/cmsScreen.min.css -->*}
+{*		<link href="{$basePath}/assets/font-awesome/css/font-awesome.css" rel="stylesheet">*}
+		{*<!-- build:css {$basePath}/css/cms-screen.min.css -->*}
 		<!-- Bootstrap Core CSS -->
-		<link href="{$basePath}/assets/font-awesome/css/font-awesome.css" rel="stylesheet">
-		<link href="{$basePath}/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-		<!-- animation CSS -->
-		<link href="{$basePath}/css/animate.css" rel="stylesheet">
-		<!-- Menu CSS -->
-		{*<link href="{$basePath}/plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css" rel="stylesheet">*}
-		<link href="{$basePath}/assets/metisMenu/dist/metisMenu.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/animate.css/animate.min.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/font-awesome/css/font-awesome.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/metisMenu/dist/metisMenu.css" rel="stylesheet">
 		<!-- Page plugins css -->
-		{*<link href="{$basePath}/plugins/bower_components/clockpicker/dist/jquery-clockpicker.min.css" rel="stylesheet">*}
-		<link href="{$basePath}/assets/jquery-clockpicker/dist/jquery-clockpicker.min.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/jquery-clockpicker/dist/jquery-clockpicker.min.css" rel="stylesheet">
 		<!-- Color picker plugins css -->
-		{*<link href="{$basePath}/plugins/bower_components/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">*}
-		<link href="{$basePath}/assets/jquery-asColorPicker/dist/css/asColorPicker.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/jquery-asColorPicker/dist/css/asColorPicker.css" rel="stylesheet">
 		<!-- Date picker plugins css -->
-		{*<link href="{$basePath}/plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />*}
-		<link href="{$basePath}/assets/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
 
-		<link href="{$basePath}/assets/happy/dist/happy.css" rel="stylesheet" type="text/css">
-		<link href="{$basePath}/assets/lightbox2/dist/css/lightbox.css" rel="stylesheet" type="text/css">
+		<link href="{$basePath}/resources/cmsModule/happy/dist/happy.css" rel="stylesheet" type="text/css">
+		<link href="{$basePath}/resources/cmsModule/lightbox2/dist/css/lightbox.css" rel="stylesheet" type="text/css">
+		<link href="{$basePath}/resources/cmsModule/toast-master/css/jquery.toast.css" rel="stylesheet" type="text/css">
 
 		<!-- Daterange picker plugins css -->
-		{*<link href="{$basePath}/plugins/bower_components/timepicker/bootstrap-timepicker.min.css" rel="stylesheet">*}
-		<link href="{$basePath}/assets/bootstrap-timepicker/css/timepicker.less" rel="stylesheet">
-		{*<link href="{$basePath}/plugins/bower_components/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">*}
-		<link href="{$basePath}/assets/daterangepicker/daterangepicker.css" rel="stylesheet">
-		<!-- toast CSS -->
-		{*<link href="{$basePath}/plugins/bower_components/toast-master/css/jquery.toast.css" rel="stylesheet">*}
-		<link href="{$basePath}/assets/toast-master/css/jquery.toast.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/daterangepicker/daterangepicker.css" rel="stylesheet">
 
-		<link href="{$basePath}/assets/seiyria-bootstrap-slider/dist/css/bootstrap-slider.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/seiyria-bootstrap-slider/dist/css/bootstrap-slider.css" rel="stylesheet">
 
 		<!-- Switchery CSS -->
-		{*<link href="{$basePath}/plugins/bower_components/switchery/dist/switchery.min.css" rel="stylesheet" />*}
-		<link href="{$basePath}/assets/switchery/switchery.css" rel="stylesheet" />
+		<link href="{$basePath}/resources/cmsModule/switchery/switchery.css" rel="stylesheet" />
 		<!-- Dropify CSS -->
-		{*<link rel="stylesheet" href="{$basePath}/plugins/bower_components/dropify/dist/css/dropify.css">*}
-		<link rel="stylesheet" href="{$basePath}/assets/dropify/dist/css/dropify.css">
+		<link href="{$basePath}/resources/cmsModule/dropify/dist/css/dropify.css" rel="stylesheet">
 		<!--Carousel CSS -->
-		{*<link href="{$basePath}/plugins/bower_components/owl.carousel/owl.carousel.min.css" rel="stylesheet" type="text/css" />*}
-		<link href="{$basePath}/assets/owl.carousel/dist/assets/owl.carousel.css" rel="stylesheet" type="text/css" />
-		{*<link href="{$basePath}/plugins/bower_components/owl.carousel/owl.theme.default.css" rel="stylesheet" type="text/css" />*}
-		<link href="{$basePath}/assets/owl.carousel/dist/assets/owl.theme.default.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/owl.carousel/dist/assets/owl.carousel.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/owl.carousel/dist/assets/owl.theme.default.css" rel="stylesheet" type="text/css" />
 
 		{* calendar *}
-		<link href="{$basePath}/assets/fullcalendar/packages/core/main.css" rel="stylesheet" type="text/css" />
-		<link href="{$basePath}/assets/fullcalendar/packages/daygrid/main.css" rel="stylesheet" type="text/css" />
-		<link href="{$basePath}/assets/fullcalendar/packages/timegrid/main.css" rel="stylesheet" type="text/css" />
-		<link href="{$basePath}/assets/fullcalendar/packages/list/main.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/fullcalendar/packages/core/main.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/fullcalendar/packages/daygrid/main.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/fullcalendar/packages/timegrid/main.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/fullcalendar/packages/list/main.css" rel="stylesheet" type="text/css" />
 		{* calendar *}
+
+		{* blueimp *}
+		<link href="{$basePath}/resources/cmsModule/blueimp-gallery/css/blueimp-gallery.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/blueimp-gallery/css/blueimp-gallery-indicator.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/blueimp-gallery/css/blueimp-gallery-video.css" rel="stylesheet" type="text/css" />
+		{* blueimp *}
+
+		{* glightbox *}
+		<link href="{$basePath}/resources/cmsModule/glightbox/dist/css/glightbox.css" rel="stylesheet" type="text/css" />
+		{* glightbox *}
 
 		<!-- Custom CSS -->
 		<link href="{$basePath}/css/spinners.css" rel="stylesheet">
-		<link href="{$basePath}/css/style.css?v=1" rel="stylesheet">
-		<link href="{$basePath}/css/cms.css?v=1" rel="stylesheet">
+		<link href="{$basePath}/css/style.css" rel="stylesheet">
+		<link href="{$basePath}/css/cms.css" rel="stylesheet">
 		<!-- color CSS -->
 		<link href="{$basePath}/css/colors/default.css" id="theme" rel="stylesheet">
 
-		<link href="{$basePath}/assets/nprogress/nprogress.css" rel="stylesheet">
-		<link href="{$basePath}/assets/ublaboo-datagrid-5/datagrid.css" rel="stylesheet">
-		<link href="{$basePath}/assets/ublaboo-datagrid-5/datagrid-spinners.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/nprogress/nprogress.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/ublaboo-datagrid/assets/datagrid.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/ublaboo-datagrid/assets/datagrid-spinners.css" rel="stylesheet">
 
-		<link href="{$basePath}/assets/grido/assets/dist/css/grido.css" rel="stylesheet">
+		<link href="{$basePath}/resources/cmsModule/grido/assets/dist/css/grido.css" rel="stylesheet">
 		{*<!-- endbuild -->*}
-		{*<link href="{$basePath}/assets/nittro-full/dist/nittro.min.css" rel="stylesheet">*}
-		{*<link n:if="$production" rel="stylesheet" type="text/css" media="screen" href="{$basePath}/css/index.min.css">*}
-
-		{*<link n:if="!$production" rel="stylesheet" type="text/css" media="screen" href="{$basePath}/css/index.css">*}
 	{/if}
 
 	{*================== BEGIN BASE JS ==================*}
-	{*<script type="application/javascript" src="{$basePath}/plugins/bower_components/jquery/dist/jquery.min.js"></script>*}
-	<script type="application/javascript" src="{$basePath}/assets/jquery/dist/jquery.js"></script>
+	<script type="application/javascript" src="{$basePath}/resources/cmsModule/jquery/dist/jquery.js"></script>
 	{*================== END BASE JS ==================*}
 	{block head}{/block}
 </head>
@@ -205,7 +193,7 @@
 			{/snippet}
 		</div>
 		<!-- /.container-fluid -->
-		<footer class="footer text-center"> {_copyright|noescape} </footer>
+		<footer class="footer text-center">Copyright &copy; 2018 - {=date(Y)} CMS.Pixatori.com</footer>
 	</div>
 	<!-- /#page-wrapper -->
 </div>
@@ -243,90 +231,85 @@
 {block scripts}
 	{*================== BEGIN BASE JS ==================*}
 	{if $production}
-		{*<script type="application/javascript" src="{$basePath}/assets/bootstrap/js/bootstrap.js"></script>*}
-		<script type="application/javascript" data-pf-placeholder="scripts" src="{$basePath}/js/index.min.js?rel=1571233505585"></script>
+		<script type="application/javascript" data-pf-placeholder="scripts" src="{$basePath}/js/index.min.js?rel=1575577431310"></script>
 		{*<script type="application/javascript" src="{$basePath}/js/nette.nprogress.js"></script>*}
 		{*<script type="application/javascript" src="{$basePath}/assets/nprogress/nprogress.js"></script>*}
 	{else}
 		{*<!-- build:js {$basePath}/js/index.min.js -->*}
-		<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/nette.ajax.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/nette-live-form-validation/live-form-validation.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/diagnostics.dumps.ajax.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/fidRemove.ajax.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/confirm.ajax.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/history.nette.ajax.js/client-side/history.ajax.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/nette.ajax.js/nette.ajax.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/nette-live-form-validation/live-form-validation.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/nette.ajax.js/extensions/diagnostics.dumps.ajax.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/nette.ajax.js/extensions/fidRemove.ajax.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/nette.ajax.js/extensions/confirm.ajax.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/history.nette.ajax.js/client-side/history.ajax.js"></script>
 
 
 
-		<script src="{$basePath}/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="{$basePath}/resources/cmsModule/bootstrap/dist/js/bootstrap.min.js"></script>
 		<!-- Menu Plugin JavaScript -->
-		{*<script src="{$basePath}/plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js"></script>*}
-		<script src="{$basePath}/assets/metisMenu/dist/metisMenu.js"></script>
+		<script src="{$basePath}/resources/cmsModule/metisMenu/dist/metisMenu.js"></script>
 		<!--slimscroll JavaScript -->
-		{*<script src="{$basePath}/js/jquery.slimscroll.js"></script>*}
-		<script src="{$basePath}/assets/jquery-slimscroll/jquery.slimscroll.js"></script>
+		<script src="{$basePath}/resources/cmsModule/jquery-slimscroll/jquery.slimscroll.js"></script>
 		<!--Wave Effects -->
 		<script src="{$basePath}/js/waves.js"></script>
 		<!-- Custom Theme JavaScript -->
-{*		<script src="{$basePath}/js/custom.min.js"></script>*}
 		<script src="{$basePath}/js/mimeType.js"></script>
-		<script src="{$basePath}/js/cms.js?v=3"></script>
+		<script src="{$basePath}/js/cms.js"></script>
 		<!-- Plugin JavaScript -->
-		{*<script src="{$basePath}/plugins/bower_components/moment/moment.js"></script>*}
-		<script src="{$basePath}/assets/moment/moment.js"></script>
+		<script src="{$basePath}/resources/cmsModule/moment/moment.js"></script>
 		<!-- Switchery -->
-		{*<script src="{$basePath}/plugins/bower_components/switchery/dist/switchery.js"></script>*}
-		<script src="{$basePath}/assets/switchery/dist/switchery.js"></script>
+		<script src="{$basePath}/resources/cmsModule/switchery/dist/switchery.js"></script>
 		<!-- Clock Plugin JavaScript -->
-		{*<script src="{$basePath}/plugins/bower_components/clockpicker/dist/jquery-clockpicker.min.js"></script>*}
-		<script src="{$basePath}/assets/jquery-clockpicker/dist/jquery-clockpicker.min.js"></script>
+		<script src="{$basePath}/resources/cmsModule/jquery-clockpicker/dist/jquery-clockpicker.min.js"></script>
 		<!-- Color Picker Plugin JavaScript -->
-		{*
-		<script src="{$basePath}/plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
-		<script src="{$basePath}/plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asGradient.js"></script>
-		<script src="{$basePath}/plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
-		*}
-		<script src="{$basePath}/assets/jquery-asColorPicker/dist/jquery-asColorPicker.js"></script>
-		<script src="{$basePath}/assets/jquery-asGradient/dist/jquery-asGradient.js"></script>
-		<script src="{$basePath}/assets/jquery-asColor/dist/jquery-asColor.js"></script>
+		<script src="{$basePath}/resources/cmsModule/jquery-asColorPicker/dist/jquery-asColorPicker.js"></script>
+		<script src="{$basePath}/resources/cmsModule/jquery-asGradient/dist/jquery-asGradient.js"></script>
+		<script src="{$basePath}/resources/cmsModule/jquery-asColor/dist/jquery-asColor.js"></script>
 
 		<!-- Toast Plugin JavaScript -->
-		{*<script src="{$basePath}/plugins/bower_components/toast-master/js/jquery.toast.js"></script>*}
-		{*<script src="{$basePath}/assets/jquery.toaster/jquery.toaster.js"></script>*}
-		<script src="{$basePath}/assets/toast-master/js/jquery.toast.js"></script>
+		<script src="{$basePath}/resources/cmsModule/toast-master/js/jquery.toast.js"></script>
 
 		<!-- jQuery file upload -->
-		{*<script src="{$basePath}/plugins/bower_components/dropify/dist/js/dropify.min.js"></script>*}
-		<script src="{$basePath}/assets/dropify/dist/js/dropify.min.js"></script>
-		<script src="{$basePath}/assets/lightbox2/dist/js/lightbox.js"></script>
+		<script src="{$basePath}/resources/cmsModule/dropify/dist/js/dropify.min.js"></script>
+		<script src="{$basePath}/resources/cmsModule/lightbox2/dist/js/lightbox.js"></script>
 		<!-- jQuery for carousel -->
-		{*<script src="{$basePath}/plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>*}
-		{*<script src="{$basePath}/plugins/bower_components/owl.carousel/owl.custom.js"></script>*}
-		<script src="{$basePath}/assets/owl.carousel/dist/owl.carousel.min.js"></script>
+		<script src="{$basePath}/resources/cmsModule/owl.carousel/dist/owl.carousel.min.js"></script>
 		<!-- Date Picker Plugin JavaScript -->
-		{*<script src="{$basePath}/plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>*}
-		<script src="{$basePath}/assets/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+		<script src="{$basePath}/resources/cmsModule/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 		<!-- Date range Plugin JavaScript -->
-		{*<script src="{$basePath}/plugins/bower_components/timepicker/bootstrap-timepicker.min.js"></script>*}
-		<script src="{$basePath}/assets/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
-		{*<script src="{$basePath}/plugins/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>*}
-		<script src="{$basePath}/assets/daterangepicker/daterangepicker.js"></script>
-		<script src="{$basePath}/assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-		<script src="{$basePath}/assets/seiyria-bootstrap-slider/dist/bootstrap-slider.js"></script>
+		<script src="{$basePath}/resources/cmsModule/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
+		<script src="{$basePath}/resources/cmsModule/daterangepicker/daterangepicker.js"></script>
+		<script src="{$basePath}/resources/cmsModule/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+		<script src="{$basePath}/resources/cmsModule/seiyria-bootstrap-slider/dist/bootstrap-slider.js"></script>
 
-		<script type="application/javascript" src="{$basePath}/assets/happy/dist/happy.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/happy/dist/happy.js"></script>
 
-		<script type="application/javascript" src="{$basePath}/assets/ublaboo-datagrid-5/datagrid.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/ublaboo-datagrid-5/datagrid-instant-url-refresh.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/ublaboo-datagrid-5/datagrid-spinners.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/jquery-ui-sortable/jquery-ui-sortable.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/ublaboo-datagrid/assets/datagrid.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/ublaboo-datagrid/assets/datagrid-instant-url-refresh.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/ublaboo-datagrid/assets/datagrid-spinners.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/jquery-ui-sortable/jquery-ui-sortable.js"></script>
 
-		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/core/main.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/core/locales/cs.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/interaction/main.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/daygrid/main.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/timegrid/main.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/fullcalendar/packages/list/main.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/fullcalendar/packages/core/main.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/fullcalendar/packages/core/locales/cs.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/fullcalendar/packages/interaction/main.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/fullcalendar/packages/daygrid/main.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/fullcalendar/packages/timegrid/main.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/fullcalendar/packages/list/main.js"></script>
+
+
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/blueimp-gallery/js/blueimp-helper.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/blueimp-gallery/js/blueimp-gallery.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/blueimp-gallery/js/blueimp-gallery-fullscreen.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/blueimp-gallery/js/blueimp-gallery-indicator.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/blueimp-gallery/js/blueimp-gallery-video.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/blueimp-gallery/js/blueimp-gallery-vimeo.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/blueimp-gallery/js/blueimp-gallery-youtube.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/blueimp-gallery/js/jquery.blueimp-gallery.js"></script>
+
+
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/glightbox/dist/js/glightbox.js"></script>
+
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/jquery-mask-plugin/dist/jquery.mask.js"></script>
 
 
 
@@ -334,10 +317,12 @@
 		<script type="application/javascript" src="{$basePath}/js/popupDialogExtension.js"></script>
 
 		<script type="application/javascript" src="{$basePath}/js/nette.nprogress.js"></script>
-		<script type="application/javascript" src="{$basePath}/assets/nprogress/nprogress.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/nprogress/nprogress.js"></script>
 
 
 		{*<!-- endbuild -->*}
+		{*		<script type="application/javascript" src="{$basePath}/assets/blueimp-gallery/js/demo/demo.js"></script>*}
+
 
 		{*<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/spinner.ajax.js"></script>*}
 		{*<script type="application/javascript" src="{$basePath}/assets/nittro-full/dist/nittro.min.js"></script>*}
@@ -351,6 +336,13 @@
 	(function($, undefined) {
         $(function () {
             $.nette.init();
+
+			lightbox.option({
+				'resizeDuration': 200,
+				'wrapAround': true,
+				'maxWidth': 800
+			})
+
         });
     })(jQuery);
 </script>

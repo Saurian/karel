@@ -197,6 +197,9 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             ->setImplement('CmsModule\Controls\ICalendarControlFactory')
             ->setInject(true);
 
+        $builder->addDefinition($this->prefix('control.playListControlFactory'))
+            ->setImplement('CmsModule\Controls\IPlayListControlFactory');
+
 
         /*
          * forms

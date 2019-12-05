@@ -12,6 +12,7 @@ namespace CmsModule\Presenters;
 use CmsModule\Controls\FlashMessageControl;
 use CmsModule\Controls\IDeviceControlFactory;
 use CmsModule\Controls\IDevicesControlFactory;
+use CmsModule\Controls\IPlayListControlFactory;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Facades\CampaignFacade;
@@ -24,7 +25,6 @@ use CmsModule\InvalidArgumentException;
 use CmsModule\Repositories\CampaignRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Nette\Application\UI\Form;
-use Nette\Application\UI\Multiplier;
 use Nette\Forms\Container;
 use Nette\Utils\Html;
 use Nette\Utils\Validators;
@@ -39,6 +39,9 @@ class DevicePresenter extends BasePresenter
 
     /** @var IDevicesControlFactory @inject */
     public $devicesControlFactory;
+
+    /** @var IPlayListControlFactory @inject */
+    public $playListControlFactory;
 
     /** @var DeviceFacade @inject */
     public $deviceFacade;
@@ -1159,6 +1162,15 @@ class DevicePresenter extends BasePresenter
 
 
 
+//        $grid->addAction('live', 'Live', 'editDevice!')
+//             ->setIcon('eye')
+//             ->setDataAttribute('target', '.addDeviceModal')
+//             ->setDataAttribute('toggle', 'ajax-modal')
+//             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.editDevice'))
+//             ->setTitle($this->translateMessage()->translate('devicePage.editDevice'))
+//             ->setClass('btn btn-xs btn-info');
+//
+//
 
         $grid->addAction('edit', '', 'editDevice!')
             ->setIcon('pencil')
@@ -1256,6 +1268,16 @@ class DevicePresenter extends BasePresenter
         return $grid;
 
     }
+
+
+    protected function createComponentPlayListControl()
+    {
+        $control = $this->playListControlFactory->create();
+
+
+        return $control;
+    }
+
 
     /**
      * readjust modal deviceForm to empty form

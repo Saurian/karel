@@ -19,7 +19,7 @@ use DateTime;
  *      @ORM\UniqueConstraint(name="campaign_idx", columns={"id", "campaign_id"}),
  *  },
  *  indexes={
- *     @ORM\Index(name="datetime_idx", columns={"datetime"}),
+ *     @ORM\Index(name="from_to_idx", columns={"from", "to"}),
  * })
  *
  * @package CmsModule\Entities
@@ -50,10 +50,17 @@ class CalendarEntity
 
     /**
      * @var DateTime
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", name="`from`")
      * @ORM\OrderBy(value={"ASC"})
      */
-    protected $datetime;
+    protected $from;
+
+
+    /**
+     * @var DateTime
+     * @ORM\Column(type="datetime", name="`to`")
+     */
+    protected $to;
 
 
     /**
@@ -73,7 +80,7 @@ class CalendarEntity
     {
         $this->campaign = $campaign;
         $this->usersGroups = $usersGroups;
-        $this->datetime = $datetime;
+        $this->from = $datetime;
         $this->percentage = $percentage;
     }
 
@@ -96,9 +103,9 @@ class CalendarEntity
     /**
      * @return DateTime
      */
-    public function getDatetime(): DateTime
+    public function getFrom(): DateTime
     {
-        return $this->datetime;
+        return $this->from;
     }
 
     /**
@@ -106,15 +113,44 @@ class CalendarEntity
      * @return CalendarEntity
      * @throws \Exception
      */
-    public function setDatetime($datetime): CalendarEntity
+    public function setFrom($datetime): CalendarEntity
     {
         if (is_string($datetime)) {
             $datetime = new \Nette\Utils\DateTime($datetime);
         }
 
-        $this->datetime = $datetime;
+        $this->from = $datetime;
         return $this;
     }
+
+    /**
+     * @return DateTime
+     */
+    public function getTo(): DateTime
+    {
+        return $this->to;
+    }
+
+
+    /**
+     * @param DateTime $length
+     * @return CalendarEntity
+     * @throws \Exception
+     */
+    public function setTo($length): CalendarEntity
+    {
+        if (is_string($length)) {
+            $length = new \Nette\Utils\DateTime($length);
+        }
+
+        if (!$length) {
+            $length = new DateTime("0000-00-00 01:00");
+        }
+
+        $this->to = $length;
+        return $this;
+    }
+
 
 
 
