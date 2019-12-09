@@ -29,6 +29,10 @@
 
 	{else}
 		{*<!-- build:css {$basePath}/css/frontScreen.min.css -->*}
+		<link href="{$basePath}/resources/cmsModule/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/resources/cmsModule/bootstrap-datepicker/dist/css/bootstrap-datepicker.standalone.css" rel="stylesheet" type="text/css" />
+
 		<link href="{$basePath}/resources/frontModule/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<link href="{$basePath}/resources/frontModule/animate.css/animate.min.css" rel="stylesheet">
 		<link href="{$basePath}/resources/frontModule/owlcarousel/assets/owl.carousel.css" rel="stylesheet" type="text/css" />
@@ -64,6 +68,12 @@
 					<li><a n:href="Homepage:#portfolio">Portfolio</a></li>
 					<li n:class="$presenter->isLinkCurrent('Api:*') ? 'menu-active'"><a n:href="Api:example">Api v příkladech</a></li>
 					<li n:class="$presenter->isLinkCurrent(':Cms:Campaign:*') ? 'menu-active'"><a n:href=":Cms:Campaign:">Admin</a></li>
+					<li>
+						<a href="#">Api</a>
+						<ul>
+							<li><a n:href="Api:playList">PlayList</a></li>
+						</ul>
+					</li>
 				</ul>
 
 			</nav>
@@ -102,6 +112,8 @@
 			<script type="application/javascript" src="{$basePath}/resources/frontModule/nette.ajax.js/extensions/fidRemove.ajax.js"></script>
 			<script type="application/javascript" src="{$basePath}/resources/frontModule/nette.ajax.js/extensions/confirm.ajax.js"></script>
 
+			<script src="{$basePath}/resources/cmsModule/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+
 			<script src="{$basePath}/resources/frontModule/bootstrap/js/bootstrap.min.js"></script>
 			<script src="{$basePath}/resources/frontModule/easing/easing.min.js"></script>
 			<script src="{$basePath}/resources/frontModule/superfish/hoverIntent.js"></script>
@@ -130,6 +142,9 @@
 		(function($, undefined) {
 			$(function () {
 				$.nette.init();
+
+
+
 			});
 		})(jQuery); //jNIV  test
 	</script>

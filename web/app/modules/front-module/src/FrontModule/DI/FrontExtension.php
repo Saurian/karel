@@ -11,6 +11,8 @@ namespace FrontModule\DI;
 
 use Flame\Modules\Providers\IPresenterMappingProvider;
 use Flame\Modules\Providers\IRouterProvider;
+use FrontModule\Facades\ApiFacade;
+use FrontModule\Forms\IPlayListFormFactory;
 use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
 use Nette\DI\CompilerExtension;
@@ -43,10 +45,20 @@ class FrontExtension extends CompilerExtension implements IPresenterMappingProvi
          */
 
 
+        /*
+         * facades
+         */
+        $builder->addDefinition($this->prefix('facade.api'))
+                ->setType(ApiFacade::class);
+
+
 
         /*
          * controls
          */
+        $builder->addDefinition($this->prefix('form.playListFormFactory'))
+                ->setImplement(IPlayListFormFactory::class)
+                ->setInject(true);
 
 
 

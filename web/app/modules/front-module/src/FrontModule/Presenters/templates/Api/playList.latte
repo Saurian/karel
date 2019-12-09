@@ -1,0 +1,77 @@
+{block title}Api PlayList{/block}
+{block content}
+
+
+<section id="api">
+    <div class="api-container">
+{*        <h1 class="text-primary text-center">Playlist test</h1>*}
+    </div>
+</section>
+
+
+<section id="services">
+    <div class="container">
+
+        <header class="section-header wow fadeInUp" style="visibility: visible; animation-name: fadeInUp;">
+            <h3>Playlist test</h3>
+            <p>Zkušební formulář</p>
+        </header>
+
+        <div class="row">
+            <div class="col-md-offset-2 col-md-6 box wow bounceInUp" data-wow-duration="1.2s" style="visibility: visible; animation-duration: 1.2s; animation-name: bounceInUp;">
+                <div class="icon"><i class="ion-ios-paper-outline"></i></div>
+                <h4 class="title"><a href="">Configuration</a></h4>
+{*                <p class="description">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur</p>*}
+
+                {control playListForm}
+            </div>
+
+            <div class="col-md-offset-2 col-md-6 box wow bounceInUp" data-wow-duration="1.4s" style="visibility: visible; animation-duration: 1.4s; animation-name: bounceInUp;">
+                <div class="icon"><i class="ion-ios-list-outline"></i></div>
+                <h4 class="title"><a href="">Demo</a></h4>
+{*                <p class="description">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur</p>*}
+
+                <div class="card mb-3">
+                    <div class="card-header">gimmePlayList</div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <a n:href="gimmePlayList! did => 'SLA-0100110', kw=>test" class="list-group-item list-group-item-action">GimmePlayList aktual date</a>
+                            <a n:href="gimmePlayList! did => 'SLA-0100110', realizedFrom=>'2019-08-01'" class="list-group-item list-group-item-action">GimmePlayList from 2019-08-01</a>
+                            <a n:href="gimmePlayList! did => 'SLA-0100110', realizedFrom=>'2019-08-01', realizedTo=>'2019-10-04'" class="list-group-item list-group-item-action">GimmePlayList from 2019-08-01 to 2019-10-04</a>
+                        </div>
+                    </div>
+                    <div class="card-footer small text-muted">
+                        pevně dané ukázkové parametry
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div n:ifset="$result" class="well">
+            {$result|noescape}
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container">
+
+
+
+</div>

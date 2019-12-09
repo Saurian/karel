@@ -60,6 +60,59 @@ h6 {
   color: #fff;
 }
 
+input[type="checkbox"],
+input[type="radio"] {
+  vertical-align: middle;
+  margin-right: 0.25em;
+}
+
+.api-links {
+  margin-bottom: 30px;
+}
+
+.api-links h4 {
+  font-size: 14px;
+}
+
+.api-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.api-links ul li:first-child {
+  padding-top: 0;
+}
+
+.api-links ul li {
+  /*border-bottom: 1px solid*/
+  padding: 3px 0;
+}
+
+.api-links ul a {
+  /*color: #7f7f7f;*/
+}
+
+::-webkit-input-placeholder {
+  /* Chrome/Opera/Safari */
+  color: darkgray;
+}
+
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: darkgray;
+}
+
+:-ms-input-placeholder {
+  /* IE 10+ */
+  color: darkgray;
+}
+
+:-moz-placeholder {
+  /* Firefox 18- */
+  color: darkgray;
+}
+
 /* Prelaoder */
 
 #preloader {
