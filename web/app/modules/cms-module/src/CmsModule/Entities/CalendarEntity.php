@@ -81,6 +81,8 @@ class CalendarEntity
         $this->campaign = $campaign;
         $this->usersGroups = $usersGroups;
         $this->from = $datetime;
+        $to = clone $datetime;
+        $this->to = $to->modify("+1 hour");
         $this->percentage = $percentage;
     }
 
