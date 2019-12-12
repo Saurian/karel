@@ -53,10 +53,10 @@ class BaseForm extends Form
         /** @var $renderer DefaultFormRenderer */
         $renderer = $this->getRenderer();
         $renderer->wrappers['controls']['container']     = NULL;
-        $renderer->wrappers['pair']['container']         = 'div class=form-group';
+        $renderer->wrappers['pair']['container']         = 'div class="form-group row"';
         $renderer->wrappers['pair']['.error']            = 'has-error';
         $renderer->wrappers['control']['container']      = 'div class=col-sm-9';
-        $renderer->wrappers['label']['container']        = 'div class="col-sm-3 control-label"';
+        $renderer->wrappers['label']['container']        = 'div class="col-sm-3 control-label text-sm-right"';
         $renderer->wrappers['control']['description']    = 'span class=help-block';
         $renderer->wrappers['control']['errorcontainer'] = 'span class=help-block';
 

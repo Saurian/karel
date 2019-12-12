@@ -324,6 +324,7 @@ $.nette.ext('calendar', {
     eventsLink: null,
     newEventLink: null,
     moveEventLink: null,
+    resizeEventLink: null,
     paramIdName: null,
     paramTimeName: null,
 
@@ -381,7 +382,8 @@ $.nette.ext('calendar', {
 
                 $(form).find('[name="id"]').val(info.event.id);
                 $(form).find('[name="name"]').val(info.event.title);
-                $(form).find('[name="time"]').val(info.event.start.toDateString() + " " + info.event.start.toLocaleTimeString());
+                $(form).find('[name="from"]').val(info.event.start.toDateString() + " " + info.event.start.toLocaleTimeString());
+                $(form).find('[name="to"]').val(info.event.end.toDateString() + " " + info.event.end.toLocaleTimeString());
 
                 $('#editEventModal').modal({ show: 'true' });
             },
@@ -395,6 +397,9 @@ $.nette.ext('calendar', {
                 var data = {};
                 data[self.paramIdName] = info.event.id;
                 data[self.paramTimeName] = info.event.start.toISOString();
+                console.log(info.event);
+                console.log(info.event.start.toISOString());
+                // console.log(info.event.end.toISOString());
 
                 $.nette.ajax({
                     type: "POST",
@@ -434,6 +439,8 @@ $.nette.ext('calendar', {
                 data[self.paramIdName] = $(info.draggedEl).data('id');
                 data[self.paramTimeName] = info.dateStr;
 
+                console.log(data);
+
                 $.nette.ajax({
                     type: "POST",
                     url: self.newEventLink,
@@ -455,6 +462,38 @@ $.nette.ext('calendar', {
                 });
             },
 
+            /**
+             * resize event
+             *
+             * @param info
+             */
+            eventResize: function(info) {
+                var data = {};
+                data[self.paramIdName] = info.event.id;
+                data[self.paramTimeName] = info.event.end.toISOString();
+
+                $.nette.ajax({
+                    type: "POST",
+                    url: self.resizeEventLink,
+                    data: data,
+                    success: function (payload) {
+
+                        if (payload.calendar_refresh && payload.calendar_refresh === true) {
+                            self.calendar.refetchEvents();
+                        }
+
+                        // snippets
+                        if (payload.snippets) {
+                            // $.nette.ext('snippets').updateSnippets(payload.snippets);
+                        }
+                    },
+                    fail: function (payload) {
+                        info.revert();
+                        console.log(payload);
+                    }
+                });
+            },
+
 
             defaultView: 'dayGridMonth',
             defaultDate: '2019-08-12',
@@ -464,7 +503,7 @@ $.nette.ext('calendar', {
             locale: 'cs',
             navLinks: true, // can click day/week names to navigate views
             editable: true,
-            eventDurationEditable: false,
+            eventDurationEditable: true,
             droppable: true, // this allows things to be dropped onto the calendar
             allDaySlot: false,
             eventLimit: true, // allow "more" link when too many events

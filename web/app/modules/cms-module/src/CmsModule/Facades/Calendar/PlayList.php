@@ -5,9 +5,12 @@ namespace CmsModule\Facades\Calendar;
 
 use CmsModule\Entities\CalendarEntity;
 use Nette\Utils\DateTime;
+use Tracy\Debugger;
 
 class PlayList
 {
+
+    const DEBUG_MODE = false;
 
     /** @var CalendarEntity[] */
     private $calendar;
@@ -46,7 +49,10 @@ class PlayList
             $calendars[$calendarEntity->id] = $calendarEntity;
         }
 
-        $this->initForDebugCalendar($calendars);
+        if (self::DEBUG_MODE) {
+            $this->initForDebugCalendar($calendars);
+        }
+
         $this->calendar = $calendars;
 
         $separate = [];
@@ -59,10 +65,6 @@ class PlayList
 
         ksort($separate);
         $this->separateTimes = $separate;
-
-
-        /** @var DateTime[] $separateTimes */
-        $separateTimes = array_values($this->separateTimes);
 
         $this->setRangeList($calendars);
         return $this;
@@ -113,7 +115,7 @@ class PlayList
     /**
      * @return MediumTime[]
      */
-    public function createList()
+    public function createMediumList()
     {
         $lists = [];
 
@@ -137,7 +139,6 @@ class PlayList
                             ? $mediumDataEntity->getTime()
                             : '0 second';
 
-//                        $time = "+8 minutes";
                         $toTime = clone $current;
                         $toTime->modify($time);
 
@@ -147,8 +148,8 @@ class PlayList
 
                         if ($current >= $from && $current < $to) {
 
-//                        if (count($lists) < 300)
-                        $lists[] = new MediumTime($mediumDataEntity, $current, $toTime);
+//                        if (self::DEBUG_MODE && count($lists) < 300)
+                            $lists[] = new MediumTime($mediumDataEntity, $current, $toTime);
 
                         } else break;
 

@@ -9,7 +9,7 @@
 				<div class="btn-group m-r-5">
 					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices > 0" n:href="addCampaign!" class="btn btn-md btn-success" data-toggle="ajax-modal" data-backdrop="static" data-target=".addCampaignModal">{_campaignPage.addCampaign}</a>
 					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices == 0" n:href="Device:" class="btn btn-md btn-success">{_campaignPage.addDeviceFirst}</a>
-					<a n:href="generateTest!" class="ajax btn btn-md btn-danger"><i class="fa fa-calendar-check-o"></i> {_campaignPage.calendar.generateLinkName}</a>
+					<a n:href="calendarGenerate!" class="ajax btn btn-md btn-danger"><i class="fa fa-calendar-check-o"></i> {_campaignPage.calendar.generateLinkName}</a>
 {*					<button class="btn btn-md btn-info" data-toggle="modal" data-target="#calendarModal"><i class="fa fa-calendar"></i> {_campaignPage.calendar.linkName}</button>*}
 					<a n:href="calendar" class="ajax btn btn-md btn-info"><i class="fa fa-calendar"></i> {_campaignPage.calendar.linkName}</a>
 

@@ -389,7 +389,11 @@ campaignPage:
 		generateLinkName: Generovat plán
 		newEvent: Přídat do kalendáře
 		removeEvent: Odstranit kampaň z kalendáře
-		moved: položka %name% upravena
+		new: položka %name% vytvořena dne %from%
+		moved: položka %name% přemístěna na datum %from%
+		resized: "čas pro položku <strong>%name%</strong> upraven:<br>od: %from%<br>do: %to%"
+		addError: "vkládaná položka %name% pro datum %datetime% je mimo rozsah [%from%, %to%]"
+
 
 	filter:
 		set: Nastaven filtr

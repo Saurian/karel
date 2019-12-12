@@ -47,7 +47,6 @@ class CalendarEntity
      */
     protected $usersGroups;
 
-
     /**
      * @var DateTime
      * @ORM\Column(type="datetime", name="`from`")
@@ -55,13 +54,11 @@ class CalendarEntity
      */
     protected $from;
 
-
     /**
      * @var DateTime
      * @ORM\Column(type="datetime", name="`to`")
      */
     protected $to;
-
 
     /**
      * @var integer
@@ -76,13 +73,12 @@ class CalendarEntity
      * @param UsersGroupEntity $usersGroups
      * @param DateTime $datetime
      */
-    public function __construct(CampaignEntity $campaign, UsersGroupEntity $usersGroups, DateTime $datetime, int $percentage = 0)
+    public function __construct(CampaignEntity $campaign, UsersGroupEntity $usersGroups, DateTime $datetime, DateTime $to, int $percentage = 0)
     {
         $this->campaign = $campaign;
         $this->usersGroups = $usersGroups;
         $this->from = $datetime;
-        $to = clone $datetime;
-        $this->to = $to->modify("+1 hour");
+        $this->to = $to;
         $this->percentage = $percentage;
     }
 
@@ -135,21 +131,21 @@ class CalendarEntity
 
 
     /**
-     * @param DateTime $length
+     * @param DateTime $dateTime
      * @return CalendarEntity
      * @throws \Exception
      */
-    public function setTo($length): CalendarEntity
+    public function setTo($dateTime): CalendarEntity
     {
-        if (is_string($length)) {
-            $length = new \Nette\Utils\DateTime($length);
+        if (is_string($dateTime)) {
+            $dateTime = new \Nette\Utils\DateTime($dateTime);
         }
 
-        if (!$length) {
-            $length = new DateTime("0000-00-00 01:00");
+        if (!$dateTime) {
+            $dateTime = new DateTime("0000-00-00 01:00");
         }
 
-        $this->to = $length;
+        $this->to = $dateTime;
         return $this;
     }
 

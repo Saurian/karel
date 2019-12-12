@@ -346,6 +346,34 @@
   width: 100%;
 }
 
+::-webkit-input-placeholder {
+  /* Chrome/Opera/Safari */
+  color: darkgray;
+}
+
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: darkgray;
+}
+
+:-ms-input-placeholder {
+  /* IE 10+ */
+  color: darkgray;
+}
+
+:-moz-placeholder {
+  /* Firefox 18- */
+  color: darkgray;
+}
+
+.form-horizontal .form-group {
+  width: 100%;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
 @media (min-width: 1200px) {
   .row-flex {
     display: -webkit-box;

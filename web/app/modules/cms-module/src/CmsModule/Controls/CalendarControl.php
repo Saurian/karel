@@ -6,11 +6,14 @@ namespace CmsModule\Controls;
 use CmsModule\Entities\CalendarEntity;
 use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\UsersGroupEntity;
+use CmsModule\Facades\CalendarFacade;
 use CmsModule\Forms\IBaseForm;
+use CmsModule\OutOfRangeException;
 use CmsModule\Presenters\BasePresenter;
 use CmsModule\Repositories\CalendarRepository;
 use CmsModule\Repositories\CampaignRepository;
 use Flame\Application\UI\Control;
+use Nette\Utils\DateTime;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
@@ -27,6 +30,9 @@ interface ICalendarControlFactory
 class CalendarControl extends Control
 {
 
+    /** @var CalendarFacade @inject */
+    public $calendarFacade;
+
     /** @var CalendarRepository @inject */
     public $calendarRepository;
 
@@ -38,6 +44,9 @@ class CalendarControl extends Control
 
     /** @var UsersGroupEntity */
     private $usersGroupEntity;
+
+    /** @var bool  */
+    private $modifyRealizationCampaignIfNeed = true;
 
 
     /**
@@ -67,7 +76,7 @@ class CalendarControl extends Control
      * @param $end
      * @throws \Nette\Application\AbortException
      *
-     * return json  [['title' => 'Event name', 'start' => '2019-08-01']]
+     * return json  [['title' => 'Event name', 'start' => '2019-08-01 08:00', 'end' => '2019-08-01 10:00']]
      */
     public function handleGetEvents($start, $end)
     {
@@ -75,7 +84,7 @@ class CalendarControl extends Control
         $end = $end ? $end : $this->getPresenter()->getParameter('end');
 
         /** @var CalendarEntity[] $records */
-        $records = $this->calendarRepository->findBy(['from >=' => $start, 'to <=' => $end], null);
+        $records = $this->calendarRepository->findBy(['from >=' => $start, 'to <=' => $end], ['from' => 'ASC']);
 
         $result = [];
         foreach ($records as $record) {
@@ -84,7 +93,7 @@ class CalendarControl extends Control
                 'id' => $record->getId(),
                 'title' => $record->getCampaign()->getName(),
                 'start' => $record->getFrom()->format('Y-m-d H:i'),
-//                'end' => $record->getDatetime()->format('Y-m-d'),
+                'end' => $record->getTo()->format('Y-m-d H:i'),
                 'classNames' => [$record->getCampaign()->getTag() ? $record->getCampaign()->getTag() : 'tagNo'],
             ];
         }
@@ -117,17 +126,24 @@ class CalendarControl extends Control
         if ($campaignEntity = $this->campaignRepository->find($id)) {
 
             try {
+                $translator = $presenter->translateMessage();
+                $title      = $translator->translate('campaignPage.management');
+
                 $calendarEntity = $this->createCalendarEntity($campaignEntity, $time);
                 $this->calendarRepository->getEntityManager()->persist($calendarEntity)->flush();
 
-                $translator = $presenter->translateMessage();
-                $title      = $translator->translate('campaignPage.management');
-                $message    = $translator->translate('campaignPage.calendar.moved', null, ['name' => $campaignEntity->getName()]);
+                $message    = $translator->translate('campaignPage.calendar.new', null, [
+                    'name' => $campaignEntity->getName(),
+                    'from' => $calendarEntity->getFrom()->format("j. n. Y H:i"),
+                ]);
                 $presenter->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_CAMPAIGN_EDIT_SUCCESS);
 
                 $presenter->payload->calendar_refresh = true;
                 $presenter->sendPayload();
 
+
+            } catch (OutOfRangeException $e) {
+                $presenter->flashMessage($e->getMessage(), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_WARNING);
 
             } catch (\Exception $e) {
                 Debugger::log($e, ILogger::WARNING);
@@ -139,6 +155,8 @@ class CalendarControl extends Control
 
 
     /**
+     * move campaign event
+     *
      * @param $id
      * @param $time
      * @throws \Nette\Application\AbortException
@@ -160,12 +178,23 @@ class CalendarControl extends Control
         /** @var CalendarEntity $entity */
         if ($entity = $this->calendarRepository->find($id)) {
             try {
-                $entity->setDatetime($time);
+
+                /*
+                 * calc length
+                 */
+                $lengthInSecs = $entity->getTo()->getTimestamp() - $entity->getFrom()->getTimestamp();
+
+                $entity->setFrom($time)
+                       ->setTo(DateTime::from($time)->modify("+ $lengthInSecs seconds"));
+
                 $this->calendarRepository->getEntityManager()->persist($entity)->flush();
 
                 $translator = $presenter->translateMessage();
                 $title      = $translator->translate('campaignPage.management');
-                $message    = $translator->translate('campaignPage.calendar.moved', null, ['name' => $entity->getCampaign()->getName()]);
+                $message    = $translator->translate('campaignPage.calendar.moved', null, [
+                    'name' => $entity->getCampaign()->getName(),
+                    'from' => $entity->getFrom()->format("j. n. Y H:i"),
+                ]);
                 $presenter->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_CAMPAIGN_EDIT_SUCCESS);
 
             } catch (\Exception $e) {
@@ -177,6 +206,56 @@ class CalendarControl extends Control
     }
 
 
+    /**
+     * resize campaign event
+     *
+     * @param $id
+     * @param $time
+     * @throws \Nette\Application\AbortException
+     */
+    public function handleResizeEvent($id, $time)
+    {
+        /** @var BasePresenter $presenter */
+        $presenter = $this->getPresenter();
+
+        if (!$id || !$time) {
+            if ($this->presenter->isAjax()) {
+                $presenter->payload->resize_event = false;
+                $presenter->sendPayload();
+            }
+
+            return;
+        }
+
+        /** @var CalendarEntity $entity */
+        if ($entity = $this->calendarRepository->find($id)) {
+            try {
+                $entity->setTo($time);
+                $this->calendarRepository->getEntityManager()->persist($entity)->flush();
+
+                $translator = $presenter->translateMessage();
+                $title      = $translator->translate('campaignPage.management');
+                $message    = $translator->translate('campaignPage.calendar.resized', null, [
+                    'name' => $entity->getCampaign()->getName(),
+                    'from' => $entity->getFrom()->format("j. n. Y H:i"),
+                    'to' => $entity->getTo()->format("j. n. Y H:i"),
+                ]);
+                $presenter->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_CAMPAIGN_EDIT_SUCCESS);
+
+            } catch (\Exception $e) {
+                Debugger::log($e, ILogger::WARNING);
+            }
+        }
+
+        $presenter->ajaxRedirect('this', null, 'flash');
+    }
+
+
+    /**
+     * not use
+     *
+     * @return \CmsModule\Forms\BaseForm
+     */
     protected function createComponentNewEvent()
     {
         $form = $this->baseForm->create();
@@ -221,19 +300,19 @@ class CalendarControl extends Control
      * @param CampaignEntity $campaignEntity
      * @param $dt
      * @throws \Exception
+     * @throws \OutOfRangeException
      *
      * @return CalendarEntity
      */
     private function createCalendarEntity(CampaignEntity $campaignEntity, $dt)
     {
-        $datetime = new \DateTime($dt);
+        $datetime = new DateTime($dt);
 
         if ($datetime->format('H:i') == '00:00') {
             $datetime->setTime(7, 0);
         }
 
-        $calendarEntity = new CalendarEntity($campaignEntity, $this->usersGroupEntity, $datetime);
-        return $calendarEntity;
+        return $this->calendarFacade->getRecord($campaignEntity, $this->usersGroupEntity, $datetime, null, 0, $this->modifyRealizationCampaignIfNeed);
     }
 
 
@@ -247,7 +326,10 @@ class CalendarControl extends Control
         $form->addText('name', 'Kampaň')
             ->setDisabled(true);
 
-        $form->addText('time', 'Čas')
+        $form->addText('from', 'Čas od')
+            ->setDisabled(true);
+
+        $form->addText('to', 'Čas do')
             ->setDisabled(true);
 
         $form->addSubmit('send', 'Smazat')

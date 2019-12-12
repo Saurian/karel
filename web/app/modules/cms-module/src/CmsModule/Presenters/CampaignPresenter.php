@@ -90,8 +90,9 @@ class CampaignPresenter extends BasePresenter
 
     /**
      * @throws \Nette\Application\AbortException
+     * @throws \Exception
      */
-    public function handleGenerateTest()
+    public function handleCalendarGenerate()
     {
         $translator = $this->translateMessage();
 

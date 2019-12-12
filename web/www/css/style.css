@@ -4887,6 +4887,19 @@ table.focus-on tbody tr.focused td {
   text-transform: uppercase;
 }
 
+.fc th.fc-widget-header a {
+  color: #ffffff;
+}
+
+.fc-list-item-title a,
+.fc-list-table td {
+  color: #ffffff;
+}
+
+.fc-time-grid .fc-slats td {
+  height: 3.0em;
+}
+
 .fc-button {
   background: #ffffff;
   border: 1px solid rgba(120, 130, 140, 0.21);
@@ -4905,7 +4918,6 @@ table.focus-on tbody tr.focused td {
 
 .fc-unthemed .fc-today {
   border: 1px solid #f75b36;
-  background: #fcf8e3!important;
 }
 
 .fc-state-highlight {

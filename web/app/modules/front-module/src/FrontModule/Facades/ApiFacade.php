@@ -140,9 +140,7 @@ class ApiFacade
 
 
                     $playList  = new PlayList($this->calendarRepository->fetch($query)->getIterator()->getArrayCopy());
-                    $mediaList = $playList->createList();
-
-                    if ($mediaList) {
+                    if ($mediaList = $playList->createMediumList()) {
                         $result = [];
 
                         foreach ($mediaList as $item) {
@@ -182,7 +180,7 @@ class ApiFacade
                                 $out += [
                                     'type'        => 'image',
                                     'mimeType'    => $medium->getType(),
-                                    'length'      => $medium->getTime(),
+                                    'length'      => $item->getLength(),
                                     'path'        => $absoluteUrl,
                                     'previewPath' => $absolutePreviewUrl,
                                 ];

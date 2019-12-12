@@ -8,18 +8,21 @@ use CmsModule\Entities\CalendarEntity;
 use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\ShopEntity;
 use CmsModule\Entities\UsersGroupEntity;
+use CmsModule\Facades\Calendar\CalendarList;
+use CmsModule\OutOfRangeException;
 use CmsModule\Repositories\CalendarRepository;
 use CmsModule\Repositories\CampaignRepository;
 use CmsModule\Repositories\ShopRepository;
 use Exception;
 use Kdyby\Doctrine\EntityManager;
+use Kdyby\Translation\Translator;
 use Nette\DateTime;
 use Nette\SmartObject;
 
 /**
  * Class CalendarFacade
  * @package CmsModule\Facades
- * @method onGenerated()
+ * @method onGenerated($calendarList)
  */
 class CalendarFacade
 {
@@ -43,6 +46,10 @@ class CalendarFacade
     /** @var ICalendarControlFactory */
     private $calendarControl;
 
+    /** @var Translator */
+    private $translator;
+
+
     /**
      * CalendarFacade constructor.
      *
@@ -51,15 +58,17 @@ class CalendarFacade
      * @param ShopRepository $shopRepository
      * @param CampaignRepository $campaignRepository
      * @param ICalendarControlFactory $calendarControl
+     * @param Translator $translator
      */
     public function __construct(EntityManager $entityManager, CalendarRepository $calendarRepository, ShopRepository $shopRepository,
-                                CampaignRepository $campaignRepository, ICalendarControlFactory $calendarControl)
+                                CampaignRepository $campaignRepository, ICalendarControlFactory $calendarControl, Translator $translator)
     {
-        $this->entityManager = $entityManager;
-        $this->shopRepository = $shopRepository;
+        $this->entityManager      = $entityManager;
+        $this->shopRepository     = $shopRepository;
         $this->campaignRepository = $campaignRepository;
         $this->calendarRepository = $calendarRepository;
-        $this->calendarControl = $calendarControl;
+        $this->calendarControl    = $calendarControl;
+        $this->translator         = $translator;
     }
 
     /**
@@ -104,16 +113,15 @@ class CalendarFacade
         $this->clearCalendar($usersGroupEntity);
 
         /** @var CampaignEntity[] $campaigns */
-        $campaigns = $this->entityManager->getRepository(CampaignEntity::class)->findBy(['usersGroups' => $usersGroupEntity]);
+        $campaigns = $this->entityManager->getRepository(CampaignEntity::class)->findBy(['usersGroups' => $usersGroupEntity, 'active' => true]);
 
         /** @var ShopEntity $shop */
         $shop = $this->entityManager->getRepository(ShopEntity::class)->find(1);
 
-        $recorded = false;
+        $calendarList = new CalendarList();
 
         foreach ($campaigns as $campaign) {
 
-            if (!$campaign->isActive()) continue;
             $time = $campaign->getRealizedFrom();
             $time->setTime($time->format('H'), 0, 0);
             while ($time <= $campaign->getRealizedTo()) {
@@ -127,8 +135,12 @@ class CalendarFacade
                         $toTime = clone $time;
                         $toTime->modify('+1 hour');
 
-                        $this->addRecord($campaign, $usersGroupEntity, DateTime::from($time), DateTime::from($toTime), $percentage);
-                        $recorded = true;
+                        try {
+                            $calendarList->addRecord($this->getRecord($campaign, $usersGroupEntity, DateTime::from($time), DateTime::from($toTime), $percentage));
+
+                        } catch (OutOfRangeException $e) {
+
+                        }
                     }
                 }
 
@@ -136,9 +148,12 @@ class CalendarFacade
             }
         }
 
-        if ($recorded) {
-            $this->onGenerated();
-            $this->entityManager->flush();
+        if ($calendarList->hasCalendar()) {
+            $calendarList = $calendarList->getCompressedCalendar();
+            // $calendarList = $calendarList->getCalendar();
+
+            $this->onGenerated($calendarList);
+            $this->entityManager->persist($calendarList)->flush();
         }
     }
 
@@ -157,13 +172,54 @@ class CalendarFacade
     }
 
 
-    public function addRecord(CampaignEntity $campaignEntity, UsersGroupEntity $usersGroupEntity, DateTime $dateTime, DateTime $length = null, int $percentage = 0)
+    /**
+     * add record to calendar
+     *
+     * @param CampaignEntity $campaignEntity
+     * @param UsersGroupEntity $usersGroupEntity
+     * @param DateTime $from
+     * @param DateTime|null $to
+     * @param int $percentage
+     * @param bool $force modify limit realizedFrom and realizedTo if need
+     * @return CalendarEntity
+     * @throws OutOfRangeException
+     * @throws Exception
+     */
+    public function getRecord(CampaignEntity $campaignEntity, UsersGroupEntity $usersGroupEntity, DateTime $from, DateTime $to = null, int $percentage = 0, $force = false)
     {
-        $entity = new CalendarEntity($campaignEntity, $usersGroupEntity, $dateTime, $percentage);
-        if ($length) {
-            $entity->setTo($length);
+        if (!$to) {
+            $to = clone $from;
+            $to->modify("+1 hour");
         }
-        $this->entityManager->persist($entity);
+
+        if ($force) {
+            if ($from < $campaignEntity->getRealizedFrom()) {
+                $campaignEntity->setRealizedFrom($from);
+            }
+            if ($to > $campaignEntity->getRealizedTo()) {
+                $campaignEntity->setRealizedTo($to);
+            }
+        }
+
+        if ($from < $campaignEntity->getRealizedFrom()) {
+            throw new OutOfRangeException($this->translator->translate("messages.campaignPage.calendar.addError", null, [
+                'name' => $campaignEntity->getName(),
+                'datetime' => $from,
+                'from' => $campaignEntity->getRealizedFrom()->format("j. n. Y H:i"),
+                'to' => $campaignEntity->getRealizedTo()->format("j. n. Y H:i"),
+            ]));
+        }
+        if ($to > $campaignEntity->getRealizedTo()) {
+            throw new OutOfRangeException($this->translator->translate("messages.campaignPage.calendar.addError", null, [
+                'name' => $campaignEntity->getName(),
+                'datetime' => $from,
+                'from' => $campaignEntity->getRealizedFrom()->format("j. n. Y H:i"),
+                'to' => $campaignEntity->getRealizedTo()->format("j. n. Y H:i"),
+            ]));
+        }
+
+        $entity = new CalendarEntity($campaignEntity, $usersGroupEntity, $from, $to, $percentage);
+        return $entity;
     }
 
 
