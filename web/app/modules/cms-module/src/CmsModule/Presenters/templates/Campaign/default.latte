@@ -45,6 +45,7 @@
 
 	{snippetArea wrapperModal}
 		{include campaignFormModal}
+		{include mediumFormModal}
 	{/snippetArea}
 
 {/block}
@@ -102,7 +103,8 @@
 			<div n:snippet="campaignFormModal" class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-					<h4 class="modal-title">{_campaignPage.addCampaign}</h4>
+					<h4 n:if="!$editCampaign" class="modal-title">{_campaignPage.addCampaign}</h4>
+					<h4 n:if="$editCampaign" class="modal-title">{$campaigns[$editCampaign][entity]->name}</h4>
 				</div>
 
 				<div class="modal-body">
@@ -252,7 +254,7 @@
 								</h4>
 							</div>
 							<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-								<div class="panel-body _well well-sm">
+								<div class="panel-body">
 
 									<div n:snippet="media" class="grido">
 										{control mediaForm}
@@ -271,3 +273,18 @@
 	</div>
 
 {/define}
+
+<div n:define="mediumFormModal" class="modal fade addMediumModal" role="dialog" aria-labelledby="myMediumModalLabel" aria-hidden="false">
+	<div class="modal-dialog modal-lg">
+		<div n:snippet="mediumFormModal" class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">{_campaignPage.medium.add.url}</h4>
+			</div>
+
+			<div class="modal-body">
+				{control mediumForm}
+			</div>
+		</div>
+	</div>
+</div>

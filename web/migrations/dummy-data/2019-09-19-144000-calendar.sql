@@ -99,6 +99,12 @@ INSERT INTO `medium_data` (`id`, `medium_id`, `campaign_id`, `time`, `time_type`
 (14,	2,	4,	NULL,	NULL,	NULL,	'big_buck_bunny.mp4',	'media/4/big_buck_bunny.mp4',	NULL,	NULL,	'video/mp4',	'video dne',	7,	'4'),
 (15,	1,	6,	10,	's',	'6/8b/mamma-mia-1.jpg',	'mamma-mia-1.jpg',	'media/6/8b/mamma-mia-1.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	1,	'6');
 
+INSERT INTO `medium_data` (`id`, `medium_id`, `campaign_id`, `time`, `identifier`, `file_name`, `file_path`, `sound`, `url`, `type`, `keywords`, `position`, `category`) VALUES
+(16,	1,	7,	'10 minutes',	'7/58/rou69c5bc_183755_3604314.jpg',	'rou69c5bc_183755_3604314.jpg',	'media/7/58/rou69c5bc_183755_3604314.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	1,	'7'),
+(17,	1,	7,	'20 minutes',	'7/2c/5654744_sport-fotbal-chelsea-slavia-evropska-liga-v0.jpg',	'5654744_sport-fotbal-chelsea-slavia-evropska-liga-v0.jpg',	'media/7/2c/5654744_sport-fotbal-chelsea-slavia-evropska-liga-v0.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	2,	'7'),
+(18,	1,	7,	'15 minutes',	'7/33/5664296_sport-fotbal-evropska-liga-slavia-chelsea-soucek-v0.jpg',	'5664296_sport-fotbal-evropska-liga-slavia-chelsea-soucek-v0.jpg',	'media/7/33/5664296_sport-fotbal-evropska-liga-slavia-chelsea-soucek-v0.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	3,	'7'),
+(19,	1,	7,	'20 minutes',	'7/7e/m2u5mjk2mze2mzrkmwviy6qnv3tsvzfoiz0ymb13qt5qe5cb75zavkfsw0kf32t8xonhkbodp7mo21bf6bv27a2xirmfhwype6t3iixkwbcv8aztgivbsrho4j3_90ezhmuzrst7kepefgnkomg-zq70h5z3pix6aylhkgmpypho2rql2zaphmq0t7cutunijwtdjv5o6_f_e3t8xm8ikw.jpg',	'm2u5mjk2mze2mzrkmwviy6qnv3tsvzfoiz0ymb13qt5qe5cb75zavkfsw0kf32t8xonhkbodp7mo21bf6bv27a2xirmfhwype6t3iixkwbcv8aztgivbsrho4j3_90ezhmuzrst7kepefgnkomg-zq70h5z3pix6aylhkgmpypho2rql2zaphmq0t7cutunijwtdjv5o6_f_e3t8xm8ikw.jpg',	'media/7/7e/m2u5mjk2mze2mzrkmwviy6qnv3tsvzfoiz0ymb13qt5qe5cb75zavkfsw0kf32t8xonhkbodp7mo21bf6bv27a2xirmfhwype6t3iixkwbcv8aztgivbsrho4j3_90ezhmuzrst7kepefgnkomg-zq70h5z3pix6aylhkgmpypho2rql2zaphmq0t7cutunijwtdjv5o6_f_e3t8xm8ikw.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	4,	'7');
+
 INSERT INTO `metric` (`id`, `shop_id`, `target_group_id`, `metric_param_id`, `name`, `inserted`, `updated`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `users_group_id`) VALUES
 (1,	1,	2,	1,	'Matky s dětmi kočárek, Matky s dětmi do 5 let, Důchodci, Babičky (nakupují pro vnoučata)',	'2019-09-12 14:13:13',	'2019-09-12 14:13:13',	2,	2,	NULL,	1),
 (2,	1,	3,	5,	'Bonita zákazníků',	'2019-09-12 14:16:17',	'2019-09-12 14:16:17',	2,	2,	NULL,	1),

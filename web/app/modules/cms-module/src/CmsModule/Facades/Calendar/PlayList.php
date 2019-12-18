@@ -4,8 +4,8 @@
 namespace CmsModule\Facades\Calendar;
 
 use CmsModule\Entities\CalendarEntity;
+use Exception;
 use Nette\Utils\DateTime;
-use Tracy\Debugger;
 
 class PlayList
 {
@@ -28,7 +28,7 @@ class PlayList
     /**
      * PlayList constructor.
      * @param CalendarEntity[] $calendar
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(array $calendar)
     {
@@ -38,7 +38,7 @@ class PlayList
     /**
      * @param CalendarEntity[] $calendar
      * @return PlayList
-     * @throws \Exception
+     * @throws Exception
      */
     protected function initCalendar(array $calendar): PlayList
     {

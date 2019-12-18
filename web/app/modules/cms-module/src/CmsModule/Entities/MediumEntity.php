@@ -9,10 +9,10 @@
 
 namespace CmsModule\Entities;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 use Devrun\Doctrine\Entities\BlameableTrait;
 use Devrun\Doctrine\Entities\DateTimeTrait;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\Attributes\Identifier;
 use Kdyby\Doctrine\Entities\MagicAccessors;
 
@@ -20,7 +20,10 @@ use Kdyby\Doctrine\Entities\MagicAccessors;
  * Class MediumEntity
  *
  * @ORM\Entity
- * @ORM\Table(name="medium")
+ * @ORM\Table(name="medium", indexes={
+ *      @ORM\Index(name="type_idx", columns={"type"}),
+ *  })
+ * )
  * @package CmsModule\Entities
  */
 class MediumEntity
@@ -28,8 +31,8 @@ class MediumEntity
 
     const TYPE_IMAGE = 'image';
     const TYPE_VIDEO = 'video';
-    const TYPE_URL = 'url';
-    const TYPE_ZIP = 'zip';
+    const TYPE_URL   = 'url';
+    const TYPE_ZIP   = 'zip';
 
     use Identifier;
     use DateTimeTrait;
@@ -44,14 +47,11 @@ class MediumEntity
     protected $mediaData;
 
 
-
     /**
      * @var string [image,video,url,zip]
      * @ORM\Column(type="string")
      */
     protected $type;
-
-
 
 
     /**
@@ -64,16 +64,6 @@ class MediumEntity
         $this->type = $type;
     }
 
-
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
     static public function getTypes()
     {
         return [
@@ -82,6 +72,14 @@ class MediumEntity
             self::TYPE_URL,
             self::TYPE_ZIP,
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
 

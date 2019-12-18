@@ -74,7 +74,7 @@ class Authorizator extends Permission
         $this->allow('watcher', 'Cms:Error4xx', Permission::ALL);
 
         // privileges editor
-        $this->allow('editor', 'Cms:Campaign', ['nestable']);
+        $this->allow('editor', 'Cms:Campaign', ['nestable', 'addMedium']);
         $this->allow('editor', 'Cms:Device', Permission::ALL);
         $this->allow('editor', 'Cms:DeviceGroup', Permission::ALL);
         $this->allow('editor', 'Cms:Reach', Permission::ALL);
@@ -116,7 +116,7 @@ class Authorizator extends Permission
         $this->deny('admin', 'Cms:Device', ['listAllDevices']);
         $this->deny('admin', 'Cms:DeviceGroup', ['listAllDevices']);
         $this->deny('admin', 'Cms:Users', 'listAllUsers');
-        $this->allow('admin', 'Cms:Campaign', ['nestable']);
+        $this->allow('admin', 'Cms:Campaign', ['nestable', 'addMedium']);
         $this->allow('admin', 'Cms:Users', ['nestable', 'listCreatedByUser', 'listByDevicesUser']);
         $this->allow('admin', 'Cms:Reach', Permission::ALL);
         $this->allow('admin', 'Cms:Template', Permission::ALL);

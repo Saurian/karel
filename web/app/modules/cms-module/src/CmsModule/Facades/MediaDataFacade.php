@@ -9,9 +9,6 @@
 
 namespace CmsModule\Facades;
 
-
-use CmsModule\Controls\IMultimediaUploadControlFactory;
-use CmsModule\Controls\MultimediaUploadControl;
 use CmsModule\Entities\MediumDataEntity;
 use CmsModule\Entities\MediumEntity;
 use CmsModule\Repositories\MediaRepository;
@@ -73,6 +70,15 @@ class MediaDataFacade
     public function getVideoTypeEntity()
     {
         return $this->repository->getEntityManager()->getRepository(MediumEntity::class)->findOneBy(['type' => 'video']);
+    }
+
+
+    /**
+     * @return MediumEntity|null
+     */
+    public function getUrlTypeEntity()
+    {
+        return $this->repository->getEntityManager()->getRepository(MediumEntity::class)->findOneBy(['type' => 'url']);
     }
 
 

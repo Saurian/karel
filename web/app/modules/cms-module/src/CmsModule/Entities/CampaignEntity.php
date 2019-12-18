@@ -34,7 +34,6 @@ use Nette\Utils\DateTime;
  *     @ORM\Index(name="position_idx", columns={"position"}),
  * })
  * @package CmsModule\Entities
- * @method setName($name)
  * @method getName()
  */
 class CampaignEntity implements IDeviceEntity
@@ -222,6 +221,15 @@ class CampaignEntity implements IDeviceEntity
         return $this->getRealizedFrom()->diff($this->getRealizedTo());
     }
 
+    /**
+     * @param string $name
+     * @return CampaignEntity
+     */
+    public function setName(string $name): CampaignEntity
+    {
+        $this->name = $name;
+        return $this;
+    }
 
 
 
@@ -341,13 +349,18 @@ class CampaignEntity implements IDeviceEntity
     }
 
 
+    /**
+     * @param MediumDataEntity $mediumDataEntity
+     * @return $this|void
+     */
     public function addMediumData(MediumDataEntity $mediumDataEntity)
     {
         if ($this->mediaData->contains($mediumDataEntity)) {
-            return;
+            return $this;
         }
 
         $this->mediaData[] = $mediumDataEntity;
+        return $this;
     }
 
     public function removeMediumData(MediumDataEntity $mediumDataEntity)

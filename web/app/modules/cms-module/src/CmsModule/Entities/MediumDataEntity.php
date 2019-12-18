@@ -13,8 +13,6 @@ use Devrun\Doctrine\Entities\PositionTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\Attributes\Identifier;
 use Kdyby\Doctrine\Entities\MagicAccessors;
-use Tracy\Debugger;
-
 
 /**
  * Class MediumDataEntity
@@ -51,7 +49,7 @@ class MediumDataEntity
 
 
     /**
-     * @var string
+     * @var string [20 minutes|10 seconds]
      * @ORM\Column(type="string", length=32, nullable=true)
      */
     protected $time;
@@ -183,6 +181,17 @@ class MediumDataEntity
     }
 
 
+    /**
+     * @param string $time
+     * @return MediumDataEntity
+     */
+    public function setTime(string $time): MediumDataEntity
+    {
+        $this->time = $time;
+        return $this;
+    }
+
+
 
 
 
@@ -219,6 +228,16 @@ class MediumDataEntity
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * @param string $url
+     * @return MediumDataEntity
+     */
+    public function setUrl(string $url): MediumDataEntity
+    {
+        $this->url = $url;
+        return $this;
     }
 
 

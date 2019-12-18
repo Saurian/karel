@@ -18,6 +18,7 @@ use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\MediumDataEntity;
+use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Facades\CalendarFacade;
 use CmsModule\Facades\CampaignFacade;
 use CmsModule\Facades\DeviceFacade;
@@ -30,7 +31,6 @@ use CmsModule\Repositories\DeviceRepository;
 use CmsModule\Repositories\Queries\CampaignQuery;
 use Devrun\CmsModule\Controls\DataGrid;
 use Devrun\Php\PhpInfo;
-use Devrun\Utils\Debugger;
 use Kdyby\Doctrine\QueryBuilder;
 use Kdyby\Translation\Phrase;
 use Nette\Application\UI\Form;
@@ -38,6 +38,7 @@ use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\FileUpload;
 use Nette\Utils\DateTime;
 use Nette\Utils\Html;
+use Nette\Utils\Strings;
 use Nette\Utils\Validators;
 use Ublaboo\ImageStorage\ImageStoragePresenterTrait;
 
@@ -97,7 +98,7 @@ class CampaignPresenter extends BasePresenter
         $translator = $this->translateMessage();
 
         if ($usersGroup = $this->userEntity->getGroup()) {
-            $this->calendarFacade->generate($usersGroup);
+            $this->calendarFacade->generateByUsersGroup($usersGroup);
 
             $title      = $translator->translate('campaignPage.management');
             $this->flashMessage($translator->translate("campaignPage.plan_generated"), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
@@ -209,6 +210,19 @@ class CampaignPresenter extends BasePresenter
     }
 
 
+    /**
+     * readjust modal deviceForm to empty form
+     *
+     */
+    public function handleAddMedium()
+    {
+//        $this->editDevice = null;
+//        $this->payload->url = $this->link('this');
+        $this->ajaxRedirect('this', null, ['mediumFormModal']);
+    }
+
+
+
     public function handleToggleActive($cid, $checked)
     {
         $campaignRepository = $this->campaignFacade->getCampaignRepository();
@@ -254,6 +268,53 @@ class CampaignPresenter extends BasePresenter
 
     }
 
+    /**
+     * @deprecated
+     * @codeCoverageIgnore
+     *
+     * @throws \Exception
+     */
+    private function testCalendar()
+    {
+        $em = $this->deviceRepository->getEntityManager();
+
+        $usersGroup = $em->getRepository(UsersGroupEntity::class)->findOneBy(['name' => 'develop-cms.pixatori.com']);
+
+        $campaigns = [];
+        $campaign = (new CampaignEntity())
+            ->setUsersGroups($usersGroup)
+            ->setRealizedFrom(new DateTime('2019-12-02'))
+            ->setRealizedTo(new DateTime('2019-12-03'))
+            ->setName("Zabíječka");
+
+        $campaign2 = (new CampaignEntity())
+            ->setUsersGroups($usersGroup)
+            ->setRealizedFrom(new DateTime('2019-12-02 10:00'))
+            ->setRealizedTo(new DateTime('2019-12-02 12:00'))
+            ->setName("Kampaň barev");
+
+        $campaigns[] = $campaign;
+        $campaigns[] = $campaign2;
+
+
+        $testDevice = (new DeviceEntity())
+            ->setName("Pokus")
+            ->setSn('D123123');
+
+        $em->persist($testDevice)
+           ->persist($campaigns)
+           ->flush();
+
+        $campaign->addDevice($testDevice);
+
+
+        $this->calendarFacade->clearCalendar($usersGroup);
+        $this->calendarFacade->generateByCampaigns($usersGroup, $campaigns);
+
+        die(__METHOD__);
+    }
+
+
     public function actionDefault()
     {
         $query   = $this->getUserAllowedDevicesQuery();
@@ -267,6 +328,7 @@ class CampaignPresenter extends BasePresenter
         }
         $this->template->devices = $devices;
 
+//        $this->testCalendar();
     }
 
 
@@ -778,15 +840,24 @@ class CampaignPresenter extends BasePresenter
         $grid->addColumnText('identifier', '')
             ->setFitContent()
             ->setRenderer(function (MediumDataEntity $entity) {
-                $link = $this->imageStorage->fromIdentifier([ $entity->getIdentifier()]);
-                $img = $this->imageStorage->fromIdentifier([ $entity->getIdentifier(), '80x50', 'exact']);
+                if ($identifier = $entity->getIdentifier()) {
+                    $link = $this->imageStorage->fromIdentifier([ $identifier]);
+                    $img = $this->imageStorage->fromIdentifier([ $identifier, '80x50', 'exact']);
 
-                $wwwDir = $this->getHttpRequest()->getUrl()->getBasePath();
-                $a = Html::el('a')->href($wwwDir . $link->createLink())->addAttributes(['data-lightbox' => $entity->getCategory(), 'data-title' => $entity->getFileName()]);
-                $img = Html::el('img')->addAttributes(['src' => $wwwDir . $img->createLink()]);
+                    $wwwDir = $this->getHttpRequest()->getUrl()->getBasePath();
+                    $a = Html::el('a')->href($wwwDir . $link->createLink())->addAttributes(['data-lightbox' => $entity->getCategory(), 'data-title' => $entity->getFileName()]);
+                    $img = Html::el('img')->addAttributes(['src' => $wwwDir . $img->createLink()]);
 
-                $a->addHtml($img);
-                return $a;
+                    $a->addHtml($img);
+                    return $a;
+
+                } elseif ($url = $entity->getUrl()) {
+                    $a = Html::el('a')->href($url)->addText($url);
+                    return $a;
+
+                } else {
+                    return "No preview available";
+                }
             });
 
         $presenter = $this;
@@ -927,6 +998,20 @@ class CampaignPresenter extends BasePresenter
             ]);
 
 
+        if ($this->getUser()->isAllowed('Cms:Campaign', 'addMedium')) {
+            $grid->addToolbarButton('addMedium!', 'Přidat Url')
+                 ->addAttributes([
+                     'data-target' => '.addMediumModal',
+                     'data-toggle' => 'ajax-modal',
+                     'data-title' => "Ahoj",
+                 ])
+                 ->setClass('btn btn-xs btn-info')
+                 ->setIcon('edge');
+        }
+
+
+
+
         $grid->addToolbarButton('addMedia', 'Nahrát obsah')
             ->addAttributes([
                 'data-click' => '#frm-mediaForm-files',
@@ -958,6 +1043,60 @@ class CampaignPresenter extends BasePresenter
         $control->setUsersGroupEntity($this->userEntity->getGroup());
 
         return $control;
+    }
+
+
+    protected function createComponentMediumForm()
+    {
+        $form = new BaseForm();
+
+        $form->addHidden('campaign', $this->campaign);
+
+        $form->addText('url', 'Url')
+            ->addRule(Form::FILLED)
+            ->addRule(Form::URL);
+
+        $form->addSubmit('send');
+        $form->addFormClass(['ajax']);
+
+        $form->setDefaults([
+            'campaign' => $this->campaign
+        ]);
+
+        $form->bootstrap3Render();
+        $form->onSuccess[] = function (BaseForm $form, $values) {
+
+            $parsed_url = parse_url($values->url);
+
+            $urlType = $parsed_url['host'] == 'www.youtube.com' && $parsed_url['path'] == "/watch" && substr($parsed_url['query'], 0, 2) == "v=" && substr($parsed_url['query'], 2) != ""
+                ? 'url/youtube'
+                : 'url/other';
+
+            /** @var CampaignEntity $campaignEntity */
+            $campaignEntity = $this->campaignFacade->getRepository()->find($values->campaign);
+            $maxPosition    = $this->mediaDataFacade->getRepository()->getMaxPositionInCategory($campaignEntity->getId());
+            $mediumEntity   = $this->mediaDataFacade->getUrlTypeEntity();
+
+            $mediumDataEntity = (new MediumDataEntity($campaignEntity, $mediumEntity))
+                ->setType($urlType)
+                ->setUrl($values->url)
+                ->setCategory($campaignEntity->getId())
+                ->setPosition(++$maxPosition);
+
+            $this->campaignFacade->getEntityManager()->persist($mediumDataEntity)->flush();
+
+            $translator = $this->translateMessage();
+            $title      = $translator->translate('campaignPage.management');
+            $message    = $translator->translate('campaignPage.medium.add.' . Strings::webalize($urlType), null, ['url' => $values->url]);
+            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_CAMPAIGN_EDIT_SUCCESS);
+
+            $form->setValues([
+                'campaign' => $this->campaign
+            ], true);
+            $this->ajaxRedirect('this', null, ['flash', 'media', 'mediumFormModal']);
+        };
+
+        return $form;
     }
 
 

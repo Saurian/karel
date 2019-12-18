@@ -106,15 +106,30 @@ class CalendarFacade
 
     /**
      * @param UsersGroupEntity $usersGroupEntity
+     * @param bool $compressedResult
+     * @return CalendarEntity[]
      * @throws Exception
      */
-    public function generate(UsersGroupEntity $usersGroupEntity)
+    public function generateByUsersGroup(UsersGroupEntity $usersGroupEntity, $compressedResult = true)
     {
         $this->clearCalendar($usersGroupEntity);
 
         /** @var CampaignEntity[] $campaigns */
         $campaigns = $this->entityManager->getRepository(CampaignEntity::class)->findBy(['usersGroups' => $usersGroupEntity, 'active' => true]);
 
+        return $this->generateByCampaigns($usersGroupEntity, $campaigns, $compressedResult);
+    }
+
+
+    /**
+     * @param UsersGroupEntity $usersGroupEntity
+     * @param CampaignEntity[] $campaigns
+     * @param bool $compressedResult
+     * @return CalendarEntity[]
+     * @throws Exception
+     */
+    public function generateByCampaigns(UsersGroupEntity $usersGroupEntity, array $campaigns, $compressedResult = true)
+    {
         /** @var ShopEntity $shop */
         $shop = $this->entityManager->getRepository(ShopEntity::class)->find(1);
 
@@ -149,12 +164,15 @@ class CalendarFacade
         }
 
         if ($calendarList->hasCalendar()) {
-            $calendarList = $calendarList->getCompressedCalendar();
-            // $calendarList = $calendarList->getCalendar();
+            $calendarList = $compressedResult
+                ? $calendarList->getCompressedCalendar()
+                : $calendarList->getCalendar();
 
             $this->onGenerated($calendarList);
             $this->entityManager->persist($calendarList)->flush();
         }
+
+        return $calendarList;
     }
 
 

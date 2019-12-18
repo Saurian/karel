@@ -382,6 +382,10 @@ campaignPage:
 	    supported: "Nahráno médium %media%.|Nahrána média %media%."
 	    not_found: médium nenalezeno
 	    removed: médium %name% smazáno
+	    add.url: Přidat url adresu
+	    add.url-youtube: Youtube url `%url%` přidána
+	    add.url-other: url `%url%` Přidána
+
 
 	calendar:
 		title: Naplánované kampaně

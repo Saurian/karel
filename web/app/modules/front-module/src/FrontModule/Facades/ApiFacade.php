@@ -115,8 +115,8 @@ class ApiFacade
                     $query = $this->calendarRepository
                         ->getQuery()
                         ->byDeviceSn($did)
-                        ->deviceActive(true)
-                        ->campaignActive(true)
+                        ->deviceActive($activeDevice)
+                        ->campaignActive($activeCampaigns)
                         ->inCampaignTimeRange()
                         ->withCampaigns()
                         ->orderByFromTo()
