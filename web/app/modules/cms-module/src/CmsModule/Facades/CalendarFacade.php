@@ -125,6 +125,7 @@ class CalendarFacade
      * @param UsersGroupEntity $usersGroupEntity
      * @param CampaignEntity[] $campaigns
      * @param bool $compressedResult
+     *
      * @return CalendarEntity[]
      * @throws Exception
      */
@@ -141,38 +142,40 @@ class CalendarFacade
             $time->setTime($time->format('H'), 0, 0);
             while ($time <= $campaign->getRealizedTo()) {
 
-                if ($this->shopRepository->isTimeInShopTimeRange($time, $shop)) {
+                if ($this->campaignRepository->isTimeInMetricsTimeRange($time, $campaign)) {
 
-                    if ($this->campaignRepository->isTimeInMetricsTimeRange($time, $campaign)) {
+                    $percentage = $this->campaignRepository->getPercentageUse($time, $campaign);
 
-                        $percentage = $this->campaignRepository->getPercentageUse($time, $campaign);
+                    $toTime = clone $time;
+                    $toTime->modify('+1 hour');
 
-                        $toTime = clone $time;
-                        $toTime->modify('+1 hour');
+                    try {
+                        $calendarList->addRecord($this->getRecord($campaign, $usersGroupEntity, DateTime::from($time), DateTime::from($toTime), $percentage));
 
-                        try {
-                            $calendarList->addRecord($this->getRecord($campaign, $usersGroupEntity, DateTime::from($time), DateTime::from($toTime), $percentage));
+                    } catch (OutOfRangeException $e) {
 
-                        } catch (OutOfRangeException $e) {
-
-                        }
                     }
                 }
+                /*
+                if ($this->shopRepository->isTimeInShopTimeRange($time, $shop)) {
+
+                }*/
 
                 $time->modify('+1 hour');
             }
         }
 
+        $result = [];
         if ($calendarList->hasCalendar()) {
-            $calendarList = $compressedResult
+            $result = $compressedResult
                 ? $calendarList->getCompressedCalendar()
                 : $calendarList->getCalendar();
 
-            $this->onGenerated($calendarList);
-            $this->entityManager->persist($calendarList)->flush();
+            $this->onGenerated($result);
+            $this->entityManager->persist($result)->flush();
         }
 
-        return $calendarList;
+        return $result;
     }
 
 
@@ -199,6 +202,7 @@ class CalendarFacade
      * @param DateTime|null $to
      * @param int $percentage
      * @param bool $force modify limit realizedFrom and realizedTo if need
+     *
      * @return CalendarEntity
      * @throws OutOfRangeException
      * @throws Exception

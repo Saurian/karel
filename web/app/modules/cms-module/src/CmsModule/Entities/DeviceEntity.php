@@ -127,6 +127,14 @@ class DeviceEntity
 
 
     /**
+     * @var ShopEntity
+     * @ORM\ManyToOne(targetEntity="ShopEntity", inversedBy="devices")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    protected $shop;
+
+
+    /**
      * @var DeviceGroupEntity[]|ArrayCollection
      * @ORM\ManyToMany(targetEntity="DeviceGroupEntity", mappedBy="devices")
      */
@@ -199,6 +207,26 @@ class DeviceEntity
         $this->name = $name;
         return $this;
     }
+
+
+    /**
+     * @return ShopEntity
+     */
+    public function getShop(): ShopEntity
+    {
+        return $this->shop;
+    }
+
+    /**
+     * @param ShopEntity $shop
+     * @return DeviceEntity
+     */
+    public function setShop(ShopEntity $shop): DeviceEntity
+    {
+        $this->shop = $shop;
+        return $this;
+    }
+
 
 
 

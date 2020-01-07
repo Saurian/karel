@@ -82,22 +82,22 @@ INSERT INTO `device_group` (`id`, `root_id`, `parent_id`, `created_by_id`, `upda
 (20,	2,	19,	2,	2,	NULL,	'Ještě vnořenější :)',	0,	0,	'2019-08-13 10:04:00',	'2019-08-13 10:04:00',	18,	'',	8,	5,	9,	NULL,	NULL);
 
 
-INSERT INTO `medium_data` (`id`, `medium_id`, `campaign_id`, `time`, `time_type`, `identifier`, `file_name`, `file_path`, `sound`, `url`, `type`, `keywords`, `position`, `category`) VALUES
-(1,	1,	1,	10,	's',	'1/70/krajina-7.jpg',	'krajina-7.jpg',	'media/1/70/krajina-7.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	3,	'1'),
-(2,	1,	1,	10,	's',	'1/30/3731111-170208145715612-o.jpg',	'3731111-170208145715612-o.jpg',	'media/1/30/3731111-170208145715612-o.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	5,	'1'),
-(3,	1,	1,	10,	's',	'1/f0/img_4670.jpg',	'img_4670.jpg',	'media/1/f0/img_4670.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	2,	'1'),
-(4,	1,	1,	10,	's',	'1/db/nikon.jpeg',	'nikon.jpeg',	'media/1/db/nikon.jpeg',	NULL,	NULL,	'image/jpeg',	NULL,	0,	'1'),
-(5,	1,	1,	10,	's',	'1/25/kamera.jpeg',	'kamera.jpeg',	'media/1/25/kamera.jpeg',	NULL,	NULL,	'image/jpeg',	NULL,	1,	'1'),
-(6,	1,	4,	10,	's',	'4/c7/594342.jpg',	'594342.jpg',	'media/4/c7/594342.jpg',	NULL,	NULL,	'image/jpeg',	'klid před bouří',	1,	'4'),
-(7,	1,	4,	10,	's',	'4/b2/sun-sunset-beach-ocean-sky-cloud.jpg',	'sun-sunset-beach-ocean-sky-cloud.jpg',	'media/4/b2/sun-sunset-beach-ocean-sky-cloud.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	2,	'4'),
-(8,	1,	4,	10,	's',	'4/88/beautiful-sky-wallpaper.jpg',	'beautiful-sky-wallpaper.jpg',	'media/4/88/beautiful-sky-wallpaper.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	3,	'4'),
-(9,	1,	4,	10,	's',	'4/aa/ocean-images-223.jpg',	'ocean-images-223.jpg',	'media/4/aa/ocean-images-223.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	4,	'4'),
-(10,	1,	4,	6,	'min',	'4/07/lj_2014_03_benin-1972.jpg',	'lj_2014_03_benin-1972.jpg',	'media/4/07/lj_2014_03_benin-1972.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	6,	'4'),
-(11,	1,	4,	10,	's',	'4/a8/beautiful-lake-pictures-1.jpg',	'beautiful-lake-pictures-1.jpg',	'media/4/a8/beautiful-lake-pictures-1.jpg',	NULL,	NULL,	'image/jpeg',	'jezero',	8,	'4'),
-(12,	1,	4,	10,	's',	'4/50/wallpaper.wiki-beautiful-full-hd-images-pic-wpe0011754.jpg',	'wallpaper.wiki-beautiful-full-hd-images-pic-wpe0011754.jpg',	'media/4/50/wallpaper.wiki-beautiful-full-hd-images-pic-wpe0011754.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	9,	'4'),
-(13,	2,	4,	NULL,	NULL,	NULL,	'intro-czmangames.mp4',	'media/4/intro-czmangames.mp4',	NULL,	NULL,	'video/mp4',	'slovo\nhledat',	5,	'4'),
-(14,	2,	4,	NULL,	NULL,	NULL,	'big_buck_bunny.mp4',	'media/4/big_buck_bunny.mp4',	NULL,	NULL,	'video/mp4',	'video dne',	7,	'4'),
-(15,	1,	6,	10,	's',	'6/8b/mamma-mia-1.jpg',	'mamma-mia-1.jpg',	'media/6/8b/mamma-mia-1.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	1,	'6');
+INSERT INTO `medium_data` (`id`, `medium_id`, `campaign_id`, `time`, `identifier`, `file_name`, `file_path`, `sound`, `url`, `type`, `keywords`, `position`, `category`) VALUES
+(1,	1,	1,	'8 minutes',	'1/70/krajina-7.jpg',	'krajina-7.jpg',	'media/1/70/krajina-7.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	3,	'1'),
+(2,	1,	1,	'12 minutes',	'1/30/3731111-170208145715612-o.jpg',	'3731111-170208145715612-o.jpg',	'media/1/30/3731111-170208145715612-o.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	5,	'1'),
+(3,	1,	1,	'10 minutes',	'1/f0/img_4670.jpg',	'img_4670.jpg',	'media/1/f0/img_4670.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	2,	'1'),
+(4,	1,	1,	'10 minutes',	'1/db/nikon.jpeg',	'nikon.jpeg',	'media/1/db/nikon.jpeg',	NULL,	NULL,	'image/jpeg',	NULL,	0,	'1'),
+(5,	1,	1,	'10 minutes',	'1/25/kamera.jpeg',	'kamera.jpeg',	'media/1/25/kamera.jpeg',	NULL,	NULL,	'image/jpeg',	NULL,	1,	'1'),
+(6,	1,	4,	'10 minutes',	'4/c7/594342.jpg',	'594342.jpg',	'media/4/c7/594342.jpg',	NULL,	NULL,	'image/jpeg',	'klid před bouří',	1,	'4'),
+(7,	1,	4,	'10 minutes',	'4/b2/sun-sunset-beach-ocean-sky-cloud.jpg',	'sun-sunset-beach-ocean-sky-cloud.jpg',	'media/4/b2/sun-sunset-beach-ocean-sky-cloud.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	2,	'4'),
+(8,	1,	4,	'10 minutes',	'4/88/beautiful-sky-wallpaper.jpg',	'beautiful-sky-wallpaper.jpg',	'media/4/88/beautiful-sky-wallpaper.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	3,	'4'),
+(9,	1,	4,	'10 minutes',	'4/aa/ocean-images-223.jpg',	'ocean-images-223.jpg',	'media/4/aa/ocean-images-223.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	4,	'4'),
+(10,	1,	4,	'6 minutes',	'4/07/lj_2014_03_benin-1972.jpg',	'lj_2014_03_benin-1972.jpg',	'media/4/07/lj_2014_03_benin-1972.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	6,	'4'),
+(11,	1,	4,	'10 minutes',	'4/a8/beautiful-lake-pictures-1.jpg',	'beautiful-lake-pictures-1.jpg',	'media/4/a8/beautiful-lake-pictures-1.jpg',	NULL,	NULL,	'image/jpeg',	'jezero',	8,	'4'),
+(12,	1,	4,	'10 minutes',	'4/50/wallpaper.wiki-beautiful-full-hd-images-pic-wpe0011754.jpg',	'wallpaper.wiki-beautiful-full-hd-images-pic-wpe0011754.jpg',	'media/4/50/wallpaper.wiki-beautiful-full-hd-images-pic-wpe0011754.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	9,	'4'),
+(13,	2,	4,	'10 minutes',	NULL,	'intro-czmangames.mp4',	'media/4/intro-czmangames.mp4',	NULL,	NULL,	'video/mp4',	'slovo\nhledat',	5,	'4'),
+(14,	2,	4,	'10 minutes',	NULL,	'big_buck_bunny.mp4',	'media/4/big_buck_bunny.mp4',	NULL,	NULL,	'video/mp4',	'video dne',	7,	'4'),
+(15,	1,	6,	'10 minutes',	'6/8b/mamma-mia-1.jpg',	'mamma-mia-1.jpg',	'media/6/8b/mamma-mia-1.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	1,	'6');
 
 INSERT INTO `medium_data` (`id`, `medium_id`, `campaign_id`, `time`, `identifier`, `file_name`, `file_path`, `sound`, `url`, `type`, `keywords`, `position`, `category`) VALUES
 (16,	1,	7,	'10 minutes',	'7/58/rou69c5bc_183755_3604314.jpg',	'rou69c5bc_183755_3604314.jpg',	'media/7/58/rou69c5bc_183755_3604314.jpg',	NULL,	NULL,	'image/jpeg',	NULL,	1,	'7'),

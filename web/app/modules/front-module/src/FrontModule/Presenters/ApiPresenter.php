@@ -677,7 +677,7 @@ class ApiPresenter extends BasePresenter
 
         $form->onSuccess[] = function ($form, $values) {
 
-//            $this->redirect('gimmePlayList!', (array) $values);
+            $this->redirect('gimmePlayList!', (array) $values);
 //            $result = $this->handleGimmePlayList($values->did, $values->ssid, $values->p, $values->realizedFrom, $values->realizedTo, $values->activeDevice, $values->activeCampaigns);
             $result = $this->apiFacade->createPlayList($values->did, $values->ssid, $values->p, $values->realizedFrom, $values->realizedTo, $values->activeDevice, $values->activeCampaigns);
 

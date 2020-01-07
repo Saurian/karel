@@ -117,7 +117,7 @@ class ApiFacade
                         ->byDeviceSn($did)
                         ->deviceActive($activeDevice)
                         ->campaignActive($activeCampaigns)
-                        ->inCampaignTimeRange()
+//                        ->inCampaignTimeRange()
                         ->withCampaigns()
                         ->orderByFromTo()
                         ->orderByCampaign()
@@ -131,15 +131,22 @@ class ApiFacade
                         if ($realizedFrom > $realizedTo) $realizedTo = $realizedFrom;
                     }
 
-                    if ($realizedFrom) {
+                    if ($realizedFrom && !$realizedTo) {
                         $query->realizedFrom($realizedFrom);
-                    }
-                    if ($realizedTo) {
+
+                    } elseif ($realizedTo && !$realizedFrom) {
                         $query->realizedTo($realizedTo);
+
+                    } elseif ($realizedFrom && $realizedTo) {
+                        $query->betweenFromTo($realizedFrom, $realizedTo);
                     }
 
+                    $calendars = $this->calendarRepository->fetch($query)->getIterator()->getArrayCopy();
 
-                    $playList  = new PlayList($this->calendarRepository->fetch($query)->getIterator()->getArrayCopy());
+                    $playList  = (new PlayList($calendars))
+                        ->setFrom($realizedFrom)
+                        ->setTo($realizedTo);
+
                     if ($mediaList = $playList->createMediumList()) {
                         $result = [];
 
@@ -151,7 +158,9 @@ class ApiFacade
                             $out = [
                                 'id'   => $medium->getId(),
                                 'from' => $item->getFrom(),
+                                'fromString' => $item->getFrom()->format('Y-m-d H:i'),
                                 'to'   => $item->getTo(),
+                                'toString' => $item->getTo()->format('Y-m-d H:i'),
                                 //                                'mediaKeywords'     => implode(' ', $this->getMediaDataKeywords($campaign)),
 
                                 //                    'name'              => $campaign->getName(),

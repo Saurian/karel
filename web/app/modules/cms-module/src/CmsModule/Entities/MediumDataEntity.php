@@ -116,7 +116,7 @@ class MediumDataEntity
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getTime()
     {

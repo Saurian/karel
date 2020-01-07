@@ -133,7 +133,23 @@ class CalendarQuery extends QueryObject
     {
         $this->filter[] = function (QueryBuilder $qb) {
             $qb->andWhere('q.from >= campaign.realizedFrom');
-//            $qb->andWhere('q.to <= campaign.realizedTo');
+            $qb->andWhere('q.to <= campaign.realizedTo');
+        };
+        return $this;
+    }
+
+
+    /**
+     * @param $realizedFrom
+     * @return $this
+     */
+    public function betweenFromTo($realizedFrom, $realizedTo)
+    {
+        $this->filter[] = function (QueryBuilder $qb) use ($realizedFrom, $realizedTo) {
+            $qb->andWhere('(q.from between :realizedFrom and :realizedTo) or (q.to between :realizedFrom and :realizedTo)')
+               ->andWhere('q.to > :realizedFrom')
+               ->setParameter('realizedFrom', $realizedFrom)
+               ->setParameter('realizedTo', $realizedTo);
         };
         return $this;
     }
@@ -146,7 +162,7 @@ class CalendarQuery extends QueryObject
     public function realizedFrom($realizedFrom)
     {
         $this->filter[] = function (QueryBuilder $qb) use ($realizedFrom) {
-            $qb->andWhere('q.from >= :realizedFrom')->setParameter('realizedFrom', $realizedFrom);
+            $qb->andWhere('(q.from >= :realizedFrom) or (q.to >= :realizedFrom)')->setParameter('realizedFrom', $realizedFrom);
         };
         return $this;
     }
@@ -155,7 +171,7 @@ class CalendarQuery extends QueryObject
     public function realizedTo($realizedTo)
     {
         $this->filter[] = function (QueryBuilder $qb) use ($realizedTo) {
-            $qb->andWhere('q.to <= :realizedTo')->setParameter('realizedTo', $realizedTo);
+            $qb->andWhere('(q.to <= :realizedTo) or (q.from <= :realizedTo)')->setParameter('realizedTo', $realizedTo);
         };
         return $this;
     }

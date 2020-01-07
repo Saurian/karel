@@ -24,15 +24,47 @@ class PlayList
     /** @var array */
     private $calendarRange = [];
 
+    /** @var DateTime */
+    private $from;
+
+    /** @var DateTime */
+    private $to;
+
 
     /**
      * PlayList constructor.
      * @param CalendarEntity[] $calendar
      * @throws Exception
      */
-    public function __construct(array $calendar)
+    public function __construct(array $calendar, DateTime $from = null, DateTime $to = null)
     {
+        $this->setFrom($from);
+        $this->setTo($to);
         $this->initCalendar($calendar);
+    }
+
+    /**
+     * @param DateTime|string|null $from
+     * @return PlayList
+     */
+    public function setFrom($from): PlayList
+    {
+        if (is_string($from)) $from = DateTime::from($from);
+
+        $this->from = $from;
+        return $this;
+    }
+
+    /**
+     * @param DateTime|string|null $to
+     * @return PlayList
+     */
+    public function setTo($to): PlayList
+    {
+        if (is_string($to)) $to = DateTime::from($to);
+
+        $this->to = $to;
+        return $this;
     }
 
     /**
@@ -162,7 +194,33 @@ class PlayList
             }
         }
 
+        /*
+         * if declared from / to, do filter
+         */
+        $this->filter($lists);
+
         return $lists;
+    }
+
+
+
+    private function filter(&$lists)
+    {
+        if ($this->from || $this->to) {
+            $filtered = array_filter($lists, function (MediumTime $list) {
+                $result = null;
+                if ($this->from) {
+                    $result = $this->from < $list->getTo();
+                }
+                if (($result === null || $result) && $this->to) {
+                    $result = $list->getFrom() < $this->to;
+                }
+
+                return $result;
+            });
+
+            $lists = $filtered;
+        }
     }
 
 

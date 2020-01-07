@@ -121,6 +121,7 @@ doctrine:
 			date: DoctrineExtensions\Query\Mysql\Date
 			datediff: DoctrineExtensions\Query\Mysql\DateDiff
 			now: DoctrineExtensions\Query\Mysql\Now
+			between: DoctrineExtensions\Query\Mysql\Between
 
 		numeric:
 

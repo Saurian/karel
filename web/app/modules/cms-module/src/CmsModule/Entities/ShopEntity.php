@@ -15,7 +15,9 @@ use Tracy\Debugger;
 /**
  * Class ShopEntity
  * @ORM\Entity(repositoryClass="CmsModule\Repositories\ShopRepository")
- * @ORM\Table(name="shop")
+ * @ORM\Table(name="shop", indexes={
+ *     @ORM\Index(name="name_idx", columns={"name"}),
+ * })
  *
  * @package CmsModule\Entities
  */
@@ -40,6 +42,13 @@ class ShopEntity
      * @ORM\OneToMany(targetEntity="MetricEntity", mappedBy="shop")
      */
     protected $metrics;
+
+
+    /**
+     * @var DeviceEntity[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="DeviceEntity", mappedBy="shop", cascade={"persist"})
+     */
+    protected $devices;
 
 
     /**
@@ -81,6 +90,7 @@ class ShopEntity
     public function __construct()
     {
         $this->metrics = new ArrayCollection();
+        $this->devices = new ArrayCollection();
     }
 
     /**
