@@ -1151,15 +1151,26 @@ class DevicePresenter extends BasePresenter
             /** @var DeviceEntity $entity */
             $entity = $this->deviceFacade->getDeviceRepository()->find($id);
 
-            Debugger::barDump($entity);
-            Debugger::barDump((bool)$new_value);
-
             $entity->setActive( $new_value);
             $this->deviceFacade->getEntityManager()->persist($entity)->flush();
 
             if ($this->isAjax()) $this['deviceGridControl']->redrawItem($id); else $this->redirect('this');
         };
 
+        $grid->addColumnText('online', 'Online')
+             ->setAlign('center')
+             ->setRenderer(function (DeviceEntity $row) {
+
+                 $html = Html::el('span');
+                 $html
+                     ->setAttribute('class', $row->isOnline() ? 'label label-success' : 'label label-default')
+                     ->setAttribute('title', $row->getOnlineText());
+
+                 $icon = Html::el('i')->setAttribute('class', $row->isOnline() ? 'fa fa-check' : 'fa fa-times');
+                 $html->addHtml($icon);
+
+                 return $html;
+             });
 
 
 //        $grid->addAction('live', 'Live', 'editDevice!')

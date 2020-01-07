@@ -129,6 +129,15 @@ class DeviceFacade
         return $_rows;
     }
 
+    /**
+     * @param DeviceEntity $deviceEntity
+     * @throws \Exception
+     */
+    public function setOnline(DeviceEntity $deviceEntity)
+    {
+        $deviceEntity->setOnline(new \DateTime());
+        $this->em->persist($deviceEntity)->flush();
+    }
 
     public function setActive(DeviceEntity $deviceEntity, $active)
     {

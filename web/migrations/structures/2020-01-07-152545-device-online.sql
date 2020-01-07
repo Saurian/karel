@@ -1,0 +1,1 @@
+ALTER TABLE device ADD online DATETIME DEFAULT NULL AFTER `active`;

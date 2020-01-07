@@ -17,6 +17,7 @@ use Devrun\Doctrine\Entities\BlameableTrait;
 use Devrun\Doctrine\Entities\DateTimeTrait;
 use Kdyby\Doctrine\Entities\Attributes\Identifier;
 use Kdyby\Doctrine\Entities\MagicAccessors;
+use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
 
 /**
@@ -38,6 +39,9 @@ use Nette\Utils\Strings;
  */
 class DeviceEntity
 {
+
+    const ONLINE_TIME = '3 hour';
+
     use Identifier;
     use DateTimeTrait;
     use BlameableTrait;
@@ -100,6 +104,12 @@ class DeviceEntity
      * @ORM\Column(type="boolean", options={"default" : false})
      */
     protected $active = false;
+
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $online;
 
     /**
      * @var string
@@ -354,6 +364,43 @@ class DeviceEntity
     {
         return $this->active;
     }
+
+
+    /**
+     * @return \DateTime
+     */
+    public function getOnline(): \DateTime
+    {
+        return $this->online;
+    }
+
+    public function getOnlineText(): string
+    {
+        return $this->online ? $this->online->format('j. n. Y H:i') : 'unknown';
+    }
+
+    public function isOnline(): bool
+    {
+        if ($this->online) {
+            $tm = clone $this->online;
+            return $tm->modify(self::ONLINE_TIME) > new DateTime();
+        }
+
+        return false;
+    }
+
+    /**
+     * @param \DateTime $online
+     * @return DeviceEntity
+     */
+    public function setOnline(\DateTime $online): DeviceEntity
+    {
+        $this->online = $online;
+        return $this;
+    }
+
+
+
 
     function __toString()
     {

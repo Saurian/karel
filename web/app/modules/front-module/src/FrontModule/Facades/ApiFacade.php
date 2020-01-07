@@ -7,6 +7,7 @@ namespace FrontModule\Facades;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\MediumEntity;
 use CmsModule\Facades\Calendar\PlayList;
+use CmsModule\Facades\DeviceFacade;
 use CmsModule\Facades\DeviceLogFacade;
 use CmsModule\Repositories\CalendarRepository;
 use CmsModule\Repositories\CampaignRepository;
@@ -20,29 +21,30 @@ use Ublaboo\ImageStorage\ImageStorage;
 class ApiFacade
 {
 
-    /** @var CalendarRepository @inject */
+    /** @var CalendarRepository */
     private $calendarRepository;
 
-    /** @var CampaignRepository @inject */
+    /** @var CampaignRepository */
     private $campaignRepository;
 
-    /** @var DeviceRepository @inject */
+    /** @var DeviceRepository */
     private $deviceRepository;
 
-    /** @var MediaRepository @inject */
+    /** @var MediaRepository */
     private $mediaRepository;
 
-    /** @var DeviceLogFacade @inject */
+    /** @var DeviceLogFacade */
     private $deviceLogFacade;
 
-    /** @var ImageStorage @inject */
+    /** @var DeviceFacade */
+    private $deviceFacade;
+
+    /** @var ImageStorage */
     private $imageStorage;
 
-    /** @var IRequest @inject */
+    /** @var IRequest */
     private $url;
 
-
-//    private $
 
     /**
      * ApiFacade constructor.
@@ -51,17 +53,20 @@ class ApiFacade
      * @param DeviceRepository $deviceRepository
      * @param MediaRepository $mediaRepository
      * @param DeviceLogFacade $deviceLogFacade
+     * @param DeviceFacade $deviceFacade
      * @param ImageStorage $imageStorage
      * @param IRequest $url
      */
     public function __construct(CalendarRepository $calendarRepository, CampaignRepository $campaignRepository, DeviceRepository $deviceRepository,
-                                MediaRepository $mediaRepository, DeviceLogFacade $deviceLogFacade, ImageStorage $imageStorage, IRequest $url)
+                                MediaRepository $mediaRepository, DeviceLogFacade $deviceLogFacade, DeviceFacade $deviceFacade,
+                                ImageStorage $imageStorage, IRequest $url)
     {
         $this->calendarRepository = $calendarRepository;
         $this->campaignRepository = $campaignRepository;
         $this->deviceRepository   = $deviceRepository;
         $this->mediaRepository    = $mediaRepository;
         $this->deviceLogFacade    = $deviceLogFacade;
+        $this->deviceFacade       = $deviceFacade;
         $this->imageStorage       = $imageStorage;
         $this->url                = $url;
     }
@@ -201,6 +206,8 @@ class ApiFacade
                     } else {
                         $result = ["result" => false, "reason" => "playlist is empty"];
                     }
+
+                    $this->deviceFacade->setOnline($device);
 
                 } else {
                     $result = ["result" => false, "reason" => "device password `$p` incorrect"];
