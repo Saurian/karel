@@ -81,10 +81,18 @@ class CalendarControl extends Control
     public function handleGetEvents($start, $end)
     {
         $start = $start ? $start : $this->getPresenter()->getParameter('start');
-        $end = $end ? $end : $this->getPresenter()->getParameter('end');
+        $end   = $end ? $end : $this->getPresenter()->getParameter('end');
+
+        $query = $this->calendarRepository
+            ->getQuery()
+            ->betweenFromTo($start, $end)
+            ->withDevices()
+            ->withDevicesGroups()
+            ->withCampaigns()
+            ->orderByFromTo();
 
         /** @var CalendarEntity[] $records */
-        $records = $this->calendarRepository->findBy(['from >=' => $start, 'to <=' => $end], ['from' => 'ASC']);
+        $records = $this->calendarRepository->fetch($query);
 
         $result = [];
         foreach ($records as $record) {

@@ -80,6 +80,28 @@ class CalendarQuery extends QueryObject
     }
 
 
+    public function withDevices(): CalendarQuery
+    {
+        $this->select[] = function (QueryBuilder $qb) {
+            $qb->leftJoin('q.devices', 'device')
+               ->addSelect('device');
+        };
+
+        return $this;
+    }
+
+
+    public function withDevicesGroups(): CalendarQuery
+    {
+        $this->select[] = function (QueryBuilder $qb) {
+            $qb->leftJoin('q.devicesGroups', 'devicesGroups')
+               ->addSelect('devicesGroups');
+        };
+
+        return $this;
+    }
+
+
 
     /*
      * filters
