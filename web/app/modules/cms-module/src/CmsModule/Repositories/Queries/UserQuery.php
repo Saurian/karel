@@ -11,6 +11,7 @@ namespace CmsModule\Repositories\Queries;
 
 use CmsModule\Entities\UserEntity;
 use CmsModule\InvalidArgumentException;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Kdyby;
 use Kdyby\Doctrine\QueryBuilder;
@@ -63,6 +64,20 @@ class UserQuery extends QueryObject
 //                ->leftJoin('q.devicesGroups', 'dg')
 //            ->where('d.id IN (:devices)')->setParameter('devices', [10])
 //            ->orWhere('d.deviceGroup IN (:devicesGroups)')->setParameter('devicesGroups', [2]);
+        };
+        return $this;
+    }
+
+
+    public function byUsersGroup(User $user)
+    {
+        $this->filter[] = function (QueryBuilder $qb) use ($user) {
+
+            $qb->join('q.group', 'ug')
+               ->join('ug.users', 'u')
+               ->andWhere('u.id = :usersGroup')
+               ->setParameter('usersGroup', $user->getId());
+
         };
         return $this;
     }
@@ -231,6 +246,16 @@ class UserQuery extends QueryObject
         };
 
         return $this;
+    }
+
+
+    /**
+     * @param Kdyby\Persistence\Queryable $repository
+     * @return Query|\Doctrine\ORM\QueryBuilder
+     */
+    public function doCreateQueryBuilder(Kdyby\Persistence\Queryable $repository)
+    {
+        return $this->doCreateQuery($repository);
     }
 
 

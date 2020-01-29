@@ -1,0 +1,56 @@
+<div class="well grido">
+    <div class="panel panel-default animated fadeIn">
+        <div n:snippet="deviceGroupsTargetGroups" class="panel-heading">
+            <h4 class="panel-title">Definované cílové skupiny na skupině zařízení `<strong class="text-primary">{$control->getDeviceGroupEdit()->name}</strong>`
+                <a n:href="close! deviceGroupEdit" class="ajax close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </a>
+            </h4>
+        </div>
+        <div class="panel-body">
+            <table class="table table-hover table-striped table-bordered table-sm" data-url="{link deviceGroupChange!}"
+                   data-param-day="{$paramDay}" data-param-time="{$paramTime}" data-param-values="{$paramValues}" data-target-groups="{$targetGroups|json}">
+                <thead>
+                <tr>
+                    <th class="datagrid-fit-content text-left col-id">
+                        {_deviceTargetGroupControl.hour|firstUpper}
+                    </th>
+                    <th class="text-left col-1">
+                        {_deviceTargetGroupControl.monday|firstUpper}
+                    </th>
+                    <th class="text-left col-2">
+                        {_deviceTargetGroupControl.tuesday|firstUpper}
+                    </th>
+                    <th class="text-left col-3">
+                        {_deviceTargetGroupControl.wednesday|firstUpper}
+                    </th>
+                    <th class="text-left col-4">
+                        {_deviceTargetGroupControl.thursday|firstUpper}
+                    </th>
+                    <th class="text-left col-5">
+                        {_deviceTargetGroupControl.friday|firstUpper}
+                    </th>
+                    <th class="text-left col-6">
+                        {_deviceTargetGroupControl.saturday|firstUpper}
+                    </th>
+                    <th class="text-left col-7">
+                        {_deviceTargetGroupControl.sunday|firstUpper}
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody n:snippet="hours">
+                <tr n:foreach="$hours as $index => $hour" data-time="{$hour['id']}" n:snippet="$hour['id']">
+                    <td class="datagrid-fit-content text-left col-id">
+                        {$hour['id']}
+                    </td>
+                    <td n:for="$i = 1;$i <= 7; $i++" class="text-left col-dtg-edit" data-select="{$hour[$i]|json}" data-day="{$i}" data-time="{$hour['id']}">
+                        <span n:if="$hour[$i]" n:foreach="$hour[$i] as $tg" class="label label-info">{$tg}</span>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot></tfoot>
+            </table>
+        </div>
+    </div>
+</div>

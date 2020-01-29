@@ -58,7 +58,8 @@ class CalendarQuery extends QueryObject
     public function withCampaigns(): CalendarQuery
     {
         $this->select[] = function (QueryBuilder $qb) {
-            $qb->addSelect('campaign');
+            $qb->join('q.campaign', 'campaign')
+               ->addSelect('campaign');
         };
 
         /*
@@ -89,12 +90,40 @@ class CalendarQuery extends QueryObject
      * @param string $sn
      * @return $this
      */
+    public function byCampaignDeviceSn(string $sn)
+    {
+        $this->filter[] = function (QueryBuilder $qb) use ($sn) {
+            $qb->join('campaign.devices', 'device')
+               ->andWhere('device.sn = :device')->setParameter('device', $sn);
+        };
+        return $this;
+    }
+
+
     public function byDeviceSn(string $sn)
     {
         $this->filter[] = function (QueryBuilder $qb) use ($sn) {
-            $qb->join('q.campaign', 'campaign')
-               ->join('campaign.devices', 'device')
-               ->andWhere('device.sn = :device')->setParameter('device', $sn);
+            $qb->leftJoin('q.devices', 'device')
+//               ->addSelect('device')
+               ->orWhere('device.sn = :device and device.active = true')->setParameter('device', $sn)
+//               ->andWhere('deviceGroupDevices.sn = :device')->setParameter('device', $sn)
+            ;
+        };
+        return $this;
+    }
+
+
+    public function byDeviceGroupSn(string $sn)
+    {
+        $this->filter[] = function (QueryBuilder $qb) use ($sn) {
+            $qb->innerJoin('q.devicesGroups', 'calendarDG')
+               ->innerJoin('calendarDG.children', 'calendarDGChildren')
+               ->innerJoin('calendarDG.devices', 'calendarDevices')
+               ->innerJoin('calendarDGChildren.devices', 'calendarChildrenDevices')
+               ->orWhere('calendarChildrenDevices.sn = :calendarChildrenDeviceSN and calendarChildrenDevices.active = true')->setParameter('calendarChildrenDeviceSN', $sn)
+               ->andWhere('calendarDGChildren.lft > calendarDG.lft')
+               ->andWhere('calendarDGChildren.rgt < calendarDG.rgt')
+               ->andWhere('calendarDGChildren.root = calendarDG.root');
         };
         return $this;
     }

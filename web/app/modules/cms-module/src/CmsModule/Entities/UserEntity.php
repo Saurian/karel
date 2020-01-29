@@ -368,6 +368,16 @@ class UserEntity implements IDeviceEntity, IRoleEntity
         return $this->group;
     }
 
+    /**
+     * @param UsersGroupEntity $group
+     * @return UserEntity
+     */
+    public function setGroup(UsersGroupEntity $group): UserEntity
+    {
+        $this->group = $group;
+        return $this;
+    }
+
 
 
 

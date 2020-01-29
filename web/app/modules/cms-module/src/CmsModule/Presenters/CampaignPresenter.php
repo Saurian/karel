@@ -98,7 +98,10 @@ class CampaignPresenter extends BasePresenter
         $translator = $this->translateMessage();
 
         if ($usersGroup = $this->userEntity->getGroup()) {
-            $this->calendarFacade->generateByUsersGroup($usersGroup);
+            $this->calendarFacade->generator()
+                                 ->setUsersGroup($usersGroup)
+                                 ->clearCalendar()
+                                 ->generateByUsersGroup(true);
 
             $title      = $translator->translate('campaignPage.management');
             $this->flashMessage($translator->translate("campaignPage.plan_generated"), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
@@ -266,52 +269,6 @@ class CampaignPresenter extends BasePresenter
     {
         $this->campaignFacade->initPositions();
 
-    }
-
-    /**
-     * @deprecated
-     * @codeCoverageIgnore
-     *
-     * @throws \Exception
-     */
-    private function testCalendar()
-    {
-        $em = $this->deviceRepository->getEntityManager();
-
-        $usersGroup = $em->getRepository(UsersGroupEntity::class)->findOneBy(['name' => 'develop-cms.pixatori.com']);
-
-        $campaigns = [];
-        $campaign = (new CampaignEntity())
-            ->setUsersGroups($usersGroup)
-            ->setRealizedFrom(new DateTime('2019-12-02'))
-            ->setRealizedTo(new DateTime('2019-12-03'))
-            ->setName("Zabíječka");
-
-        $campaign2 = (new CampaignEntity())
-            ->setUsersGroups($usersGroup)
-            ->setRealizedFrom(new DateTime('2019-12-02 10:00'))
-            ->setRealizedTo(new DateTime('2019-12-02 12:00'))
-            ->setName("Kampaň barev");
-
-        $campaigns[] = $campaign;
-        $campaigns[] = $campaign2;
-
-
-        $testDevice = (new DeviceEntity())
-            ->setName("Pokus")
-            ->setSn('D123123');
-
-        $em->persist($testDevice)
-           ->persist($campaigns)
-           ->flush();
-
-        $campaign->addDevice($testDevice);
-
-
-        $this->calendarFacade->clearCalendar($usersGroup);
-        $this->calendarFacade->generateByCampaigns($usersGroup, $campaigns);
-
-        die(__METHOD__);
     }
 
 
@@ -543,9 +500,9 @@ class CampaignPresenter extends BasePresenter
                         $entity->removeDeviceGroup($devicesGroup);
                     }
                 }
-                foreach ($entity->getMetrics() as $metricEntity) {
-                    if (! in_array($metricEntity->getId(), (array) $values->metrics)) {
-                        $entity->removeMetric($metricEntity);
+                foreach ($entity->getTargetGroups() as $targetGroupEntity) {
+                    if (! in_array($targetGroupEntity->getId(), (array) $values->targetGroups)) {
+                        $entity->removeTargetGroup($targetGroupEntity);
                     }
                 }
 
@@ -680,13 +637,13 @@ class CampaignPresenter extends BasePresenter
 
         $grid->setDataSource($model);
 
-        $grid->addColumnText('tag', 'Štítek')
+        $grid->addColumnText('tag', 'messages.forms.campaignsDetailForm.tag')
             ->setFitContent()
             ->setSortable()
             ->setRenderer(function (CampaignEntity $row) {
                 $html = $row->tag
-                    ? Html::el('div')->addAttributes(['class' => "{$row->tag}", 'style' => "width: 60px; height: 25px; "])
-                    : Html::el('div')->addAttributes(['class' => 'tagNo', 'style' => "width: 60px; height: 25px; "]);
+                    ? Html::el('div')->addAttributes(['class' => "{$row->tag}", 'style' => "width: 180px; height: 25px; "])
+                    : Html::el('div')->addAttributes(['class' => 'tagNo', 'style' => "width: 180px; height: 25px; "]);
                 return $html;
             });
 
@@ -806,7 +763,7 @@ class CampaignPresenter extends BasePresenter
                 return "Opravdu chcete smazat kampaň `{$item->name}`?";
             });
 
-        $grid->setTemplateFile(__DIR__ . '/templates/Campaign/#datagrid_campaign.latte');
+//        $grid->setTemplateFile(__DIR__ . '/templates/Campaign/#datagrid_campaign.latte');
 
         return $grid;
     }

@@ -3,19 +3,24 @@
 	{*{include "#demoUsers.latte"}*}
 
 	<div class="row bg-title">
-		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+		<div class="col-sm-10 col-xs-12">
 			<h1 class="page-title">{_userPage.management}</h1>
-			<a n:if="$user->isAllowed('CmsModule\Forms\UserForm', 'newUser')" href="javascript:void(0)" class="btn btn-md m-l-15 btn-success" data-toggle="modal" data-target=".addUserPopup">{_userPage.addUser}</a>
+			<a n:if="$user->isAllowed('CmsModule\Forms\UserForm', 'newUser')" n:href="edit!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target=".editUserModal">{_userPage.addUser}</a>
 		</div>
-		<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
+		<div class="col-sm-2 col-xs-12">
 			<ol class="breadcrumb">
-				<li><a n:href="Users:">{_userPage.title}</a></li>
-				<li class="active">{_userPage.navigation}</li>
+{*				<li><a n:href="Users:">{_userPage.title}</a></li>*}
+				<li class="active">{_userPage.title}</li>
 			</ol>
 		</div>
 	</div>
 
-	<div class="dd-item-backgroundWrap"></div>
+
+	<div class="grido animated fadeIn">
+		{control usersGridControl}
+	</div>
+
+{*
 
 	<div class="row">
 		<!-- .col -->
@@ -26,7 +31,9 @@
 
 						{foreach $rows as $row}
 							<li class="dd-item dd3-item" data-id="{$row->getId()}">
-								{*<div class="dd-item-backgroundWrap"></div>*}
+								*}
+{*<div class="dd-item-backgroundWrap"></div>*}{*
+
 								<div class="dd-handle dd3-handle tagColor2"></div>
 
 								{form usersForm-$row->id}
@@ -39,9 +46,13 @@
 								{/form}
 								{if !isset($toggle_detail)}
 									<div class="dd3-content box-list">
-										{* link to detail *}
+										*}
+{* link to detail *}{*
+
 										<a n:if="$user->isAllowed($presenter->name, 'edit')" class="ajax item-detail-link" n:href="detail! id => $row->id" data-toggle-item-detail="{$row->id}" data-ajax-off="datargid.item_detail"></a>
-										{* link to detail *}
+										*}
+{* link to detail *}{*
+
 
 										<div class="box-list__preview js-preview">
 											<h2>{$row->firstName} {$row->lastName}</h2>
@@ -72,7 +83,9 @@
 														<input n:name="active" class="hidden">
 													</label>
 
-													{*{input sendSubmit}*}
+													*}
+{*{input sendSubmit}*}{*
+
 
 													<div class="box-list__settings__one">
 														{label firstName}
@@ -179,6 +192,7 @@
 		</div>
 	</div>
 
+*}
 
 
 	{snippetArea wrapperModal}
@@ -210,13 +224,13 @@
 </script>
 
 {define userFormModal}
-	<div class="modal fade addUserPopup" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal fade editUserModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg">
-			<div n:snippet="userForm" class="modal-content">
+			<div n:snippet="userFormModal" class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 					<h4 class="modal-title">{_userPage.addUser}</h4>
-					<h1>{$userEntity->firstName}</h1>
+{*					<h1>{$userEntity->firstName}</h1>*}
 				</div>
 
 				<div class="modal-body">

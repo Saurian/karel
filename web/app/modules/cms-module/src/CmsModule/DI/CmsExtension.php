@@ -14,6 +14,7 @@ use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\DeviceLogEntity;
+use CmsModule\Entities\DeviceMetricEntity;
 use CmsModule\Entities\LogEntity;
 use CmsModule\Entities\MediumDataEntity;
 use CmsModule\Entities\MetricEntity;
@@ -25,11 +26,13 @@ use CmsModule\Entities\UserEntity;
 use CmsModule\Facades\CalendarFacade;
 use CmsModule\Listeners\MediaDataListener;
 use CmsModule\Repositories\CalendarRepository;
+use CmsModule\Repositories\DeviceMetricRepository;
 use CmsModule\Repositories\MetricParamRepository;
 use CmsModule\Repositories\MetricRepository;
 use CmsModule\Repositories\MetricStatisticRepository;
 use CmsModule\Repositories\ShopRepository;
 use CmsModule\Repositories\TargetGroupRepository;
+use Devrun\CmsModule\Controls\IDeviceTargetGroupsControlFactory;
 use Flame\Modules\Providers\IPresenterMappingProvider;
 use Flame\Modules\Providers\IRouterProvider;
 use Kdyby\Doctrine\DI\IEntityProvider;
@@ -75,10 +78,6 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, MediumDataEntity::class)
             ->setInject(true);
 
-//        $builder->addDefinition($this->prefix('repository.template'))
-//            ->setType('CmsModule\Repositories\TemplateRepository')
-//            ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, TemplateEntity::class);
-
         $builder->addDefinition($this->prefix('repository.device'))
             ->setType('CmsModule\Repositories\DeviceRepository')
             ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, DeviceEntity::class)
@@ -88,6 +87,10 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             ->setType('CmsModule\Repositories\DeviceGroupRepository')
             ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, DeviceGroupEntity::class)
             ->setInject(true);
+
+        $builder->addDefinition($this->prefix('repository.deviceMetric'))
+                ->setType(DeviceMetricRepository::class)
+                ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, DeviceMetricEntity::class);
 
         $builder->addDefinition($this->prefix('repository.campaign'))
             ->setType('CmsModule\Repositories\CampaignRepository')
@@ -199,6 +202,10 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
 
         $builder->addDefinition($this->prefix('control.playListControlFactory'))
             ->setImplement('CmsModule\Controls\IPlayListControlFactory');
+
+        $builder->addDefinition($this->prefix('control.deviceTargetGroupsControlFactory'))
+            ->setImplement(IDeviceTargetGroupsControlFactory::class)
+            ->setInject(true);
 
 
         /*

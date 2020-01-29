@@ -79,12 +79,6 @@ class DeviceGroupEntity
 
     /**
      * @var DeviceEntity[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity="DeviceEntity", mappedBy="deviceGroup")
-     */
-    protected $devicesOld;
-
-    /**
-     * @var DeviceEntity[]|ArrayCollection
      * @ORM\ManyToMany(targetEntity="DeviceEntity", inversedBy="devicesGroups")
      * @ORM\JoinTable(name="devices_groups")
      */
@@ -98,10 +92,33 @@ class DeviceGroupEntity
     protected $campaigns;
 
     /**
+     * @var CalendarEntity[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="CalendarEntity", mappedBy="devicesGroups")
+     */
+    protected $calendars;
+
+    /**
+     * skupina zařízení přiřazená konkrétnímu uživately
+     *
      * @var UserEntity[]|ArrayCollection
      * @ORM\ManyToMany(targetEntity="UserEntity", mappedBy="devicesGroups")
      */
     protected $devicesGroupsUsers;
+
+    /**
+     * skupina zařízení přiřazena celé skupině uživatelů
+     *
+     * @var UsersGroupEntity
+     * @ORM\ManyToOne(targetEntity="UsersGroupEntity", inversedBy="devicesGroups")
+     */
+    protected $usersGroups;
+
+    /**
+     * @var DeviceMetricEntity[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="DeviceMetricEntity", mappedBy="deviceGroup", cascade={"persist"})
+     */
+    private $metrics;
+
 
     /**
      * @var boolean
@@ -133,7 +150,6 @@ class DeviceGroupEntity
         $this->name               = $name;
         $this->category           = $category;
         $this->devices            = new ArrayCollection();
-        $this->devicesOld            = new ArrayCollection();
         $this->campaigns          = new ArrayCollection();
         $this->devicesGroupsUsers = new ArrayCollection();
     }

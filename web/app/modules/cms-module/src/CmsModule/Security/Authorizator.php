@@ -116,8 +116,9 @@ class Authorizator extends Permission
         $this->deny('admin', 'Cms:Device', ['listAllDevices']);
         $this->deny('admin', 'Cms:DeviceGroup', ['listAllDevices']);
         $this->deny('admin', 'Cms:Users', 'listAllUsers');
+        $this->allow('admin', 'Cms:Device', ['listUsersGroup']);
         $this->allow('admin', 'Cms:Campaign', ['nestable', 'addMedium']);
-        $this->allow('admin', 'Cms:Users', ['nestable', 'listCreatedByUser', 'listByDevicesUser']);
+        $this->allow('admin', 'Cms:Users', ['nestable', 'listUsersGroup', 'listByDevicesUser']);
         $this->allow('admin', 'Cms:Reach', Permission::ALL);
         $this->allow('admin', 'Cms:Template', Permission::ALL);
         $this->allow('admin', 'Cms:Statistic', Permission::ALL);

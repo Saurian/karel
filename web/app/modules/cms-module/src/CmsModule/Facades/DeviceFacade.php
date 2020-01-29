@@ -15,6 +15,7 @@ use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\UserEntity;
 use CmsModule\Forms\DeviceForm;
 use CmsModule\Repositories\DeviceGroupRepository;
+use CmsModule\Repositories\DeviceMetricRepository;
 use CmsModule\Repositories\DeviceRepository;
 use CmsModule\Repositories\UserRepository;
 use Kdyby\Doctrine\EntityManager;
@@ -42,6 +43,9 @@ class DeviceFacade
     /** @var DeviceGroupRepository */
     private $deviceGroupRepository;
 
+    /** @var DeviceMetricRepository */
+    private $deviceMetricRepository;
+
     /** @var UserRepository */
     private $userRepository;
 
@@ -67,16 +71,19 @@ class DeviceFacade
      *
      * @param DeviceRepository $deviceRepository
      * @param DeviceGroupRepository $deviceGroupRepository
+     * @param DeviceMetricRepository $deviceMetricRepository
      * @param UserRepository $userRepository
      * @param Session $session
      */
-    public function __construct(DeviceRepository $deviceRepository, DeviceGroupRepository $deviceGroupRepository, UserRepository $userRepository, Session $session)
+    public function __construct(DeviceRepository $deviceRepository, DeviceGroupRepository $deviceGroupRepository, DeviceMetricRepository $deviceMetricRepository,
+                                UserRepository $userRepository, Session $session)
     {
-        $this->deviceRepository      = $deviceRepository;
-        $this->deviceGroupRepository = $deviceGroupRepository;
-        $this->userRepository        = $userRepository;
-        $this->session               = $session;
-        $this->em                    = $deviceRepository->getEntityManager();
+        $this->deviceRepository       = $deviceRepository;
+        $this->deviceGroupRepository  = $deviceGroupRepository;
+        $this->deviceMetricRepository = $deviceMetricRepository;
+        $this->userRepository         = $userRepository;
+        $this->session                = $session;
+        $this->em                     = $deviceRepository->getEntityManager();
     }
 
 
@@ -174,6 +181,15 @@ class DeviceFacade
     {
         return $this->deviceGroupRepository;
     }
+
+    /**
+     * @return DeviceMetricRepository
+     */
+    public function getDeviceMetricRepository(): DeviceMetricRepository
+    {
+        return $this->deviceMetricRepository;
+    }
+
 
     /**
      * @return EntityManager

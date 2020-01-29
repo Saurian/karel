@@ -4,6 +4,7 @@
 namespace CmsModule\Entities;
 
 use Devrun\Doctrine\Entities\UuidV4EntityTrait;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Devrun\Doctrine\Entities\BlameableTrait;
 use Devrun\Doctrine\Entities\DateTimeTrait;
@@ -48,6 +49,20 @@ class CalendarEntity
     protected $usersGroups;
 
     /**
+     * @var DeviceEntity[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="DeviceEntity", inversedBy="calendars")
+     * @ORM\JoinTable(name="calendar_devices")
+     */
+    protected $devices;
+
+    /**
+     * @var DeviceGroupEntity[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="DeviceGroupEntity", inversedBy="calendars")
+     * @ORM\JoinTable(name="calendar_devices_groups")
+     */
+    protected $devicesGroups;
+
+    /**
      * @var DateTime
      * @ORM\Column(type="datetime", name="`from`")
      * @ORM\OrderBy(value={"ASC"})
@@ -80,6 +95,8 @@ class CalendarEntity
         $this->from = $datetime;
         $this->to = $to;
         $this->percentage = $percentage;
+        $this->devices = new ArrayCollection();
+        $this->devicesGroups = new ArrayCollection();
     }
 
     /**
@@ -161,8 +178,36 @@ class CalendarEntity
         return $this->percentage;
     }
 
+    /**
+     * @return DeviceEntity[]|ArrayCollection
+     */
+    public function getDevices()
+    {
+        return $this->devices;
+    }
+
+    /**
+     * @return DeviceGroupEntity[]|ArrayCollection
+     */
+    public function getDevicesGroups()
+    {
+        return $this->devicesGroups;
+    }
 
 
+    public function addDevice(DeviceEntity $deviceEntity)
+    {
+        if (!$this->devices->contains($deviceEntity)) {
+            $this->devices->add($deviceEntity);
+        }
+    }
+
+    public function addDeviceGroup(DeviceGroupEntity $deviceGroupEntity)
+    {
+        if (!$this->devicesGroups->contains($deviceGroupEntity)) {
+            $this->devicesGroups->add($deviceGroupEntity);
+        }
+    }
 
 
 }

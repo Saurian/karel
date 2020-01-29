@@ -9,6 +9,8 @@
 
 namespace CmsModule\Repositories;
 
+use CmsModule\Entities\UserEntity;
+use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Repositories\Queries\UserQuery;
 use Doctrine\ORM\Query;
 use Kdyby\Doctrine\EntityRepository;
@@ -40,6 +42,30 @@ class UserRepository extends EntityRepository implements IFilter
         $query = (new UserQuery());
         return $this->fetch($query)->getTotalCount();
     }
+
+
+    /**
+     * @todo userEntity/usersGroupEntity získat z devrun User->getIdentity()
+     *
+     * @param User $user
+     * @return UserEntity
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getEmptyUser(User $user)
+    {
+        $usersGroup = $this->createQueryBuilder()
+            ->addSelect('u')
+            ->addSelect('e')
+            ->from(UsersGroupEntity::class, 'e')
+            ->join('e.users', 'u')
+            ->where('u.id = :uid')->setParameter('uid', $user->getId())
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        $userEntity = new UserEntity(null, null, null, null, null);
+        return $userEntity->setGroup($usersGroup);
+    }
+
 
     public function getAssignedDevices(User $user)
     {
@@ -124,6 +150,32 @@ class UserRepository extends EntityRepository implements IFilter
     {
         $query = (new UserQuery());
 
+//        if (!$user->isAllowed('Cms:Users', 'listAllUsers')) {
+//            $model = $this->userRepository->createQueryBuilder('e');
+//
+//        } else {
+//            $usersGroup = $this->userEntity->getGroup();
+//
+//            $model = $this->userRepository->createQueryBuilder('e')
+//                                          ->addSelect('g')
+//                                          ->leftJoin('e.group', 'g')
+//                                          ->where('g = :group')->setParameter('group', $usersGroup);
+//
+//        }
+
+        if (!$user->isAllowed('Cms:Users', 'listAllUsers')) {
+            if ($user->isAllowed('Cms:Users', 'listUsersGroup')) {
+                $query->byUsersGroup($user);
+
+            } else {
+                $query->byUser($user);
+            }
+        }
+
+
+
+
+/*
         if (!$user->isAllowed('Cms:Users', 'listAllUsers')) {
             // list only logged user
             if ($user->isAllowed('Cms:Users', 'listThisUsers')) {
@@ -141,10 +193,21 @@ class UserRepository extends EntityRepository implements IFilter
                     ->byTest($user);
             }
         }
-
+*/
         return $query;
     }
 
+
+    /**
+     * return QueryBuilder
+     *
+     * @param User $user
+     * @return Query|\Doctrine\ORM\QueryBuilder
+     */
+    public function getUserAllowedQueryBuilder(User $user)
+    {
+        return $this->getUserAllowedQuery($user)->doCreateQueryBuilder($this);
+    }
 
 
 }

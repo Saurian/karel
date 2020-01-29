@@ -53,6 +53,10 @@
   background-color: #f5f5f5;
 }
 
+.select2-dropdown {
+  z-index: 4051;
+}
+
 .box-list {
   overflow: hidden;
   -webkit-transition: all 500ms;
@@ -295,6 +299,21 @@
   margin: 0;
 }
 
+.datagrid table tbody tr td.edited,
+.datagrid table tbody tr td.editing {
+  position: relative;
+}
+
+.datagrid table tbody tr td.edited select,
+.datagrid table tbody tr td.editing select {
+  height: auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  box-shadow: 1px 1px 6px #555;
+}
+
 .grido .datagrid .datagrid-tree {
   box-shadow: 1px 1px 12px -1px rgba(0, 0, 0, 0.2);
   background-color: #f9f9f9;
@@ -307,9 +326,9 @@
 }
 
 .grido .datagrid .datagrid-tree .datagrid-tree-item .datagrid-tree-item-content .datagrid-tree-item-right .datagrid-tree-item-right-columns {
-  -webkit-flex-basis: -webkit-calc(64%);
-  -ms-flex-preferred-size: calc(64%);
-  flex-basis: calc(64%);
+  -webkit-flex-basis: -webkit-calc(50%);
+  -ms-flex-preferred-size: calc(50%);
+  flex-basis: calc(50%);
 }
 
 .card {

@@ -46,7 +46,7 @@ class DeviceEntity
     use DateTimeTrait;
     use BlameableTrait;
     use PositionTrait;
-    use VersionTrait;
+//    use VersionTrait;
     use MagicAccessors;
     use TagsTrait;
 
@@ -75,29 +75,6 @@ class DeviceEntity
      */
     protected $name;
 
-    /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    protected $street = '';
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", nullable=true)
-     */
-    protected $strno;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    protected $zip = '';
-
-    /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    protected $city = '';
 
     /**
      * @var boolean
@@ -128,15 +105,6 @@ class DeviceEntity
 
 
     /**
-     * @deprecated
-     * @var DeviceGroupEntity
-     * @ORM\ManyToOne(targetEntity="DeviceGroupEntity", inversedBy="devicesOld", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(onDelete="CASCADE")
-     */
-    protected $deviceGroup;
-
-
-    /**
      * @var ShopEntity
      * @ORM\ManyToOne(targetEntity="ShopEntity", inversedBy="devices")
      * @ORM\JoinColumn(onDelete="CASCADE")
@@ -164,10 +132,28 @@ class DeviceEntity
     protected $devicesUsers;
 
     /**
+     * @var CalendarEntity[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="CalendarEntity", mappedBy="devices")
+     */
+    protected $calendars;
+
+    /**
+     * @var UsersGroupEntity
+     * @ORM\ManyToOne(targetEntity="UsersGroupEntity", inversedBy="devices")
+     */
+    protected $usersGroups;
+
+    /**
      * @var DeviceLogEntity[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="DeviceLogEntity", mappedBy="device")
      */
     protected $logs;
+
+    /**
+     * @var DeviceMetricEntity[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="DeviceMetricEntity", mappedBy="device")
+     */
+    protected $metrics;
 
 
     /**
@@ -176,6 +162,7 @@ class DeviceEntity
     public function __construct()
     {
         $this->campaigns = new ArrayCollection();
+        $this->calendars = new ArrayCollection();
         $this->devicesGroups = new ArrayCollection();
     }
 

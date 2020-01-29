@@ -55,7 +55,17 @@ class TargetGroupEntity
      */
     protected $metrics;
 
+    /**
+     * @var DeviceMetricEntity[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="DeviceMetricEntity", mappedBy="targetGroups")
+     */
+    protected $devicesMetrics;
 
+    /**
+     * @var CampaignEntity[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="CampaignEntity", mappedBy="targetGroups")
+     */
+    protected $campaigns;
 
 
     /**
@@ -130,6 +140,15 @@ class TargetGroupEntity
         $this->usersGroup = $usersGroup;
         return $this;
     }
+
+    /**
+     * @return DeviceMetricEntity[]|ArrayCollection
+     */
+    public function getDevicesMetrics()
+    {
+        return $this->devicesMetrics;
+    }
+
 
 
 

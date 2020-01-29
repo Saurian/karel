@@ -16,6 +16,7 @@ use CmsModule\Repositories\MediaRepository;
 use Nette\DateTime;
 use Nette\Http\IRequest;
 use Nette\Utils\Validators;
+use Tracy\Debugger;
 use Ublaboo\ImageStorage\ImageStorage;
 
 class ApiFacade
@@ -119,8 +120,9 @@ class ApiFacade
 
                     $query = $this->calendarRepository
                         ->getQuery()
+                        ->byDeviceGroupSn($did)
                         ->byDeviceSn($did)
-                        ->deviceActive($activeDevice)
+//                        ->deviceActive($activeDevice)
                         ->campaignActive($activeCampaigns)
 //                        ->inCampaignTimeRange()
                         ->withCampaigns()

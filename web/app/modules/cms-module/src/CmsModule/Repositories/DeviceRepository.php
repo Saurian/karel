@@ -23,6 +23,12 @@ class DeviceRepository extends EntityRepository implements IFilter
     use PostProcessingTrait;
     use FilterRepositoryTrait;
 
+    /** @var int  */
+    private $lifetime = 600;
+
+    /** @var bool */
+    private $useResultCache = false;
+
 
     public function existFilterDevice()
     {
@@ -97,8 +103,25 @@ class DeviceRepository extends EntityRepository implements IFilter
     {
         $query = $queryBuilder->getQuery();
 
-        $cacheQb = $query->useResultCache(true, 600, $cacheId );
+        $cacheQb = $query->useResultCache($this->useResultCache, $this->lifetime, $cacheId );
         return $cacheQb->getResult();
+    }
+
+
+    /**
+     * return cached result
+     *
+     * @param QueryBuilder $queryBuilder
+     * @param string $cacheId
+     * @return mixed
+     */
+    public function getCachedOneOrNullResult(QueryBuilder $queryBuilder, $cacheId = 'device')
+    {
+        $query = $queryBuilder->getQuery()
+                              ->setMaxResults(1);
+
+        $cacheQb = $query->useResultCache($this->useResultCache, $this->lifetime, $cacheId );
+        return $cacheQb->getOneOrNullResult();
     }
 
 
@@ -112,22 +135,28 @@ class DeviceRepository extends EntityRepository implements IFilter
         $query = (new DeviceQuery());
 
         if (!$user->isAllowed('Cms:Device', 'listAllDevices')) {
-            $query->byUser($user);
+            if ($user->isAllowed('Cms:Device', 'listUsersGroup')) {
+                $query->byUsersGroup($user);
+
+            } else {
+                $query->byUser($user);
+            }
         }
 
         return $query;
     }
 
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function findDevice($id)
     {
-        $query = $this->createQueryBuilder('e')
-            ->where("e.sn = :deviceSN")->setParameter('deviceSN' , $id)
-            ->getQuery();
+        $queryBuilder = $this->createQueryBuilder('e')
+            ->where("e.sn = :deviceSN")->setParameter('deviceSN' , $id);
 
-        /** @var Query $cacheQb */
-        $cacheQb = $query->useResultCache(true, 600, "deviceSN_$id" );
-        return $cacheQb->getOneOrNullResult();
+        return $this->getCachedOneOrNullResult($queryBuilder, "deviceSN_$id");
     }
 
 

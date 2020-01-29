@@ -29,6 +29,12 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
 
     const SESSION_NAME = 'deviceGroupFilter';
 
+    /** @var int  */
+    private $lifetime = 600;
+
+    /** @var bool */
+    private $useResultCache = false;
+
 
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
@@ -101,10 +107,26 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
     {
         $query = $queryBuilder->getQuery();
 
-        $cacheQb = $query->useResultCache(true, 600, $cacheId );
+        $cacheQb = $query->useResultCache($this->useResultCache, $this->lifetime, $cacheId );
         return $cacheQb->getResult();
     }
 
+
+    /**
+     * return cached result
+     *
+     * @param QueryBuilder $queryBuilder
+     * @param string $cacheId
+     * @return mixed
+     */
+    public function getCachedOneOrNullResult(QueryBuilder $queryBuilder, $cacheId = 'deviceGroups')
+    {
+        $query = $queryBuilder->getQuery()
+                              ->setMaxResults(1);
+
+        $cacheQb = $query->useResultCache($this->useResultCache, $this->lifetime, $cacheId );
+        return $cacheQb->getOneOrNullResult();
+    }
 
 
     public function getUserAllowedQuery(User $user)
@@ -112,7 +134,12 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
         $query = (new DeviceGroupQuery());
 
         if (!$user->isAllowed('Cms:Device', 'listAllDevices')) {
-            $query->byUser($user);
+            if ($user->isAllowed('Cms:Device', 'listUsersGroupDevices')) {
+                $query->byUsersGroup($user);
+
+            } else {
+                $query->byUser($user);
+            }
         }
 
         return $query;

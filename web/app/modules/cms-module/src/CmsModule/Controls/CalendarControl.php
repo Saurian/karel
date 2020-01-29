@@ -88,6 +88,19 @@ class CalendarControl extends Control
 
         $result = [];
         foreach ($records as $record) {
+
+            $devices = '';
+            foreach ($record->getDevices() as $device) {
+                $devices .= "{$device->getName()}, ";
+            }
+            $devices = rtrim($devices, ", ");
+
+            $deviceGroups = '';
+            foreach ($record->getDevicesGroups() as $device) {
+                $deviceGroups .= "{$device->getName()}, ";
+            }
+            $deviceGroups = rtrim($deviceGroups, ", ");
+
             $result[] =
             [
                 'id' => $record->getId(),
@@ -95,6 +108,8 @@ class CalendarControl extends Control
                 'start' => $record->getFrom()->format('Y-m-d H:i'),
                 'end' => $record->getTo()->format('Y-m-d H:i'),
                 'classNames' => [$record->getCampaign()->getTag() ? $record->getCampaign()->getTag() : 'tagNo'],
+                'devices' => $devices,
+                'deviceGroups' => $deviceGroups,
             ];
         }
 
@@ -323,6 +338,9 @@ class CalendarControl extends Control
         $form->addFormClass(['ajax']);
 
         $form->addHidden('id');
+
+        $params = $form->addGroup('Parametry');
+
         $form->addText('name', 'Kampaň')
             ->setDisabled(true);
 
@@ -331,6 +349,14 @@ class CalendarControl extends Control
 
         $form->addText('to', 'Čas do')
             ->setDisabled(true);
+
+        $devices = $form->addGroup('Obrazovky');
+        $form->addTextArea('devices', 'Zařízení', null, 3)
+            ->setDisabled(true);
+
+        $form->addTextArea('deviceGroups', 'Skupiny zařízení', null, 3)
+            ->setDisabled(true);
+
 
         $form->addSubmit('send', 'Smazat')
             ->getControlPrototype()->setAttribute('class', 'btn btn-danger btn-md');

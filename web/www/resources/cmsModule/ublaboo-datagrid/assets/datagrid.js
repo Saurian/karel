@@ -500,11 +500,16 @@ $.nette.ext('datagrid.tree', {
 		}
 		return true;
 	},
-	success: function(payload) {
+	success: function(payload, status, xhr, settings) {
 		var children_block, content, id, name, ref, snippet, template;
 		if (payload._datagrid_tree) {
 			id = payload._datagrid_tree;
-			children_block = $('.datagrid-tree-item[data-id="' + id + '"]').find('.datagrid-tree-item-children').first();
+
+			/*
+			 * fix
+			 * children_block = $('.datagrid-tree-item[data-id="' + id + '"]').find('.datagrid-tree-item-children').first();
+			 */
+			children_block = settings.nette.el.closest('.datagrid-tree-item[data-id="' + id + '"]').find('.datagrid-tree-item-children').first();
 			children_block.addClass('loaded');
 			ref = payload.snippets;
 			for (name in ref) {
@@ -570,6 +575,25 @@ $(document).on('click', '[data-datagrid-editable-url]', function(event) {
 		}
 		cell.removeClass('edited');
 		cell.html(input);
+		// $('.select2').select2();
+		// $(input).select2();
+
+		// $(input).on('select2:open', function (e) {
+		// 	console.log("open");
+		// }).on('select2:close', function (e) {
+		// 	console.log("Clos");
+		// 	$(this).select2('destroy');
+		//
+		// }).on('select2:select', function (e) {
+		// 	console.log("Select");
+		// }).on('select2:unselect', function (e) {
+		// 	console.log("UNSEl");
+		// });
+
+		// $(input).trigger('change');
+
+		console.log($(input));
+
 		submit = function(cell, el) {
 			var value;
 			value = el.val();
@@ -599,12 +623,37 @@ $(document).on('click', '[data-datagrid-editable-url]', function(event) {
 			} else {
 				cell.html(cell.data('originalValue'));
 			}
+			// return ;
 			return setTimeout(function() {
 				return cell.removeClass('editing');
 			}, 1200);
 		};
+
+
 		cell.find('input,textarea,select').focus().on('blur', function() {
+			console.log('blur');
+			// console.log(cell);
+			// return ;
+
+			// $(input).select2('close');
+
+			// console.log(input);
+			// console.log(this);
+
+			if ($(cell).closest('select').hasClass("select2-hidden-accessible")) {
+				// Select2 has been initialized
+
+				console.log(cell);
+				console.log("jo");
+
+
+				$($(cell).closest('select')).select2('close');
+			}
+
+
+
 			return submit(cell, $(this));
+
 		}).on('keydown', function(e) {
 			if (cell.data('datagrid-editable-type') !== 'textarea') {
 				if (e.which === 13) {
@@ -621,6 +670,9 @@ $(document).on('click', '[data-datagrid-editable-url]', function(event) {
 			}
 		});
 		return cell.find('select').on('change', function() {
+			console.log("change");
+			// return ;
+
 			return submit(cell, $(this));
 		});
 	}

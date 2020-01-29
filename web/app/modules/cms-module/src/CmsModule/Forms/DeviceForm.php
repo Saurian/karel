@@ -91,29 +91,6 @@ class DeviceForm extends BaseForm
             ->addCondition(Form::FILLED)
             ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 65535);
 
-        $this->addCheckbox('address', 'address')
-            ->setAttribute('class', 'happy primary')
-            ->addCondition(Form::EQUAL, true)
-            ->toggle('address-container');
-
-        $this->addText('city', 'city')
-            ->setDisabled($disAllowed)
-            ->setAttribute('placeholder', "city_holder")
-            ->addCondition(Form::FILLED)
-            ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 128);
-
-        $this->addText('street', 'street')
-            ->setDisabled($disAllowed)
-            ->setAttribute('placeholder', "street_holder")
-            ->addCondition(Form::FILLED)
-            ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 255);
-
-        $this->addText('zip', 'psc')
-            ->setDisabled($disAllowed)
-            ->setAttribute('placeholder', "psc_holder")
-            ->addCondition(Form::FILLED)
-            ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 255);
-
 
         $this->addSelect('deviceGroup', $this->getTranslator()->translate('group'), $this->getDevicesGroups())
             ->setTranslator(null)
@@ -141,7 +118,7 @@ class DeviceForm extends BaseForm
 
         $this->addSubmit('sendSubmit', 'save')
             ->setDisabled($disAllowed)
-            ->setAttribute('class', 'btn btn-success box-list__settings__close js-settingsClose');
+            ->setAttribute('class', 'btn btn-success btn-block js-settingsClose');
 //            ->setAttribute('data-dismiss', 'modal');
 //            ->onClick[] = [$this, 'success'];
 

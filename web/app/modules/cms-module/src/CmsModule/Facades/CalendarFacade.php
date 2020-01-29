@@ -9,6 +9,7 @@ use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\ShopEntity;
 use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Facades\Calendar\CalendarList;
+use CmsModule\Facades\Calendar\Generator;
 use CmsModule\OutOfRangeException;
 use CmsModule\Repositories\CalendarRepository;
 use CmsModule\Repositories\CampaignRepository;
@@ -103,8 +104,18 @@ class CalendarFacade
         return $this->calendarControl;
     }
 
+    /**
+     * @return Generator
+     */
+    public function generator()
+    {
+        return new Generator($this->entityManager, $this->translator);
+    }
+
 
     /**
+     * @deprecated use Generator instead
+     *
      * @param UsersGroupEntity $usersGroupEntity
      * @param bool $compressedResult
      * @return CalendarEntity[]
@@ -122,6 +133,8 @@ class CalendarFacade
 
 
     /**
+     * @deprecated use Generator instead
+     *
      * @param UsersGroupEntity $usersGroupEntity
      * @param CampaignEntity[] $campaigns
      * @param bool $compressedResult

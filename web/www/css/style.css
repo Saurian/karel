@@ -664,9 +664,6 @@ strong {
 /* Labels */
 
 .label {
-  letter-spacing: 0.05em;
-  border-radius: 60px;
-  padding: 4px 12px 3px;
   font-weight: 500;
 }
 

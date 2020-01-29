@@ -353,7 +353,7 @@ $.nette.ext('calendar', {
 
         this.calendar = new FullCalendar.Calendar(calendarEl, {
             plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
-            timeZone: 'UTC',
+            timeZone: 'local',
             height: 'parent',
             handleWindowResize: false,
             header: {
@@ -384,6 +384,8 @@ $.nette.ext('calendar', {
                 $(form).find('[name="name"]').val(info.event.title);
                 $(form).find('[name="from"]').val(info.event.start.toDateString() + " " + info.event.start.toLocaleTimeString());
                 $(form).find('[name="to"]').val(info.event.end.toDateString() + " " + info.event.end.toLocaleTimeString());
+                $(form).find('[name="devices"]').val(info.event.extendedProps.devices);
+                $(form).find('[name="deviceGroups"]').val(info.event.extendedProps.deviceGroups);
 
                 $('#editEventModal').modal({ show: 'true' });
             },
@@ -538,7 +540,13 @@ $.nette.ext('bs-modal', {
         $('.modal[id^="snippet-"]').each(function () {
             self.open($(this));
         });
+    },
+    success: function(payload, status, xhr, settings) {
+        if (settings.nette && payload.closeModal) {
+            $('.modal.in').modal('hide');
+        }
     }
+
 }, {
     open: function (el) {
         var content = el.find('.modal-content');
@@ -547,7 +555,7 @@ $.nette.ext('bs-modal', {
         }
 
         el.modal({});
-    }
+    },
 });
 
 
@@ -625,6 +633,36 @@ $.nette.ext('bs-popover', {
     initModalSlider: function (selector) {
         // $(selector).popover();
         $(selector).tooltip()
+    }
+});
+
+
+$.nette.ext('select2', {
+    load: function () {
+        var self = this;
+
+        this.initSelect2('.grido:not(.no-select2) select');
+    }
+
+    }, {
+
+    /**
+     * init select2
+     * https://select2.org/
+     *
+     * @param selector
+     */
+    initSelect2: function (selector) {
+        $(selector).select2();
+    }
+});
+
+
+$.nette.ext('smoothScroll', {
+    success: function(payload, status, xhr, settings) {
+        if (settings.nette && payload.scrollTo) {
+            $.smoothScroll({ scrollTarget: payload.scrollTo });
+        }
     }
 });
 
@@ -953,6 +991,21 @@ $(function(){
 
 
 
+        /**
+         * switch device / deviceGroups
+         */
+    }).on('change', '.js-skupinyControl, .js-zarizeniControl', function (e) {
+
+        if ($(this).hasClass( 'js-skupinyControl')) {
+            // var target = $('.js-skupiny [data-source="' + $(this).data('target') + '"]' );
+            $(this).closest(".box-list__settings__one").find(".js-skupiny").show();
+            $(this).closest(".box-list__settings__one").find(".js-zarizeni").hide();
+        }
+        else if($(this).hasClass( 'js-zarizeniControl')) {
+            $(this).closest(".box-list__settings__one").find(".js-skupiny").hide();
+            $(this).closest(".box-list__settings__one").find(".js-zarizeni").show();
+        }
+
 
         /**
          * send ajax before modal open
@@ -1065,7 +1118,7 @@ $(function(){
 
 
             /*
-             * odešleme current selectovaný prvek na server, ten sám osnačí potomky a rodiče
+             * odešleme current selectovaný prvek na server, ten sám označí potomky a rodiče
              */
             $.nette.ajax({
                 off: ['datagrid.happy'],
@@ -1098,10 +1151,74 @@ $(function(){
     });
 
 
+    /**
+     * editace cílových skupin na zařízení
+     */
+    $(document).on("click", ".col-dtg-edit:not(.edit)", function(e) {
+
+        var cell = this;
+        var valueToEdit = "";
+        var targetGroups = $(this).closest('table').data('target-groups');
+        var selects = $(this).data('select');
+
+        $.each(targetGroups, function (id, val) {
+            var optionSelect = id in selects
+                ? " selected='selected' "
+                : "";
+
+            valueToEdit += "<option value='" + id + "'" + optionSelect + ">" + val + "</option>";
+        });
 
 
+        input = $('<select class="select2" style="width: 100%;" multiple="multiple">' + valueToEdit + '</select>');
 
 
+        $(cell).html(input);
+
+        $(input).select2().select2('open');
+        // $(input).select2('open');
+        // $(input).trigger('select2:open');
+
+        $(cell).addClass('edit');
+
+        $(input).on('change', function (e) {
+
+            var cell = $(this).closest('.col-dtg-edit');
+            var url = $(cell).closest('table').data('url');
+            var time = $(cell).data('time');
+            var day = $(cell).data('day');
+
+            var paramDay = $(cell).closest('table').data('param-day');
+            var paramTime = $(cell).closest('table').data('param-time');
+            var paramValues = $(cell).closest('table').data('param-values');
+            var data = {};
+
+            data[paramDay] = day;
+            data[paramTime] = time;
+            data[paramValues] = JSON.stringify($(this).val());
+
+            $.nette.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                success: function (payload) {
+                    // snippets
+                    if (payload.snippets) {
+                        $.nette.ext('snippets').updateSnippets(payload.snippets);
+                    }
+                },
+                fail: function (payload) {
+                    console.log(payload);
+                }
+            });
+
+        }).on('change.select2', function (e) {
+
+        }).on('select2:unselect', function (e) {
+
+        });
+
+    });
 
 
 });

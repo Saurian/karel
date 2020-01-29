@@ -38,6 +38,31 @@ class ShopEntity
 
 
     /**
+     * @var string
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $street;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=16, nullable=true)
+     */
+    protected $strno;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $zip;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $city;
+
+
+    /**
      * @var MetricEntity[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="MetricEntity", mappedBy="shop")
      */

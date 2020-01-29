@@ -50,7 +50,7 @@ menu:
 	campaigns: Kampaně
 	devices: Správa zařízení
 	devicesGroups: Skupiny zařízení
-	reach: Data z prodejen
+	reach: Cílové skupiny
 	statistics: Statistiky
 	users: Uživatelé
 	settings: Nastavení
@@ -68,7 +68,7 @@ forms:
 		devicesLabel: Obrazovky
 		devices: Zařízení
 		groups: Skupiny
-		tag: Štítek
+		tag: Barevné označení kampaně
 		keywords: Klíčová slova
 		keywordsToggle: více možností
 		template: Vyberte šablonu
@@ -141,7 +141,7 @@ forms:
 		ruleMinLength: vyplňte alespoň %d znaky
 
 
-	userDetailForm:
+	userForm:
 		active: Aktivní
 		sendUser: Uložit úpravy
 		first_name: Jméno
@@ -312,8 +312,8 @@ userPage:
 
 reachPage:
 	title: Cílové skupiny - data z prodejen
-	navigation: Cílové skupiny - data z prodejen
-	management: Data z prodejen
+	navigation: Cílové skupiny
+	management: Správa cílových skupin
 
 	shop:
 		management: Správa prodejen
@@ -446,7 +446,7 @@ devicePage:
 	device_active: zařízení `%name%` je nyní aktivní
 	device_non_active: zařízení `%name%` je nyní neaktivní
 
-	device_removed: "Nové zařízení %name% vytvořeno"
+	device_removed: "Zařízení %name% smazáno"
 	device_group_removed: "Skupina zařízení %name% smazána"
 
 	group_moved: Skupina `%name%` přesunuta
@@ -491,3 +491,13 @@ apiPage:
 		title: wifi přístupy
 		text: "log id: %id% smazán"
 
+# device TargetGroup control
+deviceTargetGroupControl:
+	hour: hodina
+	monday: pondělí
+	tuesday: úterý
+	wednesday: středa
+	thursday: čtvrtek
+	friday: pátek
+	saturday: sobota
+	sunday: neděle

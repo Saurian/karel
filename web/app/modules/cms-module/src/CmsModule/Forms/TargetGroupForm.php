@@ -59,7 +59,7 @@ class TargetGroupForm extends BaseForm
             $params[$paramResult->getParam()->getName()][$paramResult->getId()] = $paramResult->getName();
         }
 
-        $this->addMultiSelect('values', 'Parametry', $params)
+        $this->addMultiSelect('values', 'Parametry', $params, 20)
 //            ->setOption(IComponentMapper::FIELD_IGNORE, true)
             ->setOption(IComponentMapper::ITEMS_TITLE, 'name');
 //            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;

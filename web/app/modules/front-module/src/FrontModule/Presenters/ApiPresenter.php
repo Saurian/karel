@@ -64,6 +64,13 @@ class ApiPresenter extends BasePresenter
     }
 
 
+    /**
+     * @param $did
+     * @param $p
+     * @param null $ssid
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Nette\Application\AbortException
+     */
     public function renderDefault($did, $p, $ssid = null)
     {
         if ($did && $p) {

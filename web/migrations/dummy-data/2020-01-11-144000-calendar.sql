@@ -5,8 +5,8 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 
 INSERT INTO `campaign` (`id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `users_groups_id`, `name`, `realized_from`, `realized_to`, `active`, `tag`, `keywords`, `inserted`, `updated`, `position`, `category`, `version`) VALUES
-(1,	2,	2,	NULL, 1,	'Letáky KH 1',	'2019-08-14 07:53:00',	'2019-08-16 09:53:00',	1,	'tagColor5',	NULL,	'2019-08-13 07:54:06',	'2019-08-13 08:11:51',	1,	'',	3),
-(2,	2,	2,	NULL, 1,	'Lékárny Rokycany',	'2019-08-13 08:11:00',	'2019-08-13 10:11:00',	0,	'tagColor5',	NULL,	'2019-08-13 08:11:43',	'2019-08-16 13:55:55',	2,	'',	2),
+(1,	2,	2,	NULL, 1,	'Letáky KH 1',	'2019-08-12 07:53:00',	'2019-08-14 09:53:00',	1,	'tagColor5',	NULL,	'2019-08-13 07:54:06',	'2019-08-13 08:11:51',	1,	'',	3),
+(2,	2,	2,	NULL, 1,	'Lékárny Rokycany',	'2019-08-13 08:11:00',	'2019-08-15 10:11:00',	1,	'tagColor5',	NULL,	'2019-08-13 08:11:43',	'2019-08-16 13:55:55',	2,	'',	2),
 (3,	2,	2,	NULL, 1,	'Kampaň barev',	'2019-09-14 08:12:00',	'2019-09-30 08:12:00',	1,	'tagColor2',	NULL,	'2019-08-13 08:12:38',	'2019-08-13 08:13:03',	3,	'',	3),
 (4,	2,	2,	NULL, 1,	'Leto2019',	'2019-08-13 08:10:00',	'2019-08-13 12:15:00',	0,	'tagColor3',	NULL,	'2019-08-13 08:13:34',	'2019-08-13 09:43:42',	4,	'',	4),
 (5,	2,	2,	NULL, 1,	'Derby pražských S',	'2019-10-03 08:15:00',	'2019-10-04 08:15:00',	1,	'tagColor1',	NULL,	'2019-08-13 08:19:40',	'2019-08-13 09:45:11',	5,	'',	7),
@@ -35,14 +35,17 @@ INSERT INTO `campaigns_metrics` (`campaign_entity_id`, `metric_entity_id`) VALUE
 (1,	3),
 (1,	2);
 
+INSERT INTO `campaigns_target_groups` (`campaign_entity_id`, `target_group_entity_id`) VALUES
+(1,	2);
 
-INSERT INTO `device` (`id`, `default_campaign_id`, `device_group_id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `sn`, `sn_rotate`, `psw`, `name`, `street`, `strno`, `zip`, `city`, `active`, `keywords`, `inserted`, `updated`, `position`, `category`, `version`, `tag`) VALUES
-(1,	NULL,	NULL,	2,	2,	NULL,	'KKH-01',	NULL,	NULL,	'Kaufland KH',	'',	NULL,	'',	'',	1,	NULL,	'2019-08-13 07:52:19',	'2019-08-15 20:46:27',	1,	'',	2,	NULL),
-(2,	NULL,	NULL,	2,	2,	NULL,	'bb-01',	NULL,	NULL,	'Bilovice letáky 1',	'',	NULL,	'',	'',	0,	NULL,	'2019-08-13 08:03:36',	'2019-08-13 08:03:36',	2,	'',	1,	NULL),
-(3,	NULL,	NULL,	2,	2,	NULL,	'KKol-01',	NULL,	NULL,	'Kaufland Kolín',	'',	NULL,	'',	'',	0,	NULL,	'2019-08-13 08:04:22',	'2019-08-13 08:04:22',	3,	'',	1,	NULL),
-(4,	NULL,	NULL,	2,	2,	NULL,	'BIL-01',	NULL,	NULL,	'Billa Rokycanská',	'',	NULL,	'',	'',	1,	NULL,	'2019-08-13 08:04:50',	'2019-08-15 20:46:33',	4,	'',	2,	NULL),
-(5,	NULL,	NULL,	2,	2,	NULL,	'SkLArny-110',	NULL,	NULL,	'Sklárny',	'',	NULL,	'',	'',	1,	NULL,	'2019-08-13 08:05:33',	'2019-08-15 20:46:08',	5,	'',	2,	NULL),
-(6,	NULL,	NULL,	2,	2,	NULL,	'SLA-0100110',	NULL,	NULL,	'Na Slávii',	'',	NULL,	'',	'',	1,	NULL,	'2019-08-13 08:05:59',	'2019-08-15 20:46:23',	6,	'',	2,	NULL);
+
+INSERT INTO `device` (`id`, `default_campaign_id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `sn`, `sn_rotate`, `psw`, `name`, `active`, `keywords`, `inserted`, `updated`, `position`, `category`, `version`, `tag`) VALUES
+(1,	NULL,	2,	2,	NULL,	'KKH-01',	NULL,	NULL,	'Kaufland KH',	1,	NULL,	'2019-08-13 07:52:19',	'2019-08-15 20:46:27',	1,	'',	2,	NULL),
+(2,	NULL,	2,	2,	NULL,	'bb-01',	NULL,	NULL,	'Bilovice letáky 1',	0,	NULL,	'2019-08-13 08:03:36',	'2019-08-13 08:03:36',	2,	'',	1,	NULL),
+(3,	NULL,	2,	2,	NULL,	'KKol-01',	NULL,	NULL,	'Kaufland Kolín',	0,	NULL,	'2019-08-13 08:04:22',	'2019-08-13 08:04:22',	3,	'',	1,	NULL),
+(4,	NULL,	2,	2,	NULL,	'BIL-01',	NULL,	NULL,	'Billa Rokycanská',	1,	NULL,	'2019-08-13 08:04:50',	'2019-08-15 20:46:33',	4,	'',	2,	NULL),
+(5,	NULL,	2,	2,	NULL,	'SkLArny-110',	NULL,	NULL,	'Sklárny',	1,	NULL,	'2019-08-13 08:05:33',	'2019-08-15 20:46:08',	5,	'',	2,	NULL),
+(6,	NULL,	2,	2,	NULL,	'SLA-0100110',	NULL,	NULL,	'Na Slávii',	1,	NULL,	'2019-08-13 08:05:59',	'2019-08-15 20:46:23',	6,	'',	2,	NULL);
 
 INSERT INTO `devices_groups` (`device_group_entity_id`, `device_entity_id`) VALUES
 (1,	2),
@@ -304,6 +307,17 @@ INSERT INTO `metric_statistic` (`id`, `metric_id`, `created_by_id`, `updated_by_
 ('fd989f6a-9686-4606-9584-695cc326e0e6',	2,	2,	2,	NULL,	'18:00:00',	1,	3,	'2019-09-12 14:16:48',	'2019-09-12 14:16:48'),
 ('ffb26992-b15d-4a04-9af2-a51f2819d590',	4,	2,	2,	NULL,	'18:00:00',	5,	13,	'2019-09-12 14:25:56',	'2019-09-12 14:25:56');
 
+INSERT INTO `devices_target_groups` (`device_metric_entity_id`, `target_group_entity_id`) VALUES
+('70b33bd3-9b01-478d-966c-42c4b6efe69b',	2),
+('90d3da0c-7131-491a-bdef-86c5067981ee',	2),
+('9472b7ec-8f72-4827-ab61-752c87e2e131',	2),
+('0fe3e40d-efe2-4455-b18f-befb224e4502',	4);
+
+INSERT INTO `device_metric` (`id`, `device_id`, `device_group_id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `block_day`, `block_time`, `inserted`, `updated`) VALUES
+('0fe3e40d-efe2-4455-b18f-befb224e4502',	1,	NULL,	2,	2,	NULL,	1,	'10:00:00',	'2020-01-16 16:22:21',	'2020-01-16 16:22:21'),
+('70b33bd3-9b01-478d-966c-42c4b6efe69b',	1,	NULL,	2,	2,	NULL,	1,	'09:00:00',	'2020-01-16 16:22:09',	'2020-01-16 16:22:09'),
+('90d3da0c-7131-491a-bdef-86c5067981ee',	1,	NULL,	2,	2,	NULL,	1,	'08:00:00',	'2020-01-16 16:22:03',	'2020-01-16 16:22:03'),
+('9472b7ec-8f72-4827-ab61-752c87e2e131',	1,	NULL,	2,	2,	NULL,	2,	'08:00:00',	'2020-01-16 16:22:27',	'2020-01-16 16:22:27');
 
 INSERT INTO `shop` (`id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `name`, `open_time`, `close_time`, `open_day_of_week`, `close_day_of_week`, `inserted`, `updated`, `users_group_id`) VALUES
 (1,	2,	2,	NULL,	'Svojkova',	'07:00:00',	'18:00:00',	1,	5,	'2019-09-11 09:45:43',	'2019-09-11 09:45:43',	1),

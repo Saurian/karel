@@ -213,7 +213,7 @@ class ReachPresenter extends BasePresenter
                 'data-title' => $this->translateMessage()->translate('reachPage.targetGroup.add'),
             ])
             ->setClass('btn btn-xs btn-success')
-            ->setIcon('fa fa-plus');
+            ->setIcon('plus');
 
 
 

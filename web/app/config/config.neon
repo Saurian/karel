@@ -51,6 +51,10 @@ monolog:
 	registerFallback: on
 
 services:
+	latte.latteFactory:
+		setup:
+			- addFilter(json, Devrun\Utils\Filters::json)
+
 	translation.helpers:
 		factory: Kdyby\Translation\TemplateHelpers(@Kdyby\Translation\Translator::domain(messages))
 

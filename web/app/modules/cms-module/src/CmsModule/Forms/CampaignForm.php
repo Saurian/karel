@@ -13,19 +13,14 @@ use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\MediumDataEntity;
-use CmsModule\Entities\TemplateEntity;
 use CmsModule\Entities\UserEntity;
 use CmsModule\Forms\Controls\BootstrapDateRangePicker;
-use CmsModule\InvalidArgumentException;
 use Devrun\Doctrine\DoctrineForms\IComponentMapper;
-use Devrun\Doctrine\DoctrineForms\ToManyContainer;
-use Devrun\Php\PhpInfo;
 use Kdyby\Translation\Phrase;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Security\User;
 use Nette\Utils\DateTime;
-use Tracy\Debugger;
 
 interface ICampaignFormFactory
 {
@@ -137,7 +132,7 @@ class CampaignForm extends BaseForm
             ->addRule(Form::FILLED, 'ruleDeviceOrGroup');
 
 
-        $this->addCheckboxList('metrics', $this->getTranslator()->translate('targetGroups'))
+        $this->addCheckboxList('targetGroups', $this->getTranslator()->translate('targetGroups'))
             ->setTranslator(null)
             ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
             ->setOption(IComponentMapper::ITEMS_FILTER, ['usersGroup' => 1])

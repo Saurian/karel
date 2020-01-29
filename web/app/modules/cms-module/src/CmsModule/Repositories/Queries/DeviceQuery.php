@@ -57,18 +57,27 @@ class DeviceQuery extends QueryObject
     }
 
 
+    public function byUsersGroup(User $user)
+    {
+        $this->filter[] = function (QueryBuilder $qb) use ($user) {
+
+            $qb->join('q.usersGroups', 'ug')
+               ->join('ug.users', 'u')
+               ->andWhere('u.id = :usersGroup')
+               ->setParameter('usersGroup', $user->getId());
+
+        };
+        return $this;
+    }
+
+
     public function byUser(User $user)
     {
         $this->filter[] = function (QueryBuilder $qb) use ($user) {
 
-            $qb
-                ->leftJoin('q.devicesUsers', 'du')
-                ->leftJoin('q.deviceGroup', 'dg')
-                ->leftJoin('dg.devicesGroupsUsers', 'dgu');
-
-            $qb->andWhere('du.id = :user')
-                ->orWhere('dgu.id = :user')
-                ->setParameter('user', $user->getId());
+            $qb->leftJoin('q.devicesUsers', 'du')
+               ->andWhere('du.id = :user')
+               ->setParameter('user', $user->getId());
 
         };
         return $this;

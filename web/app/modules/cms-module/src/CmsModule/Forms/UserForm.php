@@ -197,7 +197,7 @@ class UserForm extends BaseForm
             $em = $form->getEntityMapper()->getEntityManager();
 
             /** @var UserEntity $entity */
-            $entity              = $form->getEntity();
+//            $entity              = $form->getEntity();
             $selectDevices       = (array)$values->devices;
             $selectDevicesGroups = (array)$values->devicesGroups;
             $devices             = $this->getDevices();

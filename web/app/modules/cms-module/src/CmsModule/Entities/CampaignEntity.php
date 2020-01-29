@@ -68,11 +68,19 @@ class CampaignEntity implements IDeviceEntity
     protected $defaultDevices;
 
     /**
+     * @deprecated
      * @var MetricEntity[]|ArrayCollection
      * @ORM\ManyToMany(targetEntity="MetricEntity", inversedBy="campaigns")
      * @ORM\JoinTable(name="campaigns_metrics")
      */
     protected $metrics;
+
+    /**
+     * @var TargetGroupEntity[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="TargetGroupEntity", inversedBy="campaigns")
+     * @ORM\JoinTable(name="campaigns_target_groups")
+     */
+    protected $targetGroups;
 
     /**
      * @var UsersGroupEntity
@@ -330,6 +338,29 @@ class CampaignEntity implements IDeviceEntity
     }
 
 
+    public function addTargetGroup(TargetGroupEntity $targetGroupEntity)
+    {
+        if (!$this->targetGroups->contains($targetGroupEntity)) {
+            $this->targetGroups->add($targetGroupEntity);
+        }
+    }
+
+    /**
+     * @return TargetGroupEntity[]|ArrayCollection
+     */
+    public function getTargetGroups()
+    {
+        return $this->targetGroups;
+    }
+
+    public function removeTargetGroup(TargetGroupEntity $targetGroupEntity)
+    {
+        if ($this->targetGroups->contains($targetGroupEntity)) {
+            $this->targetGroups->removeElement($targetGroupEntity);
+        }
+    }
+
+
 
     /**
      * @return MediumDataEntity[]|ArrayCollection
@@ -371,6 +402,9 @@ class CampaignEntity implements IDeviceEntity
     }
 
 
+    /**
+     * @deprecated
+     */
     public function synchronizeMediaDataFromTemplate()
     {
         if ($template = $this->template) {
@@ -468,7 +502,12 @@ class CampaignEntity implements IDeviceEntity
         return $this;
     }
 
+    public function isDeviceTargetGroupAtTime(DeviceEntity $deviceEntity, DateTime $dateTime)
+    {
 
+
+
+    }
 
 
 

@@ -77,6 +77,18 @@ class UsersGroupEntity
      */
     protected $campaigns;
 
+    /**
+     * @var DeviceEntity[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="DeviceEntity", mappedBy="usersGroups", cascade={"persist"})
+     */
+    protected $devices;
+
+    /**
+     * @var DeviceGroupEntity[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="DeviceGroupEntity", mappedBy="usersGroups", cascade={"persist"})
+     */
+    protected $devicesGroups;
+
 
 
 
@@ -85,11 +97,12 @@ class UsersGroupEntity
      */
     public function __construct()
     {
-        $this->users = new ArrayCollection();
-        $this->targets = new ArrayCollection();
-        $this->shops = new ArrayCollection();
-        $this->campaigns = new ArrayCollection();
-        $this->calendars = new ArrayCollection();
+        $this->users        = new ArrayCollection();
+        $this->targets      = new ArrayCollection();
+        $this->shops        = new ArrayCollection();
+        $this->campaigns    = new ArrayCollection();
+        $this->devices      = new ArrayCollection();
+        $this->calendars    = new ArrayCollection();
         $this->metricParams = new ArrayCollection();
     }
 
