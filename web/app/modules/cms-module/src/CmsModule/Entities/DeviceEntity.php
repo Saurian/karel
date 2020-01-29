@@ -386,6 +386,17 @@ class DeviceEntity
         return $this;
     }
 
+    /**
+     * @param UsersGroupEntity $usersGroups
+     * @return DeviceEntity
+     */
+    public function setUsersGroups(UsersGroupEntity $usersGroups): DeviceEntity
+    {
+        $this->usersGroups = $usersGroups;
+        return $this;
+    }
+
+
 
 
 

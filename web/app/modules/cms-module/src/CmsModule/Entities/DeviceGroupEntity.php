@@ -299,6 +299,17 @@ class DeviceGroupEntity
         return false;
     }
 
+    /**
+     * @param UsersGroupEntity $usersGroups
+     * @return DeviceGroupEntity
+     */
+    public function setUsersGroups(UsersGroupEntity $usersGroups): DeviceGroupEntity
+    {
+        $this->usersGroups = $usersGroups;
+        return $this;
+    }
+
+
 
 
 

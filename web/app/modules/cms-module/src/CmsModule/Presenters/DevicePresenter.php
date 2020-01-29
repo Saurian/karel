@@ -440,6 +440,7 @@ class DevicePresenter extends BasePresenter
         $unPlaceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserUnPlaceDeviceGroup($this->getUser());
 
         $entity = new DeviceEntity();
+        $entity->setUsersGroups($this->userEntity->getGroup());
 
         $form->setDevicesGroups($devicesGroups = $this->deviceFacade->getAllowedDevicesGroups($this->user));
 
@@ -450,7 +451,7 @@ class DevicePresenter extends BasePresenter
 
         if ($this->editDevice) {
             if (!$entity = $this->deviceFacade->getDeviceRepository()->find($this->editDevice)) {
-                $entity = new DeviceEntity();
+                $entity = (new DeviceEntity())->setUsersGroups($this->userEntity->getGroup());
                 $unPlaceGroupEntity->addDevice($entity);
             }
 
@@ -460,23 +461,13 @@ class DevicePresenter extends BasePresenter
 
 
 
-
-
-
         $form->create();
         $form->bootstrap3Render();
         $form->bindEntity($entity);
         $form->onSuccess[] = function (BaseForm $form, $values) {
-//            Debugger::barDump(__FUNCTION__, 'onSuccess');
-//            Debugger::barDump($_POST, 'onSuccess');
 
             /** @var DeviceEntity $entity */
             $entity = $form->getEntity();
-
-
-//            dump($values);
-//            die();
-
 
 
             /*
@@ -517,7 +508,9 @@ class DevicePresenter extends BasePresenter
     /**
      * modal add / edit group
      *
+     * @param $name
      * @return \CmsModule\Forms\DeviceGroupForm
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     protected function createComponentDeviceGroupForm($name)
     {
@@ -530,14 +523,17 @@ class DevicePresenter extends BasePresenter
         $form->bootstrap3Render();
 
 
-        $entity = new DeviceGroupEntity('Výchozí');
+        $entity = (new DeviceGroupEntity('Výchozí'))
+            ->setUsersGroups($this->userEntity->getGroup());
+
         $rootEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
         $entity->setParent($rootEntity);
 
         if ($this->editDeviceGroup) {
             if (!$entity = $this->deviceFacade->getDeviceGroupRepository()->find($this->editDeviceGroup)) {
-                $entity = new DeviceGroupEntity('Výchozí');
-                $entity->setParent($rootEntity);
+                $entity = (new DeviceGroupEntity('Výchozí'))
+                    ->setParent($rootEntity)
+                    ->setUsersGroups($this->userEntity->getGroup());
             }
 
         } else {
@@ -550,22 +546,10 @@ class DevicePresenter extends BasePresenter
 
 
         $form->bindEntity($entity);
-
-
-
         $form->onSuccess[] = function (BaseForm $form) {
-
-
-
 
             /** @var DeviceGroupEntity $entity */
             $entity = $form->getEntity();
-//            Debugger::barDump($entity);
-
-//            dump($entity);
-//            die();
-
-
 
             /*
              * add new device group to user
@@ -1264,7 +1248,7 @@ class DevicePresenter extends BasePresenter
             ->addAttributes([
                 'data-target' => '.addDeviceModal',
                 'data-toggle' => 'ajax-modal',
-                'data-title' => $this->translateMessage()->translate('devicePage.edit_device_group'),
+                'data-title' => $this->translateMessage()->translate('devicePage.addNewDevice'),
             ])
             ->setClass('btn btn-xs btn-success btn-secondary')
             ->setIcon('plus');
