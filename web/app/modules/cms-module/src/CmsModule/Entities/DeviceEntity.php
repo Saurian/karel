@@ -29,6 +29,7 @@ use Nette\Utils\Strings;
  *      @ORM\UniqueConstraint(name="sn_rotate_idx", columns={"sn", "sn_rotate"}),
  *  },
  *  indexes={
+ *     @ORM\Index(name="sn_idx", columns={"sn"}),
  *     @ORM\Index(name="tag_idx", columns={"tag"}),
  *     @ORM\Index(name="device_active_idx", columns={"active"}),
  *     @ORM\Index(name="device_name_idx", columns={"name"}),

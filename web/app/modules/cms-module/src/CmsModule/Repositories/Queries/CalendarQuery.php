@@ -138,14 +138,15 @@ class CalendarQuery extends QueryObject
     public function byDeviceGroupSn(string $sn)
     {
         $this->filter[] = function (QueryBuilder $qb) use ($sn) {
-            $qb->innerJoin('q.devicesGroups', 'calendarDG')
-               ->innerJoin('calendarDG.children', 'calendarDGChildren')
-               ->innerJoin('calendarDG.devices', 'calendarDevices')
-               ->innerJoin('calendarDGChildren.devices', 'calendarChildrenDevices')
+            $qb->leftJoin('q.devicesGroups', 'calendarDG')
+               ->leftJoin('calendarDG.children', 'calendarDGChildren')
+               ->leftJoin('calendarDG.devices', 'calendarDevices')
+               ->leftJoin('calendarDGChildren.devices', 'calendarChildrenDevices')
                ->orWhere('calendarChildrenDevices.sn = :calendarChildrenDeviceSN and calendarChildrenDevices.active = true')->setParameter('calendarChildrenDeviceSN', $sn)
                ->andWhere('calendarDGChildren.lft > calendarDG.lft')
                ->andWhere('calendarDGChildren.rgt < calendarDG.rgt')
-               ->andWhere('calendarDGChildren.root = calendarDG.root');
+               ->andWhere('calendarDGChildren.root = calendarDG.root')
+            ;
         };
         return $this;
     }
