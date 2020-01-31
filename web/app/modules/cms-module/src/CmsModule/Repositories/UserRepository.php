@@ -67,6 +67,13 @@ class UserRepository extends EntityRepository implements IFilter
     }
 
 
+    /**
+     * @deprecated
+     *
+     * @param User $user
+     * @return array
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function getAssignedDevices(User $user)
     {
         $userEntity = $this->createQueryBuilder('e')
@@ -95,7 +102,13 @@ class UserRepository extends EntityRepository implements IFilter
     }
 
 
-
+    /**
+     * @deprecated
+     *
+     * @param User $user
+     * @return array
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function getAssignedDevicesGroups(User $user)
     {
         $userEntity = $this->createQueryBuilder('e')

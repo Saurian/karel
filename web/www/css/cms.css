@@ -393,6 +393,19 @@
   align-items: center;
 }
 
+ul li [aria-expanded="true"],
+ul li [aria-expanded="true"]:focus {
+  color: #008efa;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+ul li [aria-expanded="false"] {
+  color: rgba(0, 0, 0, 0.2);
+  font-weight: 500;
+  font-size: 13px;
+}
+
 @media (min-width: 1200px) {
   .row-flex {
     display: -webkit-box;

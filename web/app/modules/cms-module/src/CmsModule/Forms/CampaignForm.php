@@ -69,8 +69,8 @@ class CampaignForm extends BaseForm
 
         $this->addSubmit('sendSubmit', 'save')
             ->setAttribute('class', 'btn btn-success box-list__settings__close js-settingsClose')
-            ->setAttribute('data-dismiss', 'modal')
-            ->onClick[] = [$this, 'success'];
+            ->setAttribute('data-dismiss', 'modal');
+//            ->onClick[] = [$this, 'success'];
 
 
         $this->addText('name', 'name')
@@ -205,6 +205,15 @@ class CampaignForm extends BaseForm
         /** @var CampaignEntity $entity */
         $entity = $form->getEntity();
         $mediaData = $entity->getMediaData();
+
+
+        dump($_POST);
+
+
+        dump($values);
+        dump($entity);
+        die;
+
     }
 
 

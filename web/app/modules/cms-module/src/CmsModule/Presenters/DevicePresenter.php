@@ -274,6 +274,8 @@ class DevicePresenter extends BasePresenter
 
 
     /**
+     * @deprecated
+     *
      * zařadit/vyřadit zařízení do skupiny a podskupin
      *
      * @param $did
@@ -442,7 +444,8 @@ class DevicePresenter extends BasePresenter
         $entity = new DeviceEntity();
         $entity->setUsersGroups($this->userEntity->getGroup());
 
-        $form->setDevicesGroups($devicesGroups = $this->deviceFacade->getAllowedDevicesGroups($this->user));
+        $devicesGroups = $this->getDevicesGroups();
+        $form->setDevicesGroups($devicesGroups);
 
         if ($this->deviceFacade->isNewDevice()) {
             $this->deviceFacade->cleanNewDevice();
@@ -475,6 +478,20 @@ class DevicePresenter extends BasePresenter
              */
             $userEntity = $this->userEntity;
             $userEntity->addDevice($entity);
+
+            /**
+             * porovnáme value devices s entitou, nesouhlasné device smažeme
+             */
+            foreach ($values->devicesGroups as $did) {
+                $dg = $this->getDevicesGroups()[$did];
+                $dg->addDevice($entity);
+            }
+
+            foreach ($entity->getDevicesGroups() as $devicesGroup) {
+                if (! in_array($devicesGroup->getId(), (array) $values->devicesGroups)) {
+                    $devicesGroup->removeDevice($entity);
+                }
+            }
 
             $translator = $this->translateMessage();
 
@@ -1063,7 +1080,7 @@ class DevicePresenter extends BasePresenter
         $grid->setTemplateFile(__DIR__ . "/templates/Device/#datagrid_treelist_template.latte");
 
         $grid->onRender[] = function (DataGrid $grid) {
-            $grid->template->editDeviceId = $this->editDevice;
+            $grid->template->form = $this['deviceForm'];
         };
 
         return $grid;
@@ -1539,6 +1556,25 @@ class DevicePresenter extends BasePresenter
 
         $this->payload->url = $this->link('this');
         $this->ajaxRedirect('this', 'deviceGridControl', 'deviceInGroupName');
+    }
+
+
+
+    /**
+     * @return DeviceGroupEntity[]|null
+     */
+    public function getDevicesGroups()
+    {
+        static $devicesGroups;
+
+        if (null === $devicesGroups) {
+            $devicesGroups = $this->deviceFacade->getDeviceGroupRepository()->getAssoc(
+                $this->deviceFacade->getDeviceGroupRepository()->fetch(
+                    $this->deviceFacade->getDeviceGroupRepository()->getUserAllowedQuery($this->user))->getIterator()
+            );
+        }
+
+        return $devicesGroups;
     }
 
 

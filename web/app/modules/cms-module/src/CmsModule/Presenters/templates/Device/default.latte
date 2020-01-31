@@ -75,8 +75,8 @@
 
 			<div class="modal-body" n:snippet="editDeviceFormModal">
 				<div class="row">
-					<div n:class="$editDevice ? col-md-6">
-						{form deviceForm}
+					{form deviceForm}
+						<div n:class="$editDevice ? col-md-6">
 							<div n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" class="box-list__settings__one">
 								{input sendSubmit}
 							</div>
@@ -119,33 +119,34 @@
 								<a n:href="editDeviceTargetGroups! $this->editDevice" class="ajax btn btn-md btn-block btn-info">Cílové skupiny</a>
 							</div>
 
+						</div>
+						<div n:class="$editDevice ? 'col-md-6 grido' : 'grido'">
+							{control deviceGroupListGridControl}
+						</div>
+
 {*
-							<div class="box-list__settings__one">
-								<div class="box-list__settings__one__templateSelectHead clearfix">
-									{label deviceGroup}
-								</div>
-								{input deviceGroup}
+						<div class="box-list__settings__one">
+							<div class="box-list__settings__one__templateSelectHead clearfix">
+								{label deviceGroup}
 							</div>
+							{input deviceGroup}
+						</div>
 
-							<div class="box-list__settings__one">
-								<div class="box-list__settings__one__templateSelectHead clearfix">
-									{label defaultCampaign}
-									{input defaultCampaign}
-								</div>
+						<div class="box-list__settings__one">
+							<div class="box-list__settings__one__templateSelectHead clearfix">
+								{label defaultCampaign}
+								{input defaultCampaign}
 							</div>
-							<div class="box-list__settings__one">
-								<div class="box-list__settings__one__templateSelectHead clearfix">
-									{label loopCampaign}
-									{input loopCampaign}
-								</div>
+						</div>
+						<div class="box-list__settings__one">
+							<div class="box-list__settings__one__templateSelectHead clearfix">
+								{label loopCampaign}
+								{input loopCampaign}
 							</div>
+						</div>
 *}
-						{/form}
+					{/form}
 
-					</div>
-					<div n:if="$editDevice" class="col-md-6 grido">
-						{control deviceGroupListGridControl}
-					</div>
 				</div>
 			</div>
 		</div>

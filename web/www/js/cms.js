@@ -170,6 +170,17 @@ $.nette.ext('switchery', {
     }
 });
 
+/**
+ * happy checkboxes
+ */
+$.nette.ext('happy', {
+    success: function() {
+        if (window.happy) {
+            window.happy.reset();
+        }
+    }
+});
+
 
 // $.nette.ext('dsds', {
 //     init: function () {
@@ -991,21 +1002,6 @@ $(function(){
 
 
 
-        /**
-         * switch device / deviceGroups
-         */
-    }).on('change', '.js-skupinyControl, .js-zarizeniControl', function (e) {
-
-        if ($(this).hasClass( 'js-skupinyControl')) {
-            // var target = $('.js-skupiny [data-source="' + $(this).data('target') + '"]' );
-            $(this).closest(".box-list__settings__one").find(".js-skupiny").show();
-            $(this).closest(".box-list__settings__one").find(".js-zarizeni").hide();
-        }
-        else if($(this).hasClass( 'js-zarizeniControl')) {
-            $(this).closest(".box-list__settings__one").find(".js-skupiny").hide();
-            $(this).closest(".box-list__settings__one").find(".js-zarizeni").show();
-        }
-
 
         /**
          * send ajax before modal open
@@ -1068,7 +1064,7 @@ $(function(){
         /**
          * zařízení select / unselect ve skupinách zařízení
          */
-    }).on("change", "form input.happy", function(e){
+    }).on("change", "_form#frm-deviceGroupListGridControl-filter input.happy", function(e){
 
         var ajaxSelectEl = $(this).closest('[data-ajax-select]');
 
@@ -1087,6 +1083,7 @@ $(function(){
             /*
              * selectujeme všechny potomky
              */
+            /*
             if ($(item).is('.has-children')) {
                 var childrenCheckboxes = $(item).find('.happy-checkbox');
                 var childrenInputs = $(item).find('input[data-check]');
@@ -1100,12 +1097,14 @@ $(function(){
                     $(childrenInputs).prop( "checked", false );
                 }
             }
+            */
             /********************************************************/
 
 
             /*
              * unselectujeme všechny rodiče
              */
+            /*
             if (checked == false) {
                 var parents = $(item).parents('.datagrid-tree-item');
 
@@ -1114,6 +1113,7 @@ $(function(){
                     $(this).find('input[data-check]').first().prop( "checked", false );
                 });
             }
+            */
             /********************************************************/
 
 

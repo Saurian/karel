@@ -265,6 +265,14 @@ class DeviceEntity
         return $this;
     }
 
+    public function hasDeviceGroupById($id)
+    {
+        foreach ($this->devicesGroups as $devicesGroup) {
+            if ($devicesGroup->getId() == $id) return true;
+        }
+
+        return false;
+    }
 
 
 

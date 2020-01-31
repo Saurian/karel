@@ -300,6 +300,17 @@ class DeviceGroupEntity
     }
 
     /**
+     * @param CampaignEntity $campaignEntity
+     * @return bool
+     */
+    public function hasCampaign(CampaignEntity $campaignEntity)
+    {
+        return $this->campaigns->contains($campaignEntity);
+    }
+
+
+
+    /**
      * @param UsersGroupEntity $usersGroups
      * @return DeviceGroupEntity
      */

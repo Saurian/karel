@@ -18,7 +18,6 @@ use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\MediumDataEntity;
-use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Facades\CalendarFacade;
 use CmsModule\Facades\CampaignFacade;
 use CmsModule\Facades\DeviceFacade;
@@ -767,6 +766,98 @@ class CampaignPresenter extends BasePresenter
 
         return $grid;
     }
+
+
+    /**
+     * zobrazení tree skupiny zařízení v modal okně
+     *
+     * @param $name
+     * @return \Ublaboo\DataGrid\DataGrid
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Ublaboo\DataGrid\Exception\DataGridException
+     */
+    protected function createComponentDeviceGroupListGridControl($name)
+    {
+        $grid = new DataGrid();
+        $grid->setTranslator($this->translator);
+
+
+        if ($this->user->isAllowed('Cms:Device', 'listAllDevices')) {
+            $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                        ->select('e')
+                                        ->andWhere('e.lvl = :level')->setParameter('level', 0)
+                                        ->addOrderBy('e.lvl')
+                                        ->addOrderBy('e.lft')
+            ;
+
+        } else {
+            $rootDeviceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
+
+            $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                        ->select('e')
+                                        ->andWhere('e.lft > :left')->setParameter('left', $rootDeviceGroupEntity->getLft())
+                                        ->andWhere('e.rgt < :right')->setParameter('right', $rootDeviceGroupEntity->getRgt())
+                                        ->andWhere('e.root = :root')->setParameter('root', $rootDeviceGroupEntity)
+                                        ->andWhere('e.lvl = :level')->setParameter('level', 1)
+                                        ->addOrderBy('e.lvl')
+                                        ->addOrderBy('e.lft')
+            ;
+        }
+
+
+        $grid->setDataSource($query);
+        $grid->setTreeView(function ($id) {
+            return $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                      ->where('e.parent = :parent')->setParameter('parent', $id)
+                                      ->addOrderBy('e.lvl')
+                                      ->addOrderBy('e.lft')
+                                      ->getQuery()
+                                      ->getResult();
+
+        }, function (DeviceGroupEntity $deviceGroupEntity) {
+            return $this->deviceFacade->getDeviceGroupRepository()->childCount($deviceGroupEntity) > 0;
+        });
+
+
+
+        $grid->addColumnText('name', 'Název')
+             ->addAttributes(['class' => 'btn btn-xs btn-default btn-block']);
+
+
+        $group = $grid->addGroupAction('Aktivní');
+
+        $group->onSelect[]   = [$this, 'setActives'];
+
+
+
+        $grid->setTemplateFile(__DIR__ . "/templates/Campaign/#datagrid_devices_groups_tree.latte");
+
+        $grid->onRender[] = function (DataGrid $grid) {
+            $grid->template->form = $this['campaignForm'];
+        };
+
+        return $grid;
+    }
+
+
+    /**
+     * @return CampaignEntity|null
+     */
+    public function getCampaignEntity()
+    {
+        static $campaignEntity;
+
+        if (null === $campaignEntity && $this->campaign) {
+
+            /** @var CampaignEntity $campaignEntity */
+            $campaignEntity = $this->campaignFacade->getRepository()->find($this->campaign);
+        }
+
+        return $campaignEntity;
+    }
+
+
+
 
 
     /**

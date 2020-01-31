@@ -118,6 +118,7 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
      * @param QueryBuilder $queryBuilder
      * @param string $cacheId
      * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function getCachedOneOrNullResult(QueryBuilder $queryBuilder, $cacheId = 'deviceGroups')
     {
@@ -134,7 +135,7 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
         $query = (new DeviceGroupQuery());
 
         if (!$user->isAllowed('Cms:Device', 'listAllDevices')) {
-            if ($user->isAllowed('Cms:Device', 'listUsersGroupDevices')) {
+            if ($user->isAllowed('Cms:Device', 'listUsersGroup')) {
                 $query->byUsersGroup($user);
 
             } else {

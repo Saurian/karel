@@ -23,6 +23,7 @@ use Kdyby\Doctrine\EntityRepository;
 use Nette\Http\Session;
 use Nette\Security\User;
 use Nette\SmartObject;
+use Tracy\Debugger;
 
 /**
  * Class DeviceFacade
@@ -108,6 +109,12 @@ class DeviceFacade
     }
 
 
+    /**
+     * @deprecated use deviceGroupRepository->getUserAllowedQuery instead
+     *
+     * @param User $user
+     * @return array
+     */
     public function getAllowedDevicesGroups(User $user)
     {
         if (null === $this->allowedDevicesGroups) {

@@ -92,6 +92,14 @@ class DeviceForm extends BaseForm
             ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 65535);
 
 
+        $this->addCheckboxList('devicesGroups', $this->getTranslator()->translate('groups'), $this->devicesGroups)
+            ->setTranslator(null)
+            ->setDisabled($disAllowed);
+//            ->setOption(IComponentMapper::FIELD_IGNORE, true);
+//            ->setOption(IComponentMapper::ITEMS_TITLE, 'name');
+//            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items
+//            ->setOption(IComponentMapper::ITEMS_FILTER, ['deviceGroup' => null]);
+
         $this->addSelect('deviceGroup', $this->getTranslator()->translate('group'), $this->getDevicesGroups())
             ->setTranslator(null)
             ->setDisabled($disAllowed)
@@ -147,6 +155,7 @@ class DeviceForm extends BaseForm
     {
         /** @var BaseForm $form */
         $form      = $button->getForm();
+        $values = $form->getValues();
 
         /** @var BasePresenter $presenter */
         $presenter = $form->getPresenter();

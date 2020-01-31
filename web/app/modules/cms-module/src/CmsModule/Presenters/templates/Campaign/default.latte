@@ -136,24 +136,18 @@
 											<div class="box-list__settings__one__devices__head clearfix">
 												{label devices}
 												<ul>
-													<li><input type="radio" name="typzarizeni" checked="checked" class="js-zarizeniControl" id="ff-zarizeni-new" data-target-id="new"><label for="ff-zarizeni-new">{_forms.campaignsDetailForm.devices}</label></li>
-													<li><input type="radio" name="typzarizeni" class="js-skupinyControl"  id="ff-skupiny-new" data-target-id="new"><label for="ff-skupiny-new">{_forms.campaignsDetailForm.groups}</label></li>
+													<li class="active">
+														<a href="#groups" aria-controls="groups" role="tab" data-toggle="tab" aria-expanded="true">{_forms.campaignsDetailForm.groups}</a>
+													</li>
+													<li>
+														<a href="#devices" aria-controls="devices" role="tab" data-toggle="tab" aria-expanded="false">{_forms.campaignsDetailForm.devices}</a>
+													</li>
 												</ul>
 											</div>
-											<div class="box-list__settings__one__devices">
-												<div class="box-list__settings__one__devices__inner clearfix js-skupiny nooo" data-source="js-skupiny-new">
-													<div n:if="$form[devicesGroups]->items" n:foreach="$form[devicesGroups]->items as $key => $label">
-														<input n:name="devicesGroups:$key">
-														<label n:name="devicesGroups:$key"><span>{$label}</span></label>
-													</div>
-													{if count($form[devicesGroups]->items) == 0}
-														<input n:name="devicesGroups" class="hidden">
-														<div>
-															<label class="alert alert-danger disabled">
-																<span class="text-danger">{_forms.deviceDetailForm.noAnyDeviceGroups}</span>
-															</label>
-														</div>
-													{/if}
+
+											<div class="tab-content box-list__settings__one__devices m-0">
+												<div role="tabpanel" class="tab-pane active" id="groups">
+													{control deviceGroupListGridControl}
 													{*
 													<div>
 														<label class="alert alert-info m-b-0 bg-primary">
@@ -162,26 +156,28 @@
 													</div>
 													*}
 												</div>
-												<div class="box-list__settings__one__devices__inner clearfix js-zarizeni" data-source="js-zarizeni-new">
-													<div n:if="$form[devices]->items" n:foreach="$form[devices]->items as $key => $label">
-														<input n:name="devices:$key">
-														<label n:name="devices:$key"><span>{$label}</span></label>
-													</div>
-													{if count($form[devices]->items) == 0}
-														<input n:name="devices" class="hidden">
-														<div>
-															<label class="alert alert-danger disabled">
-																<span class="text-danger">{_forms.deviceDetailForm.noAnyDevices}</span>
-															</label>
+												<div role="tabpanel" class="tab-pane" id="devices">
+													<div class="box-list__settings__one__devices__inner clearfix js-zarizeni">
+														<div n:if="$form[devices]->items" n:foreach="$form[devices]->items as $key => $label">
+															<input n:name="devices:$key">
+															<label n:name="devices:$key"><span>{$label}</span></label>
 														</div>
-													{/if}
-													{*
-													<div>
-														<label class="alert alert-info m-b-0 bg-primary">
-															<a n:href="modalDeviceFormInDevicePage!" class="btn btn-info btn-md">{_campaignPage.newDevice}</a>
-														</label>
+														{if count($form[devices]->items) == 0}
+															<input n:name="devices" class="hidden">
+															<div>
+																<label class="alert alert-danger disabled">
+																	<span class="text-danger">{_forms.deviceDetailForm.noAnyDevices}</span>
+																</label>
+															</div>
+														{/if}
+														{*
+                                                        <div>
+                                                            <label class="alert alert-info m-b-0 bg-primary">
+                                                                <a n:href="modalDeviceFormInDevicePage!" class="btn btn-info btn-md">{_campaignPage.newDevice}</a>
+                                                            </label>
+                                                        </div>
+                                                        *}
 													</div>
-													*}
 												</div>
 											</div>
 										</div>
