@@ -25,21 +25,26 @@ interface ITargetGroupFormFactory
  * Class TargetGroupForm
  * @package CmsModule\Forms
  * @method addDynamic($name, $factory, $createDefault = 0, $forceDefault = FALSE): \Kdyby\Replicator\Container
+ * @method onSave(TargetGroupEntity $targetGroupEntity, TargetGroupForm $form)
  */
 class TargetGroupForm extends BaseForm
 {
 
     protected $autoButtonClass = false;
 
-
     /** @var ReachFacade @inject */
     public $reachFacade;
 
+    /** @var array callback */
+    public $onSave = [];
+
 
     /** @return TargetGroupForm */
-    public function create()
+    public function create(Container $container = null)
     {
-        $this->addText('name', 'Název cílové skupiny')
+        $form = $container ? $container : $this;
+
+        $form->addText('name', 'Název cílové skupiny')
             ->setAttribute('placeholder', "placeholder.name")
             ->addRule(Form::FILLED, 'ruleUsername')
             ->addRule(Form::MIN_LENGTH, 'ruleMinLength', 4)
@@ -59,12 +64,12 @@ class TargetGroupForm extends BaseForm
             $params[$paramResult->getParam()->getName()][$paramResult->getId()] = $paramResult->getName();
         }
 
-        $this->addMultiSelect('values', 'Parametry', $params, 20)
+        $form->addMultiSelect('values', 'Parametry', $params, 20)
 //            ->setOption(IComponentMapper::FIELD_IGNORE, true)
             ->setOption(IComponentMapper::ITEMS_TITLE, 'name');
 //            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
 
-        $this->addSubmit('send', 'Odeslat')->setAttribute('class', 'btn btn-md btn-success')
+        $form->addSubmit('send', 'Odeslat')->setAttribute('class', 'btn btn-md btn-success')
             ->onClick[] = [$this, 'formSuccess'];
 
 //        $this->onSuccess[] = array($this, 'success');
@@ -107,49 +112,39 @@ class TargetGroupForm extends BaseForm
         }
     }
 
-
+    /**
+     * @param SubmitButton $button
+     * @throws \Exception
+     */
     public function formSuccess(SubmitButton $button)
     {
         /** @var TargetGroupEntity $entity */
         $entity = $this->getEntity();
-
         $values = $button->getForm()->getValues();
 
+        $this->save($entity, $values);
+    }
 
-//        dump($entity);
-//        dump($values);
 
-//        die("ASd");
-
-        Debugger::$maxDepth = 7;
-//        dump($entity->getParams()[1]);
-
+    /**
+     * @param TargetGroupEntity $entity
+     * @param $values
+     * @throws \Exception
+     */
+    public function save(TargetGroupEntity $entity, $values)
+    {
         $em = $this->getEntityMapper()->getEntityManager();
 
         /*
          * manual mapping
          * toReplicator not complete
          */
-
-        /** @var TargetGroupEntity $entity */
-//        $entity = $this->reachFacade->getTargetGroupRepository()->find($values->id);
-
-//        $entity->name = $values->name;
-
         $existIds = [];
-
         foreach ($entity->getValues() as $value) {
             $existIds[] = $value->getId();
         }
 
-
-
-//        dump($existIds);
-//        dump((array) $values->values);
-
         $toRemove = array_diff($existIds, (array) $values->values);
-
-
         foreach ($toRemove as $item) {
             foreach ($entity->getValues() as $value) {
                 if ($value->getId() == $item) {
@@ -158,43 +153,9 @@ class TargetGroupForm extends BaseForm
             }
         }
 
-
-//        dump($toRemove);
-
-//        dump($entity);
-
-
-
-        $em->persist($entity);
-
-
-        $em->flush();
-
-//        die(__METHOD__);
-
-//        Debugger::$maxDepth = 7;
-//        Debugger::barDump($entity->getParams()[1]);
-//        Debugger::barDump($entity);
-//        Debugger::barDump($values);
-
-//        Debugger::$maxDepth = 3;
-
-
-//        $q = $entity::getReflection()->getProperty('name');
-
-//        Debugger::barDump($q);
-
-
-//        $param = new TargetGroupParamEntity('ASASA', $entity);
-
-//        $entity->addParam($param);
-
-        $this->getPresenter()->redirect('this');
-
-        $this->getPresenter()->redrawControl();
-
+        $em->persist($entity)->flush();
+        $this->onSave($entity, $this);
     }
-
 
 
 

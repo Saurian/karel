@@ -1,0 +1,31 @@
+{*{extends $original_template}*}
+
+{block detail}
+    <div class="form-horizontal well no-select2">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                Parametry cílové skupiny `<strong class="text-white">{$item->name}</strong>`
+            </div>
+            {formContainer items_detail_form-$item->id}
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-3">
+                        <div class="form-group">
+                            {label name}
+                            {input name, value => $item->name, class => 'form-control'}
+                        </div>
+                        <div class="form-group">
+                            {label values}
+{*                            {input values, value => $item->values, class => 'form-control'}*}
+                            {input values, class => 'form-control no-select2'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer text-right">
+                {input save}
+            </div>
+            {/formContainer}
+        </div>
+    </div>
+{/block}

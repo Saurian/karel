@@ -3,7 +3,6 @@
 
 namespace CmsModule\Presenters;
 
-
 use CmsModule\Controls\FlashMessageControl;
 use CmsModule\Entities\MetricEntity;
 use CmsModule\Entities\MetricStatisticEntity;
@@ -13,12 +12,13 @@ use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Facades\ReachFacade;
 use CmsModule\Forms\BaseForm;
 use Devrun\CmsModule\Controls\DataGrid;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Devrun\Doctrine\DoctrineForms\EntityFormMapper;
+use Nette;
 use Nette\Application\UI\Multiplier;
-use Nette\Forms\Container;
+use Nette\Forms\Controls\SubmitButton;
 use Nette\Utils\DateTime;
 use Nette\Utils\Validators;
-use Tracy\Debugger;
+use Ublaboo\DataGrid\Column\ItemDetail;
 
 class ReachPresenter extends BasePresenter
 {
@@ -38,9 +38,14 @@ class ReachPresenter extends BasePresenter
     /** @var MetricEntity[] */
     private $metrics;
 
+    /** @var EntityFormMapper @inject */
+    public $entityFormMapper;
+
 
     public function renderDefault()
     {
+        $this->template->editTargetGroup = $this->editTargetGroup;
+        $this->template->editTargetParamGroup = $this->editTargetParamGroup;
 
     }
 
@@ -107,8 +112,8 @@ class ReachPresenter extends BasePresenter
         /** @var TargetGroupEntity $entity */
         if (!$entity = $this->reachFacade->getTargetGroupRepository()->find($id)) {
 
-            $title   = $this->translateMessage()->translate('devicePage.management');
-            $message = $this->translateMessage()->translate('devicePage.device_group_not_found', null, ['id' => $id]);
+            $title   = $this->translateMessage()->translate('reachPage.management');
+            $message = $this->translateMessage()->translate('reachPage.targetGroup.not_found', null, ['id' => $id]);
             $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_DANGER);
             $this->ajaxRedirect('this', null, ['flash']);
             return;
@@ -116,14 +121,13 @@ class ReachPresenter extends BasePresenter
 
         $this->reachFacade->getEntityManager()->remove($entity)->flush();
 
-        $title   = $this->translateMessage()->translate('devicePage.management');
-        $message = $this->translateMessage()->translate('devicePage.device_group_removed', null, ['name' => $entity->getName()]);
+        $title   = $this->translateMessage()->translate('reachPage.management');
+        $message = $this->translateMessage()->translate('reachPage.targetGroup.removed', null, ['name' => $entity->getName()]);
         $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_DANGER);
-
 
         $this->editTargetGroup = null;
         $this->payload->url = $this->link('this');
-        $this->ajaxRedirect('this', ['reachGridControl'], ['flash']);
+        $this->ajaxRedirect('this', ['targetGroupGridControl'], ['flash']);
     }
 
 
@@ -189,14 +193,6 @@ class ReachPresenter extends BasePresenter
             ->setFilterText();
 
 
-        $grid->addAction('edit', 'messages.reachPage.targetGroup.update', 'editTargetGroup!')
-            ->setIcon('pencil')
-            ->setDataAttribute('target', '#targetGroupFormModal')
-            ->setDataAttribute('title', $this->translateMessage()->translate('reachPage.targetGroup.edit'))
-            ->setDataAttribute('toggle', 'ajax-modal')
-            ->setTitle('messages.reachPage.targetGroup.update')
-            ->setClass('btn btn-xs btn-info');
-
 
         $grid->addAction('delete', 'messages.reachPage.targetGroup.delete', 'deleteTargetGroup!')
             ->setIcon('trash')
@@ -208,14 +204,60 @@ class ReachPresenter extends BasePresenter
 
         $grid->addToolbarButton('addTargetGroup!', 'messages.reachPage.targetGroup.add')
             ->addAttributes([
-                'data-target' => '#targetGroupFormModal',
-                'data-toggle' => 'ajax-modal',
+                'href' => 'javascript:void(0)',
+                'data-target' => '#collapseTargetGroupForm',
+                'data-toggle' => 'collapse',
                 'data-title' => $this->translateMessage()->translate('reachPage.targetGroup.add'),
             ])
             ->setClass('btn btn-xs btn-success')
             ->setIcon('plus');
 
 
+        $grid->setItemsDetail(__DIR__ . '/templates/Reach/#grid_item_detail.latte');
+
+        $grid->setItemsDetailForm(function (Nette\Forms\Container $container) use ($grid) {
+
+            $id = $container->getName();
+
+            /** @var TargetGroupEntity $entity */
+            $entity = $this->reachFacade->getTargetGroupRepository()->find($container->getName());
+
+            $form = $this->reachFacade->getTargetGroupFormFactory()->create();
+            $form
+                ->setFormName($name = 'targetGroupForm')
+                ->create($container);
+
+            $container->setDefaults([
+                'values' => $values = $this->reachFacade->targetGroupParamValueRepository->findPairs(['groups.id' => $id], 'id'),
+            ]);
+
+            $container->addSubmit('save', 'Uložit úpravy')
+                ->setAttribute('class', 'btn btn-md btn-success')
+                ->onClick[] = function (SubmitButton $button) use ($container, $entity, $grid, $form) {
+
+                    $this->entityFormMapper->save($entity, $container);
+                    $values = $button->getParent()->getValues();
+
+                    $form->onSave[] = function () use ($entity) {
+                        $message = $this->translateMessage()->translate('reachPage.targetGroup.updated', null, ['name' => $entity->getName()]);
+                        $title   = $this->translateMessage()->translate('reachPage.management');
+                        $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+                        $this->ajaxRedirect('this', 'targetGroupGridControl', ['flash']);
+                    };
+
+                    if ($container->isValid()) {
+                        $form->save($entity, $values);
+                    }
+
+                };
+            }
+        );
+
+        /** @var ItemDetail $detail */
+        $detail = $grid->getItemsDetail();
+        $detail->setIcon('pencil')
+               ->setText($this->translateMessage()->translate('reachPage.targetGroup.update'))
+               ->setClass('btn btn-xs btn-info ajax');
 
         return $grid;
     }
@@ -358,27 +400,22 @@ class ReachPresenter extends BasePresenter
             $entity->setUsersGroup($this->userEntity->getGroup());
         }
 
-
         $form->create();
         $form->bindEntity($entity);
         $form->bootstrap3Render();
         $form->onSuccess[] = function (BaseForm $form, $values) {
 
-//            $form->isSubmitted()
-            $byName = $form->isSubmitted()->getName();
+            $form->setValues([
+                'name' => "Nová skupina"
+            ], true);
 
 
+            $title   = $this->translateMessage()->translate('reachPage.parameters.management');
+            $message = $this->translateMessage()->translate('reachPage.parameters.saved');
+            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
 
-            /** @var TargetGroupEntity $entity */
-//            $entity = $form->getEntity();
-
-
-//            Debugger::barDump($entity);
-            Debugger::barDump($byName);
-            Debugger::barDump($values);
-//            die(__METHOD__);
-
-
+            $this->payload->_un_collapse = "#collapseTargetGroupForm";
+            $this->ajaxRedirect('this', ['targetGroupGridControl'], ['flash', 'targetGroupForm']);
 
         };
 
@@ -395,50 +432,38 @@ class ReachPresenter extends BasePresenter
         $form->bootstrap3Render();
 
         $form->onSuccess[] = function (BaseForm $form, $values) {
-
+            $title   = $this->translateMessage()->translate('reachPage.parameters.management');
             if ($byName = $form->isSubmitted()->getName()) {
                 if ($byName == 'send') {
-                    $message = "Uživatelský přístup  přidán!";
-                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, 'Správa uživatelských přístupů', FlashMessageControl::TOAST_SUCCESS);
+                    $message = $this->translateMessage()->translate('reachPage.parameters.saved');
+                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+
+                    $this->payload->_un_collapse = "#collapseTargetGroupParamsForm";
 
                     $this->ajaxRedirect('this', null, ['editMetricParamFormModal', 'flash']);
 
                 } elseif ( $byName == 'addParam') {
                     $message = "Parametr přidán";
 //                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, 'Správa uživatelských přístupů', FlashMessageControl::TOAST_SUCCESS);
-                    $this->ajaxRedirect('this', null, ['editTargetGroupParamsFormModal', 'flash']);
+                    $this->ajaxRedirect('this', null, ['editTargetGroupParamsForm', 'flash']);
 
                 } elseif ( $byName == 'removeParam') {
-                    $this->ajaxRedirect('this', null, ['editTargetGroupParamsFormModal', 'flash']);
+                    $this->ajaxRedirect('this', null, ['editTargetGroupParamsForm', 'flash']);
 
                 } elseif ( $byName == 'addValue') {
                     $message = "Hodnota přidána";
 //                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, 'Správa uživatelských přístupů', FlashMessageControl::TOAST_SUCCESS);
-                    $this->ajaxRedirect('this', null, ['editTargetGroupParamsFormModal', 'flash']);
+                    $this->ajaxRedirect('this', null, ['editTargetGroupParamsForm', 'flash']);
 
                 } elseif ( $byName == 'removeValue') {
                     $message = "Hodnota odebrána";
 //                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, 'Správa uživatelských přístupů', FlashMessageControl::TOAST_SUCCESS);
                     //                $this->ajaxRedirect('this', null, ['editMetricParamFormModal', 'flash']);
-                    $this->ajaxRedirect('this', null, ['editTargetGroupParamsFormModal', 'flash']);
+                    $this->ajaxRedirect('this', null, ['editTargetGroupParamsForm', 'flash']);
                 }
             }
 
-
-
-
-            /** @var TargetGroupEntity $entity */
-            $entity = $form->getEntity();
-
-
-            Debugger::barDump($byName);
-//            Debugger::barDump($entity);
-//            Debugger::barDump($values);
-//            die(__METHOD__);
-
         };
-
-
 
         return $form;
     }

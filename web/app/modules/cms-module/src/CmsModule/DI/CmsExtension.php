@@ -22,6 +22,7 @@ use CmsModule\Entities\MetricParamEntity;
 use CmsModule\Entities\MetricStatisticEntity;
 use CmsModule\Entities\ShopEntity;
 use CmsModule\Entities\TargetGroupEntity;
+use CmsModule\Entities\TargetGroupParamValueEntity;
 use CmsModule\Entities\UserEntity;
 use CmsModule\Facades\CalendarFacade;
 use CmsModule\Listeners\MediaDataListener;
@@ -31,6 +32,7 @@ use CmsModule\Repositories\MetricParamRepository;
 use CmsModule\Repositories\MetricRepository;
 use CmsModule\Repositories\MetricStatisticRepository;
 use CmsModule\Repositories\ShopRepository;
+use CmsModule\Repositories\TargetGroupParamValueRepository;
 use CmsModule\Repositories\TargetGroupRepository;
 use Devrun\CmsModule\Controls\IDeviceGroupsTreeControlFactory;
 use Devrun\CmsModule\Controls\IDeviceTargetGroupsControlFactory;
@@ -115,6 +117,10 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             ->setType(TargetGroupRepository::class)
             ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, TargetGroupEntity::class);
 
+        $builder->addDefinition($this->prefix('repository.targetGroupParamValue'))
+            ->setType(TargetGroupParamValueRepository::class)
+            ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, TargetGroupParamValueEntity::class);
+
         $builder->addDefinition($this->prefix('repository.shop'))
             ->setType(ShopRepository::class)
             ->addTag(OrmExtension::TAG_REPOSITORY_ENTITY, ShopEntity::class);
@@ -155,7 +161,8 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             ->setType('CmsModule\Facades\DeviceLogFacade');
 
         $builder->addDefinition($this->prefix('facade.reach'))
-            ->setType('CmsModule\Facades\ReachFacade');
+            ->setType('CmsModule\Facades\ReachFacade')
+            ->setInject(true);
 
         $builder->addDefinition($this->prefix('facade.calendar'))
             ->setType(CalendarFacade::class);

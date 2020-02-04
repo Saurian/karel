@@ -15,6 +15,7 @@ use CmsModule\Repositories\MetricParamRepository;
 use CmsModule\Repositories\MetricRepository;
 use CmsModule\Repositories\MetricStatisticRepository;
 use CmsModule\Repositories\ShopRepository;
+use CmsModule\Repositories\TargetGroupParamValueRepository;
 use CmsModule\Repositories\TargetGroupRepository;
 use Kdyby\Doctrine\EntityManager;
 
@@ -27,6 +28,9 @@ class ReachFacade
 
     /** @var TargetGroupRepository */
     private $targetGroupRepository;
+
+    /** @var TargetGroupParamValueRepository @inject */
+    public $targetGroupParamValueRepository;
 
     /** @var ShopRepository */
     private $shopRepository;

@@ -1026,14 +1026,6 @@ $(function(){
 
 
         /**
-         * emulate click to detail grid
-         */
-    }).on('click', 'a[data-toggle="detail-click"]', function (e) {
-        e.preventDefault();
-        $(this).closest('.col-action').find('[data-toggle-detail]').click();
-
-
-        /**
          * on change autoSave form elements [auto send form]
          */
     }).on('change', 'form.auto-save input:not(.not-auto-save), form.auto-save select:not(.not-auto-save)', function (e) {

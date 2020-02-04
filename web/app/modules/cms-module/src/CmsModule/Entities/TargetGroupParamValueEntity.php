@@ -12,7 +12,7 @@ use Kdyby\Doctrine\Entities\MagicAccessors;
 
 /**
  * Class TargetGroupKeyValue
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="CmsModule\Repositories\TargetGroupParamValueRepository")
  * @ORM\Table(name="target_group_value")
  *
  * @package CmsModule\Entities

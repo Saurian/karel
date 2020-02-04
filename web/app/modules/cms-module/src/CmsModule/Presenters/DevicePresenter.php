@@ -104,7 +104,7 @@ class DevicePresenter extends BasePresenter
             $this->editDevice = null;
         }
 
-        $this->payload->scrollTo = ".breadcrumb";
+        $this->payload->scrollTo = "#base";
         $this->payload->url = $this->link('this');
         $this->ajaxRedirect('this', null, ['flash', 'deviceTargetGroups', 'deviceGroupTargetGroups', 'editDeviceGroupForm', 'editDeviceForm']);
 
@@ -1428,7 +1428,7 @@ class DevicePresenter extends BasePresenter
                 $this->editDeviceTargetGroups = null;
             }
 
-            $this->payload->scrollTo = ".breadcrumb";
+            $this->payload->scrollTo = "#base";
             $this->payload->url = $this->link('this');
             $this->ajaxRedirect('this', null, ['flash', 'deviceTargetGroups', 'deviceGroupTargetGroups']);
         };

@@ -318,6 +318,11 @@ reachPage:
 	navigation: Cílové skupiny
 	management: Správa cílových skupin
 
+	parameters:
+		management: Správa parametrů cílových skupin
+		list: Karta parametrů cílových skupin
+		saved: Parametry cílových skupin uloženy.
+
 	shop:
 		management: Správa prodejen
 		not_found: prodejna `%id%` nenalezena
@@ -334,10 +339,11 @@ reachPage:
 		name: Název
 		add: Přidat cílovou skupinu
 		update: Upravit
-		updated: Cílová skupina `%name%` upravena
+		updated: Cílová skupina `%name%` upravena.
 		delete: Smazat
 		edit: Upravit cílovou skupinu
-
+		not_found: Cílová skupina `%id%` nenalezena.
+		removed: Cílová skupina `%name%` smazána.
 
 	reach:
 		management: Správa statistik
