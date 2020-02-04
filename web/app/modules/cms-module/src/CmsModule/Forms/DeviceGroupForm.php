@@ -46,7 +46,7 @@ class DeviceGroupForm extends BaseForm
 
         $this->addSubmit('sendSubmit', 'save')
             ->setAttribute('data-dismiss', 'modal')
-            ->setAttribute('class', 'btn btn-success box-list__settings__close');
+            ->setAttribute('class', 'btn btn-success'); // box-list__settings__close
 
 //        $this->onSuccess[] = [$this, 'success'];
         $this->addFormClass(['ajax']);

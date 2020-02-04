@@ -1,0 +1,117 @@
+{*{extends $original_template}*}
+
+{block detail}
+
+    <div class="form-horizontal well no-select2">
+
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                správa uživatele `<strong class="text-white">{$item->fullName}</strong>`
+            </div>
+            {formContainer items_detail_form-$item->id}
+            <div class="panel-body">
+
+    {*        {input id, value => $item->id}*}
+
+{*                    {dump $item}*}
+{*                    {dump $this}*}
+
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {label firstName}
+                                {input firstName, value => $item->firstName, class => 'form-control'}
+                            </div>
+                            <div class="form-group">
+                                {label lastName}
+                                {input lastName, value => $item->lastName, class => 'form-control'}
+                            </div>
+
+                            <div class="form-group">
+                                {label devices}
+                                <div class="box-list__settings__one__devices__inner">
+                                    <div n:if="$_form[devices]->items" n:foreach="$_form[devices]->items as $key => $label">
+                                        <input n:name="devices:$key">
+                                        <label n:name="devices:$key"><span>{$label}</span></label>
+                                    </div>
+                                    {if count($_form[devices]->items) == 0}
+                                        <input n:name="devices" class="hidden">
+                                        <div>
+                                            <label class="alert alert-danger disabled">
+                                                <span class="text-danger">{_forms.deviceDetailForm.noAnyDevices}</span>
+                                            </label>
+                                        </div>
+                                    {/if}
+                                    {*
+                                    <div>
+                                        <label class="alert alert-info m-b-0 bg-primary">
+                                            <a n:href="modalDeviceFormInDevicePage!" class="btn btn-info btn-md">{_campaignPage.newDevice}</a>
+                                        </label>
+                                    </div>
+                                    *}
+                                </div>
+
+
+
+{*
+                                <div n:foreach="$_form[devices]->items as $key => $label">
+                                    <input n:name="devices:$key">
+                                    <label n:name="devices:$key"><span>{$label}</span></label>
+                                </div>
+*}
+                            </div>
+
+{*                            {dump $_form}*}
+
+
+
+                        </div>
+                        <div class="col-md-6">
+
+
+                            <div class="form-group">
+                                {label mail}
+                                {input mail, value => $item->mail, class => 'form-control'}
+                            </div>
+                            <div class="form-group">
+                                {label role}
+                                {input role, selected => $item->role, class => 'form-control no-select2'}
+                            </div>
+                            <div class="form-group">
+
+                                <div n:foreach="$_form[devicesGroups]->items as $key => $label" class="hidden">
+                                    <input n:name="devicesGroups:$key">
+                                    <label n:name="devicesGroups:$key"><span>{$label}</span></label>
+                                </div>
+
+
+                                {*
+                                    <div n:if="$items_detail_form-$item->id[devices]->items" n:foreach="$items_detail_form-$item->id[devices]->items as $key => $label">
+                                        <input n:name="devices:$key">
+                                        <label n:name="devices:$key"><span>{$label}</span></label>
+                                    </div>
+                                *}
+                                <div class="tree" data-checkbox-list="input[name='items_detail_form[{$item->id}][devicesGroups][]']">
+                                    {include #trees, trees => $devicesGroupsTree}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="panel-footer text-right">
+                {input save}
+            </div>
+            {/formContainer}
+        </div>
+    </div>
+{/block}
+
+<ul n:define="trees">
+    <li n:foreach="$trees as $tree" data-target='input[name="items_detail_form[{$item->id}][devicesGroups][]"][value="{$tree[id]}"]' data-id="{$tree[id]}"{ifset $tree['selected']} data-selected="true"{/ifset}>
+        {$tree[name]}
+        {if $tree[__children]}
+            {include #trees, trees => $tree[__children], class => ''}
+        {/if}
+    </li>
+</ul>

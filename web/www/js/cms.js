@@ -293,6 +293,19 @@ $.nette.ext('modalForm', {
 });
 
 
+$.nette.ext('unCollapse', {
+    success: function(payload, status, xhr, settings) {
+
+        // if (settings.nette && settings.nette.isSubmit && settings.nette.form.data('name') == 'userForm') {
+        if (settings.nette && payload._un_collapse) {
+            if ($(payload._un_collapse).is('.collapse.in')) {
+                $(payload._un_collapse).collapse('hide');
+            }
+        }
+    }
+});
+
+
 $.nette.ext('calendar', {
 
     /**
@@ -652,7 +665,7 @@ $.nette.ext('select2', {
     load: function () {
         var self = this;
 
-        this.initSelect2('.grido:not(.no-select2) select');
+        this.initSelect2('.grido:not(.no-select2) select:not(.no-select2)');
     }
 
     }, {
@@ -675,6 +688,51 @@ $.nette.ext('smoothScroll', {
             $.smoothScroll({ scrollTarget: payload.scrollTo });
         }
     }
+});
+
+
+$.nette.ext('fancyTree', {
+    load: function(payload, status, xhr, settings) {
+        var self = true;
+
+        $('.tree').fancytree({
+            checkbox: true,
+            selectMode: 2,
+
+            select: function(event, data) {
+                // Display list of selected nodes
+                var id = data.node.data['id'];
+                var target = data.node.data['target'];
+                if (id) {
+                }
+                if (target) {
+                    $(target).prop('checked', data.node.isSelected());
+                }
+            }
+        });
+
+        $('.tree').each(function () {
+
+            var checkBoxes = $(this).data('checkbox-list');
+            var tree = $(this).fancytree("getTree");
+            var node = tree.getNodeByKey("_2"); // for example
+            nodes = tree.findAll("");
+
+            var selected = [];
+            $.each($(checkBoxes + ":checked"), function(){
+                selected.push(parseInt($(this).val()));
+            });
+
+            $.each(nodes, function (index, node) {
+                if ($.inArray(node.data['id'], selected) > -1) {
+                    node.setSelected(true);
+                }
+            })
+
+        });
+    }
+}, {
+    selector: '.tree'
 });
 
 
@@ -965,6 +1023,14 @@ $(function(){
             $(lastValueEl).data('last-value', value);
         }
 
+
+
+        /**
+         * emulate click to detail grid
+         */
+    }).on('click', 'a[data-toggle="detail-click"]', function (e) {
+        e.preventDefault();
+        $(this).closest('.col-action').find('[data-toggle-detail]').click();
 
 
         /**

@@ -73,6 +73,25 @@ class DeviceGroupQuery extends QueryObject
     }
 
 
+    public function byHigherLevelThen($level = 0)
+    {
+        $this->filter[] = function (QueryBuilder $qb) use ($level) {
+            $qb->andWhere('q.lvl > :level')->setParameter('level', $level);
+        };
+        return $this;
+    }
+
+
+    public function orderByLeft()
+    {
+        $this->select[] = function (QueryBuilder $qb) {
+            $qb->addOrderBy("q.lft");
+        };
+
+        return $this;
+    }
+
+
     public function orderByPosition()
     {
         $this->select[] = function (QueryBuilder $qb) {

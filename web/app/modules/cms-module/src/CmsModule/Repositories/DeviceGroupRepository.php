@@ -11,6 +11,7 @@ namespace CmsModule\Repositories;
 
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Repositories\Queries\DeviceGroupQuery;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Gedmo\Tree\Traits\Repository\ORM\NestedTreeRepositoryTrait;
@@ -85,6 +86,23 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
 
 
     /**
+     * @param array $names
+     * @return array
+     */
+    public function getIdFromNames(array $names = [])
+    {
+        $result = [];
+        foreach ($names as $device) {
+            if ($entity = $this->findOneBy(['name' => $device])) {
+                $result[] = $entity->id;
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
      * return QueryBuilder
      *
      * @param User $user
@@ -132,7 +150,7 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
 
     public function getUserAllowedQuery(User $user)
     {
-        $query = (new DeviceGroupQuery());
+        $query = (new DeviceGroupQuery())->byHigherLevelThen(0)->orderByLeft();
 
         if (!$user->isAllowed('Cms:Device', 'listAllDevices')) {
             if ($user->isAllowed('Cms:Device', 'listUsersGroup')) {
@@ -148,20 +166,27 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
 
 
     /**
+     * @todo prověřit po vzoru getUserUnPlaceDeviceGroup
+     *
      * return root device group for user
      *
      * @param User $user
      * @return DeviceGroupEntity|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function getUserRootDeviceGroup(User $user)
     {
-        return $this->createQueryBuilder('e')
-            ->join('e.devicesGroupsUsers', 'dgu')
-            ->where('dgu.id = ?1')->setParameter(1, $user->getId())
-            ->andWhere('e.lvl = 0')
-            ->getQuery()
-            ->getOneOrNullResult();
+        try {
+            return $this->createQueryBuilder('e')
+                        ->join('e.devicesGroupsUsers', 'dgu')
+                        ->where('dgu.id = ?1')->setParameter(1, $user->getId())
+                        ->andWhere('e.lvl = 0')
+                        ->setMaxResults(1)
+                        ->getQuery()
+                        ->getOneOrNullResult();
+
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
     }
 
 
@@ -173,9 +198,11 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
     public function getUserUnPlaceDeviceGroup(User $user)
     {
         return $this->createQueryBuilder('e')
-            ->join('e.devicesGroupsUsers', 'dgu')
-            ->where('dgu.id = ?1')->setParameter(1, $user->getId())
+            ->join('e.usersGroups', 'dgu')
+            ->join('dgu.users', 'u')
+            ->where('u.id = ?1')->setParameter(1, $user->getId())
             ->andWhere('e.unPlace = 1')
+            ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
     }

@@ -14,7 +14,6 @@ use Nette\Application\PresenterFactory;
 use Nette\Application\Request;
 use Nette\Application\Responses\TextResponse;
 use Nette\Security\User;
-use Test\InvalidArgumentException;
 
 
 class Presenter extends BaseTestCase
@@ -55,7 +54,7 @@ class Presenter extends BaseTestCase
     /**
      * @param $name
      *
-     * @return \Nette\Application\UI\Presenter
+     * @return \Nette\Application\IPresenter|\Nette\Application\UI\Presenter
      */
     public function getPresenter($name = '')
     {
@@ -274,6 +273,42 @@ class Presenter extends BaseTestCase
     }
 
 
+    /**
+     * přihlášení se
+     *
+     * @param string $type contactTeamForm|adminForm
+     *
+     * @return \Nette\Security\User
+     * @throws \Nette\Security\AuthenticationException
+     */
+    protected function login($type = 'adminUser')
+    {
+        $container  = $this->getContainer();
+        $userParams = $container->getParameters()[$type];
+
+        /** @var \Nette\Security\User $user */
+        $user = $this->getSecurityUser();
+        $user->login($userParams['username'], $userParams['password']);
+
+        return $user;
+    }
+
+
+
+
+
+    /**
+     * @return User
+     */
+    protected function getSecurityUser()
+    {
+        $container  = $this->getContainer();
+        /** @var \Nette\Security\User $user */
+        $user = $container->getByType('Nette\Security\User');
+        return $user;
+    }
+
+
 
     protected function assocProviderData($items, $assocBy = null)
     {
@@ -285,6 +320,16 @@ class Presenter extends BaseTestCase
             return $resultAssoc;
         }
         return $items;
+    }
+
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        /** @var \Nette\Security\User $user */
+        $user = $this->getSecurityUser();
+        $user->logout();
     }
 
 }

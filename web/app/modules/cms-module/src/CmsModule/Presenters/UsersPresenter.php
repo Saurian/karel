@@ -10,6 +10,7 @@
 namespace CmsModule\Presenters;
 
 use CmsModule\Controls\FlashMessageControl;
+use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\UserEntity;
 use CmsModule\Facades\DeviceFacade;
 use CmsModule\Facades\UserFacade;
@@ -22,7 +23,9 @@ use Devrun\CmsModule\Controls\DataGrid;
 use Devrun\Doctrine\DoctrineForms\EntityFormMapper;
 use Nette;
 use Nette\Application\UI\Multiplier;
+use Nette\Forms\Controls\SubmitButton;
 use Tracy\Debugger;
+use Ublaboo\DataGrid\Utils\ItemDetailForm;
 
 class UsersPresenter extends BasePresenter
 {
@@ -155,8 +158,8 @@ class UsersPresenter extends BasePresenter
 
         } else {
             $this->userRepository->getEntityManager()->remove($entity)->flush();
-            $title = $translator->translate('campaignPage.management');
-            $message = $translator->translate('campaignPage.campaign_removed', null, ['name' => $entity->getFullName()]);
+            $title = $translator->translate('userPage.management');
+            $message = $translator->translate('userPage.userRemoved', null, ['name' => $entity->getFullName()]);
             $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
 
             $this->payload->url = $this->link('this');
@@ -223,6 +226,64 @@ class UsersPresenter extends BasePresenter
 
 
 //        $this->template->userEntity = $this->entity;
+
+        Debugger::$maxDepth = 4;
+
+        $rootDeviceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
+
+        $queryBuilder = $this->deviceGroupRepository->childrenQueryBuilder($rootDeviceGroupEntity);
+
+//        dump($queryBuilder);
+
+//        $queryBuilder->orderBy('node.lvl');
+
+//        dump($queryBuilder->getQuery()->getResult());
+
+//        $devicesGroups = $this->deviceGroupRepository->getCachedResult($this->deviceGroupRepository->getUserAllowedQueryBuilder($this->getUser()));
+//        $devicesGroups = $this->deviceGroupRepository->getAssoc($devicesGroups);
+//
+//        dump($devicesGroups);
+
+        /** @var UserEntity $entity */
+        $entity = $this->userRepository->find(3);
+
+//        dump($entity->getDevicesGroups());
+        $selectedIds = [];
+        foreach ($entity->getDevicesGroups() as $devicesGroup) {
+            $selectedIds[] = $devicesGroup->getId();
+        }
+
+
+
+        $rawTrees = $this->deviceGroupRepository->buildTreeArray($queryBuilder->getQuery()->getArrayResult());
+        $fancyTree = $this->deviceFacade->getFancyTree()->selectByIds($rawTrees, $selectedIds);
+
+
+
+        $this->template->trees = $fancyTree;
+        $this->template->debug = Debugger::dump($fancyTree, true);
+
+
+//        dump($rawTrees);
+
+
+        Debugger::$maxDepth = 10;
+//        dump($rawTrees);
+//        dump($fancyTree);
+
+
+        $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                    ->select('e')
+                                    ->andWhere('e.lvl = :level')->setParameter('level', 0)
+                                    ->addOrderBy('e.lvl')
+                                    ->addOrderBy('e.lft')
+        ;
+
+//        dump($query->getQuery()->getResult());
+//        die;
+
+
+
     }
 
 
@@ -272,7 +333,13 @@ class UsersPresenter extends BasePresenter
     }
 
 
-    /**
+    /**                $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                            ->select('e')
+                                            ->andWhere('e.lvl = :level')->setParameter('level', 0)
+                                            ->addOrderBy('e.lvl')
+                                            ->addOrderBy('e.lft')
+                ;
+
      * @deprecated
      * user detail form
      *
@@ -428,7 +495,7 @@ class UsersPresenter extends BasePresenter
             ->setDevices($devices)
             ->setDevicesGroups($devicesGroups)
             ->setFormName($name)
-            ->setTranslator($this->translator->domain('messages.forms.userForm'))
+            ->setTranslator($this->translator)
             ->setNewPassword(Nette\Utils\Random::generate()) // $this->newPassword
             ->setEditActive($this->user->isAllowed($this->name, 'toggleActive'))
             ->setEditRole($this->getEditRoles())
@@ -460,14 +527,34 @@ class UsersPresenter extends BasePresenter
             'devicesGroups' => $deviceGroupList,
         ]);
 
+        $form->onSendEmail[] = function (UserEntity $entity) {
+            $title      = $this->translateMessage()->translate('userPage.management');
+            $message = $this->translateMessage('messages.forms.userForm')->translate('user_has_been_send_email', $entity->mail);
+            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+        };
+
+        $form->onResetPassword[] = function ($password, UserEntity $entity) {
+            $title      = $this->translateMessage()->translate('userPage.management');
+            $message = $this->translateMessage('messages.forms.userForm')->translate('user_password', null, ['password' => $password]);
+            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
+        };
+
+        $form->onSave[] = function ($message, UserEntity $entity) {
+            $title      = $this->translateMessage()->translate('userPage.management');
+            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+            $this->payload->_un_collapse = "#collapseUserForm";
+            $this->ajaxRedirect('this', 'usersGridControl', ['flash', 'userForm']);
+        };
+
+        $form->onSaveError[] = function ($message) {
+            $title      = $this->translateMessage()->translate('userPage.management');
+            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_DANGER);
+        };
+
         $form->onSuccess[] = function (BaseForm $form, $values) {
+
             $this->clearEntity();
-
             $form->setValues([], true);
-            $this->payload->_switchery_redraw = true;
-            $this->ajaxRedirect('this', 'usersGridControl', ['flash']);
-//            $this->ajaxRedirect('this', null, ['userForm', 'users', 'filter', 'flash']);
-
         };
 
         return $form;
@@ -634,7 +721,8 @@ class UsersPresenter extends BasePresenter
              ->setFilterText();
 
 
-        $statusList = array('' => 'Vše', 'admin' => 'Admin', '1' => 'Aktivní');
+        $roles = $this->userRepository->getAllRoles($this->getUser());
+        $statusList = array('' => 'Vše') + $roles;
 
         if ($this->getUser()->isAllowed(UserForm::class, 'editRole')) {
             $translator = $this->translateMessage('messages.forms.userForm');
@@ -721,9 +809,7 @@ class UsersPresenter extends BasePresenter
 
         $grid->addAction('edit', 'Upravit', 'edit!')
              ->setIcon('pencil fa-1x')
-             ->setDataAttribute('backdrop', 'static')
-             ->setDataAttribute('target', '.editUserModal')
-             ->setDataAttribute('toggle', 'ajax-modal')
+             ->setDataAttribute('toggle', 'detail-click')
              ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.editDevice'))
              ->setTitle($this->translateMessage()->translate('devicePage.editDevice'))
              ->setClass('btn btn-xs btn-info');
@@ -736,16 +822,331 @@ class UsersPresenter extends BasePresenter
                  return "Opravdu chcete smazat uživatele `{$item->username}`?";
              });
 
-//        $grid->setTemplateFile(__DIR__ . '/templates/Campaign/#datagrid_campaign.latte');
+
+        $presenter = $this;
+        $grid->setItemsDetail(__DIR__ . '/templates/Users/#grid_item_detail.latte');
+
+        $devicesGroupsBuilder = $this->deviceGroupRepository->getUserAllowedQueryBuilder($this->getUser());
+        $devicesGroupsTree = $this->deviceGroupRepository->buildTreeArray($devicesGroupsBuilder->getQuery()->getArrayResult());
+
+        $devicesGroups = $this->deviceGroupRepository->getCachedResult($devicesGroupsBuilder);
+        $devicesGroups = $this->deviceGroupRepository->getAssoc($devicesGroups);
+
+        $grid->setItemsDetailForm(function (Nette\Forms\Container $container) use ($grid, $presenter, $devicesGroups) {
+
+            Debugger::$maxDepth = 4;
+
+
+//            Debugger::barDump($q->getQuery()->getArrayResult());
+
+//            $queryBuilder = $this->deviceGroupRepository->childrenQueryBuilder($rootDeviceGroupEntity);
+//            dump($queryBuilder);
+
+
+
+
+//            Debugger::barDump($devicesGroups);
+
+
+
+            $devices = $this->deviceRepository->getCachedResult($this->deviceRepository->getUserAllowedQueryBuilder($this->getUser()));
+            $devices = $this->deviceRepository->getAssoc($devices);
+
+            /** @var UserEntity $entity */
+            $entity = $this->userRepository->find($container->getName());
+
+//            dump($container->getName());
+//            dump($entity);
+
+            $form = $this->userFormFactory->create();
+
+            $form
+                ->setFormName($name = 'userForm')
+                ->setDevices($devices)
+                ->setDevicesGroups($devicesGroups)
+                ->setTranslator($this->translator->domain('messages.forms.userForm'))
+                ->setNewPassword(Nette\Utils\Random::generate()) // $this->newPassword
+                ->setEditActive($this->user->isAllowed($this->name, 'toggleActive'))
+                ->setEditRole($this->getEditRoles());
+
+
+            $form->create($container);
+//            $form->create();
+//            $form->bootstrap3Render();
+
+//            $form->bindEntity($entity);
+
+            /** @var Nette\Forms\Controls\TextInput $component */
+//            $component = $form->getComponent('firstName');
+//
+//            $component->getRules();
+
+
+            $deviceList = [];
+            foreach ($entity->getDevices() as $device) {
+                if (in_array($device->getId(), array_keys($devices))) {
+                    $deviceList[] = $device->getId();
+                }
+            }
+
+
+            $deviceGroupList = [];
+            foreach ($entity->getDevicesGroups() as $devicesGroup) {
+                if (in_array($devicesGroup->getId(), array_keys($devicesGroups))) {
+                    $deviceGroupList[] = $devicesGroup->getId();
+                }
+            }
+
+//        dump($entity->getDevices());
+//        dump($deviceList);
+
+            $container->setDefaults([
+                'role' => $entity->getRole(),
+                'devices' => $deviceList,
+                'devicesGroups' => $deviceGroupList,
+            ]);
+
+
+
+
+//            $container->addComponent($form['firstName'], 'firstName');
+//            $container->addComponent($form->getComponent('firstName'), 'firstName');
+
+//            $firstName = $container->addText('firstName', 'Jméno');
+
+
+
+//            $container->addText('lastName', 'Příjmení');
+//            $container->addText('mail', 'E-Mail');
+//            $container->addSelect('role', 'Role', $this->getEditRoles());
+
+
+
+            /*
+                        $container->addHidden('id');
+                        $container->addText('name');
+
+                        $container->addSubmit('save', 'Save')
+                            ->onClick[] = function($button) use ($grid, $presenter) {
+                            $values = $button->getParent()->getValues();
+
+                            $presenter['usersGridControl']->redrawItem($values->id);
+                        };
+            */
+
+//            Debugger::$maxDepth = 4;
+//            dump($container);
+
+//            $container->onValidate[] = function (Nette\Forms\Container $container) use ($grid) {
+//
+//                $message = "ASADADADDSADS";
+//
+//                $title      = $this->translateMessage()->translate('userPage.management');
+//                $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_DANGER);
+//
+//
+//
+//                /** @var Nette\Forms\Controls\CheckboxList $component */
+//                $component = $container->getComponent('devices');
+//
+//                $component->addError('ASScc cccc');
+//
+//
+//                $this->ajaxRedirect('this', null, ['flash']);
+//
+//                $this->payload->_toggle = false;
+//
+//                $grid->redrawItem("4");
+//
+////                dump($component);
+//
+//                return false;
+////                $grid->invalidResponse('ASdad');
+//            };
+//
+
+
+
+            $container->addSubmit('save', 'Save')
+                ->onClick[] = function(SubmitButton $button) use ($entity, $container, $form, $grid)  {
+
+
+
+                if ($container->isValid()) {
+                    $this->entityFormMapper->save($entity, $container);
+                }
+
+
+                $values = $button->getParent()->getValues();
+
+
+//                Debugger::barDump($container, 'container after');
+
+
+//                dump($values);
+//                dump($container->isValid());
+//                dump($entity);
+
+//                Debugger::barDump($button);
+
+//                dump($button);
+//                die();
+
+                $form->onSave[] = function ($message, UserEntity $entity) {
+                    $title      = $this->translateMessage()->translate('userPage.management');
+                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+                    $this->ajaxRedirect('this', 'usersGridControl', ['flash']);
+                };
+
+                $form->onSaveError[] = function ($message) use ($grid) {
+                    $title      = $this->translateMessage()->translate('userPage.management');
+                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_DANGER);
+                    $this->ajaxRedirect('this', null, ['flash']);
+                    $grid->redrawItem(0); // non exist snippet, overflow grid snippets to ignore redraw anything with out flash
+                    return false;
+                };
+
+                if ($container->isValid()) {
+                    $form->save($entity, $values);
+                }
+
+                return false;
+            };
+
+        });
+
+
+        $grid->onRender[] = function (DataGrid $grid) use ($devicesGroupsTree) {
+
+
+//            $selectedIds = [];
+//            foreach ($entity->getDevicesGroups() as $devicesGroup) {
+//                $selectedIds[] = $devicesGroup->getId();
+//            }
+
+
+
+//            $rawTrees = $this->deviceGroupRepository->buildTreeArray($queryBuilder->getQuery()->getArrayResult());
+//            $fancyTree = $this->deviceFacade->getFancyTree()->selectByIds($rawTrees, $selectedIds);
+
+
+
+            $grid->template->devicesGroupsTree = $devicesGroupsTree;
+            $grid->template->deviceGroupListGridControl = $this['deviceGroupListGridControl'];
+            $grid->template->deviceGroupsTreeControl = $this['deviceGroupsTreeControl'];
+        };
+
+
+//        $grid->setTemplateFile(__DIR__ . '/templates/Users/#grid_item_detail.latte');
 
         return $grid;
     }
 
 
+    /**
+     * zobrazení tree skupiny zařízení
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Ublaboo\DataGrid\Exception\DataGridException
+     * @return Multiplier
+     */
+    protected function createComponentDeviceGroupListGridControl($name)
+    {
+        $self = $this;
+
+        return new Multiplier(function ($index) use ($self, $name) {
+
+            $grid = new DataGrid();
+            $grid->setTranslator($this->translator);
+
+            if ($this->user->isAllowed('Cms:Device', 'listAllDevices')) {
+                $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                            ->select('e')
+                                            ->andWhere('e.lvl = :level')->setParameter('level', 0)
+                                            ->addOrderBy('e.lvl')
+                                            ->addOrderBy('e.lft')
+                ;
+
+
+
+
+            } else {
+                $rootDeviceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
+
+                $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                            ->select('e')
+                                            ->andWhere('e.lft > :left')->setParameter('left', $rootDeviceGroupEntity->getLft())
+                                            ->andWhere('e.rgt < :right')->setParameter('right', $rootDeviceGroupEntity->getRgt())
+                                            ->andWhere('e.root = :root')->setParameter('root', $rootDeviceGroupEntity)
+                                            ->andWhere('e.lvl = :level')->setParameter('level', 1)
+                                            ->addOrderBy('e.lvl')
+                                            ->addOrderBy('e.lft')
+                ;
+            }
+
+
+            $grid->setDataSource($query);
+            $grid->setTreeView(function ($id) {
+                return $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                          ->where('e.parent = :parent')->setParameter('parent', $id)
+                                          ->addOrderBy('e.lvl')
+                                          ->addOrderBy('e.lft')
+                                          ->getQuery()
+                                          ->getResult();
+
+            }, function (DeviceGroupEntity $deviceGroupEntity) {
+                return $this->deviceFacade->getDeviceGroupRepository()->childCount($deviceGroupEntity) > 0;
+            });
+
+
+            $grid->addColumnText('name', 'Název')
+                 ->addAttributes(['class' => 'btn btn-xs btn-default btn-block']);
+
+
+            $grid->addGroupAction('Aktivní')->onSelect[] = [$this, 'setActives'];
+
+            $grid->setTemplateFile(__DIR__ . "/templates/Users/#datagrid_devices_groups_tree.latte");
+
+            $grid->onRender[] = function (DataGrid $grid) use ($name) {
+//                $grid->template->form = $this['usersGridControl']['items_detail_form'][$name];
+
+                Debugger::$maxDepth = 4;
+                Debugger::barDump($this['usersGridControl']->itemsDetail->getForm());
+                /** @var ItemDetailForm $form */
+                $form = $this['usersGridControl']->itemsDetail->getForm();
+//                $container = $form->getComponent(4);
+
+//                $grid->template->form = $this['usersGridControl']->itemsDetail->getForm();
+//                $grid->template->form = $container;
+
+
+
+
+                $grid->template->getLatte()->addProvider('formsStack', $form);
+                $grid->template->_form = $form;
+
+
+//                Debugger::barDump($grid->template->getLatte()->getProviders());
+
+            };
+
+            return $grid;
+        });
+    }
+
+
+    protected function createComponentDeviceGroupsTreeControl($name)
+    {
+        $control = $this->deviceFacade->getDeviceGroupsTreeControlFactory()->create();
+
+        return $control;
+    }
+
 
     /**
+     * @todo do userFacade or userRepository
+     *
      * @return UserEntity
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     protected function getEntity(): UserEntity
     {
@@ -754,18 +1155,7 @@ class UsersPresenter extends BasePresenter
         if (!$entity) {
             $entity = $this->editUser
                 ? $this->userRepository->find($this->editUser)
-                : $this->userRepository->getEmptyUser($this->getUser());
-
-//            if ($this->editUser) {
-//
-//            }
-//
-//            if (!$entity = $this->userRepository->find($this->editUser)) {
-//                $entity = $this->userRepository->getEmptyUser();
-//            }
-
-
-
+                : $this->userFacade->createEmptyUser($this->getUserEntity());
         }
 
         return $entity;

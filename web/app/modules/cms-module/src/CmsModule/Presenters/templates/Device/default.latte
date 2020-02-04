@@ -3,8 +3,10 @@
 	<div class="row bg-title">
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<h1 class="page-title">{_devicePage.management}</h1>
-			<a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addDeviceGroup!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target=".addGroupModal">{_devicePage.add_new_group}</a>
-			<a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addDevice!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target=".addDeviceModal">{_devicePage.addDevice}</a>
+			<button n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" class="btn btn-md m-l-15 btn-success" type="button" data-toggle="collapse" data-target="#collapseDeviceGroupForm" aria-expanded="true" aria-controls="collapseDeviceGroupForm">{_devicePage.add_new_group}</button>
+			<button n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" class="btn btn-md m-l-15 btn-success" type="button" data-toggle="collapse" data-target="#collapseDeviceForm" aria-expanded="true" aria-controls="collapseDeviceForm">{_devicePage.addDevice}</button>
+{*			<a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addDeviceGroup!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target=".addGroupModal">{_devicePage.add_new_group}</a>*}
+{*			<a n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" n:href="addDevice!" class="btn btn-md m-l-15 btn-success" data-toggle="ajax-modal" data-target=".addDeviceModal">{_devicePage.addDevice}</a>*}
 		</div>
 		<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
 			<ol class="breadcrumb">
@@ -15,22 +17,57 @@
 		</div>
 	</div>
 
-	<div class="dd-item-backgroundWrap"></div>
+	{* collapse add*}
+	<div class="collapse" id="collapseDeviceGroupForm">
+		<div class="well">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">{_devicePage.add_group}
+						<button class="ajax close" aria-label="Close" data-toggle="collapse" data-target="#collapseDeviceGroupForm" aria-expanded="false" aria-controls="collapseDeviceGroupForm">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</h4>
+				</div>
+				{snippet addDeviceGroupForm}
+					{include deviceGroupForm, id => 'new'}
+				{/snippet}
+			</div>
+		</div>
+	</div>
+
+	<div class="collapse" id="collapseDeviceForm">
+		<div class="well">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">{_devicePage.addDevice}
+						<button class="ajax close" aria-label="Close" data-toggle="collapse" data-target="#collapseDeviceForm" aria-expanded="false" aria-controls="collapseDeviceForm">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</h4>
+				</div>
+				{snippet addDeviceForm}
+					{include deviceForm, id => 'new'}
+				{/snippet}
+			</div>
+		</div>
+	</div>
+	{* collapse add*}
 
 {*	{control playListControl}*}
 
-	<div class="row well">
+	{* base edit *}
+	<div id="base" class="row well">
 		<div class="col-md-6">
 			<div class="panel panel-default animated fadeIn">
-				<div class="panel-heading">Skupiny zařízení</div>
+				<div class="panel-heading">
+					{_devicePage.deviceGroups}
+				</div>
 				<div class="panel-body">
 					<div class="grido">
 						{control deviceGroupGridControl}
 					</div>
 				</div>
 			</div>
-
-
 		</div>
 		<div class="col-md-6">
 			<div class="grido">
@@ -40,12 +77,41 @@
 						{control deviceGridControl}
 					</div>
 				</div>
-
-
 			</div>
-
 		</div>
 	</div>
+	{* base edit *}
+
+	{* collapse edit *}
+	{snippet editDeviceForm}
+		<div n:if="$editDevice" class="well">
+			<div  class="panel panel-default animated zoomIn">
+				<div class="panel-heading">
+					<h4 class="panel-title">{_devicePage.editDevice} `<strong class="text-primary">test</strong>`
+						<a n:href="close! deviceEdit" class="ajax close" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</a>
+					</h4>
+				</div>
+				{include deviceForm, id => $editDevice}
+			</div>
+		</div>
+	{/snippet}
+
+	{snippet editDeviceGroupForm}
+		<div n:if="$editDeviceGroup" class="well">
+			<div  class="panel panel-default animated zoomIn">
+				<div class="panel-heading">
+					<h4 class="panel-title">{_devicePage.editDeviceGroup} `<strong class="text-primary">test</strong>`
+						<a n:href="close! deviceGroupEdit" class="ajax close" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</a>
+					</h4>
+				</div>
+				{include deviceGroupForm, id => $editDeviceGroup}
+			</div>
+		</div>
+	{/snippet}
 
 	{snippet deviceTargetGroups}
 	{if $editDeviceTargetGroups}
@@ -58,171 +124,98 @@
 		{control deviceTargetGroupsControl:deviceGroup}
 	{/if}
 	{/snippet}
-
-	{snippetArea deviceFormModal}{include deviceFormModal}{/snippetArea}
-	{snippetArea deviceGroupFormModal}
-		{include deviceGroupFormModal}
-	{/snippetArea}
+	{* collapse edit *}
 {/block}
 
-<div n:block="deviceFormModal" class="modal fade addDeviceModal animated bounceInRight" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title">{_devicePage.addDevice}</h4>
-			</div>
-
-			<div class="modal-body" n:snippet="editDeviceFormModal">
-				<div class="row">
-					{form deviceForm}
-						<div n:class="$editDevice ? col-md-6">
-							<div n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" class="box-list__settings__one">
-								{input sendSubmit}
-							</div>
-							<div class="box-list__settings__one">
-								{label name}
-								{input name}
-							</div>
-
-							<div class="box-list__settings__one">
-								<div class="row">
-									<div n:class="$editDevice ? col-md-7 : col-md-8">
-										{label sn}
-										{input sn}
-									</div>
-									<div n:class="$editDevice ? col-md-5 : col-md-4">
-										{label snRotate}
-										{input snRotate}
-									</div>
-								</div>
-							</div>
-
-							<div class="box-list__settings__one">
-								{label tag}
-								<div class="box-list__settings__one__colors clearfix">
-									{foreach $form['tag']->items as $key => $label}
-										<div class="input-control">
-											<input n:name="tag:$key">
-											<label n:name="tag:$key" class="{$label}">{*{$label}*}</label>
-										</div>
-									{/foreach}
-								</div>
-							</div>
-
-							<div class="box-list__settings__one">
-								{label keywords}
-								{input keywords}
-							</div>
-
-							<div n:if="$editDevice" class="box-list__settings__one">
-								<a n:href="editDeviceTargetGroups! $this->editDevice" class="ajax btn btn-md btn-block btn-info">Cílové skupiny</a>
-							</div>
-
-						</div>
-						<div n:class="$editDevice ? 'col-md-6 grido' : 'grido'">
-							{control deviceGroupListGridControl}
-						</div>
-
-{*
-						<div class="box-list__settings__one">
-							<div class="box-list__settings__one__templateSelectHead clearfix">
-								{label deviceGroup}
-							</div>
-							{input deviceGroup}
-						</div>
-
-						<div class="box-list__settings__one">
-							<div class="box-list__settings__one__templateSelectHead clearfix">
-								{label defaultCampaign}
-								{input defaultCampaign}
-							</div>
-						</div>
-						<div class="box-list__settings__one">
-							<div class="box-list__settings__one__templateSelectHead clearfix">
-								{label loopCampaign}
-								{input loopCampaign}
-							</div>
-						</div>
-*}
-					{/form}
-
+{define deviceGroupForm}
+{form deviceGroupForm-$id}
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="box-list__settings__one">
+					{label name}
+					{input name}
 				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-
-<div n:block="deviceGroupFormModal" class="modal fade addGroupModal animated bounceInLeft" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title">{_devicePage.add_group}</h4>
-			</div>
-
-			{snippet editDeviceGroupFormModal}
-			{form deviceGroupForm}
-				<div class="modal-body p-t-0 p-b-0">
-					<div class="box-list__settings js-settings">
-						{input sendSubmit}
-						<div class="box-list__settings__one">
-							{label name}
-							{input name}
-						</div>
-
-						<div class="box-list__settings__one">
-							{label tag}
-							<div class="box-list__settings__one__colors clearfix">
-								{foreach $form['tag']->items as $key => $label}
-									<div class="input-control">
-										<input n:name="tag:$key">
-										<label n:name="tag:$key" class="{$label}">{*{$label}*}</label>
-									</div>
-								{/foreach}
+				<div class="box-list__settings__one">
+					{label tag}
+					<div class="box-list__settings__one__colors clearfix">
+						{foreach $form['tag']->items as $key => $label}
+							<div class="input-control">
+								<input n:name="tag:$key">
+								<label n:name="tag:$key" class="{$label}">{*{$label}*}</label>
 							</div>
-						</div>
-
-						<div class="box-list__settings__one">
-							{label keywords}
-							{input keywords}
-						</div>
-
-						<div n:if="$editDeviceGroup" class="box-list__settings__one text-right">
-							<a n:href="editDeviceGroupTargetGroups! $editDeviceGroup" class="ajax btn btn-md btn-info">Cílové skupiny</a>
-						</div>
-
+						{/foreach}
 					</div>
 				</div>
-			{/form}
-			{/snippet}
-		</div>
-		<!-- /.modal-content -->
-	</div>
-</div>
-
-{* edit device group *}
-{*
-<div n:block="editDeviceGroupFormModal" class="modal fade editGroupPopup" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title">{_devicePage.add_group}</h4>
 			</div>
-			{form deviceGroupForm}
-				<div class="modal-body p-t-0 p-b-0">
-					<div class="box-list__settings js-settings">
-						{input sendSubmit}
-						<div class="box-list__settings__one">
-							{label name}
-							{input name}
+			<div class="col-md-6">
+				<div class="box-list__settings__one">
+					{label keywords}
+					{input keywords}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="panel-footer text-right">
+		<a n:if="$id!='new'" n:href="editDeviceGroupTargetGroups! $editDeviceGroup" class="ajax btn btn-md btn-info">Cílové skupiny</a>
+		{input sendSubmit}
+	</div>
+{/form}
+{/define}
+
+{define deviceForm}
+	{form deviceForm-$id}
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="box-list__settings__one">
+						{label name}
+						{input name}
+					</div>
+
+					<div class="box-list__settings__one">
+						<div class="row">
+							<div n:class="$editDevice ? col-md-7 : col-md-8">
+								{label sn}
+								{input sn}
+							</div>
+							<div n:class="$editDevice ? col-md-5 : col-md-4">
+								{label snRotate}
+								{input snRotate}
+							</div>
 						</div>
 					</div>
+
+					<div class="box-list__settings__one">
+						{label tag}
+						<div class="box-list__settings__one__colors clearfix">
+							{foreach $form['tag']->items as $key => $label}
+								<div class="input-control">
+									<input n:name="tag:$key">
+									<label n:name="tag:$key" class="{$label}">{*{$label}*}</label>
+								</div>
+							{/foreach}
+						</div>
+					</div>
+
+					<div class="box-list__settings__one">
+						{label keywords}
+						{input keywords}
+					</div>
 				</div>
-			{/form}
+				<div class="col-md-6 grido">
+					<label>Přiřazení do skupiny zařízení</label>
+
+{*					{input devicesGroups}*}
+
+					{control deviceGroupListGridControl-$id}
+				</div>
+			</div>
 		</div>
-	</div>
-</div>
-*}
+		<div n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" class="panel-footer text-right">
+
+			<a n:if="$id!='new'" n:href="editDeviceTargetGroups! $this->editDevice" class="ajax btn btn-md btn-info">Cílové skupiny</a>
+			{input sendSubmit}
+		</div>
+	{/form}
+{/define}

@@ -46,6 +46,7 @@ class UserRepository extends EntityRepository implements IFilter
 
     /**
      * @todo userEntity/usersGroupEntity získat z devrun User->getIdentity()
+     * @deprecated
      *
      * @param User $user
      * @return UserEntity
@@ -156,6 +157,18 @@ class UserRepository extends EntityRepository implements IFilter
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+
+    public function getAllRoles(User $user)
+    {
+        $authRoles = $user->getAuthorizator()->roles;
+        $roles = [];
+        foreach ($authRoles as $authRole) {
+            $roles[$authRole] = $authRole;
+        }
+
+        return $roles;
     }
 
 

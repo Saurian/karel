@@ -34,11 +34,7 @@
             {/block}
         {/if}
 
-
-
-
         {snippetArea items}
-
             <div class="datagrid-tree-item datagrid-tree-header" n:snippet="item-header">
                 <div class="text-right" n:if="$control->canHideColumns() || $inlineAdd || $exports || $toolbar_buttons">
 				<span n:if="$toolbar_buttons">
@@ -107,7 +103,8 @@
                                             name="{$control->getName()|lower}_group_action_item[{$row->getId()}]">
                                     *}
 
-                                    <input n:name="$form[devicesGroups]:$row->id" n:class="$control->useHappyComponents() ? 'happy gray-border' , primary">
+                                    <input n:name="$_form[devicesGroups]:$row->id">
+{*									<input n:name="$_form[devicesGroups]:$row->id" n:class="$control->useHappyComponents() ? 'happy gray-border' , primary">*}
                                 {/if}
                             </div>
 

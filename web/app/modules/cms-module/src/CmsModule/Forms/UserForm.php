@@ -39,6 +39,14 @@ interface IUserFormFactory
     function create();
 }
 
+/**
+ * Class UserForm
+ * @package CmsModule\Forms
+ * @method onSendEmail(UserEntity $userEntity, UserForm $form)
+ * @method onResetPassword($message, UserEntity $userEntity, UserForm $form)
+ * @method onSave($message, UserEntity $userEntity, UserForm $form)
+ * @method onSaveError($message, UserForm $form)
+ */
 class UserForm extends BaseForm
 {
 
@@ -91,54 +99,69 @@ class UserForm extends BaseForm
     /** @var boolean */
     private $disAllowed = false;
 
+
+    /** @var array callback */
+    public $onSendEmail = [];
+
+    /** @var array callback */
+    public $onSave = [];
+
+    /** @var array callback */
+    public $onResetPassword = [];
+
+    /** @var array callback */
+    public $onSaveError = [];
+
+
+
     public function create(Container $container = null)
     {
         $form = $container ? $container : $this;
 
         $form->addSubmit('sendSubmit', 'sendUser')
-            ->setAttribute('class', 'btn btn-success box-list__settings__close js-settingsClose');
+            ->setAttribute('class', 'btn btn-success'); // box-list__settings__close
 
-        $form->addText('firstName', 'first_name')
+        $form->addText('firstName', 'messages.forms.userForm.first_name')
             ->setDisabled($this->disAllowed)
-            ->setAttribute('placeholder', "placeholder.first_name")
-            ->addRule(Form::FILLED, 'filled')
+            ->setAttribute('placeholder', "messages.forms.userForm.placeholder.first_name")
+            ->addRule(Form::FILLED, 'messages.forms.userForm.filled')
             ->addRule(Form::MIN_LENGTH, new Phrase('min', 3), 3)
             ->addRule(Form::MAX_LENGTH, new Phrase('max', 255), 255);
 
-        $form->addText('lastName', 'last_name')
+        $form->addText('lastName', 'messages.forms.userForm.last_name')
             ->setDisabled($this->disAllowed)
-            ->setAttribute('placeholder', "placeholder.last_name")
-            ->addRule(Form::FILLED, 'filled')
+            ->setAttribute('placeholder', "messages.forms.userForm.placeholder.last_name")
+            ->addRule(Form::FILLED, 'messages.forms.userForm.filled')
             ->addRule(Form::MIN_LENGTH, new Phrase('min', 3), 3)
             ->addRule(Form::MAX_LENGTH, new Phrase('max', 255), 255);
 
-        $form->addText('mail', 'email')
+        $form->addText('mail', 'messages.forms.userForm.email')
             ->setDisabled($this->disAllowed)
-            ->setAttribute('placeholder', "placeholder.email")
-            ->addRule(Form::FILLED, 'filled')
-            ->addRule(Form::EMAIL, 'valid_email');
+            ->setAttribute('placeholder', "messages.forms.userForm.placeholder.email")
+            ->addRule(Form::FILLED, 'messages.forms.userForm.filled')
+            ->addRule(Form::EMAIL, 'messages.forms.userForm.valid_email');
 
         if ($this->editActive) {
-            $form->addCheckbox('active', 'active')
+            $form->addCheckbox('active', 'messages.forms.userForm.active')
                 ->setAttribute('placeholder', "active")
                 ->setAttribute('class', 'js-switch')
                 ->setAttribute('data-size', 'small');
         }
 
 
-        $form->addSelect('role', 'role.role', [
-            'watcher'    => 'role.watcher',
-            'editor'     => 'role.editor',
-            'master'     => 'role.master',
-            'admin'      => 'role.admin',
-            'supervisor' => 'role.supervisor',
+        $form->addSelect('role', 'messages.forms.userForm.role.role', [
+            'watcher'    => 'messages.forms.userForm.role.watcher',
+            'editor'     => 'messages.forms.userForm.role.editor',
+            'master'     => 'messages.forms.userForm.role.master',
+            'admin'      => 'messages.forms.userForm.role.admin',
+            'supervisor' => 'messages.forms.userForm.role.supervisor',
         ])
             ->setDisabled($this->editRole)
-            ->setPrompt('select_please')
-            ->addRule(Form::FILLED, 'filled');
+            ->setPrompt('messages.forms.userForm.select_please')
+            ->addRule(Form::FILLED, 'messages.forms.userForm.filled');
 
 
-        $devices = $form->addCheckboxList('devices', 'devices', $this->getDeviceNames())
+        $devices = $form->addCheckboxList('devices', 'messages.forms.userForm.devices', $this->getDeviceNames())
             ->setDisabled($this->disAllowed)
             ->setTranslator(null)
             ->setOption(IComponentMapper::FIELD_IGNORE, true)
@@ -146,7 +169,7 @@ class UserForm extends BaseForm
             ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
 
 
-        $devicesGroups = $form->addCheckboxList('devicesGroups', 'devices_groups', $this->getDeviceGroupsNames())
+        $devicesGroups = $form->addCheckboxList('devicesGroups', 'messages.forms.userForm.devices_groups', $this->getDeviceGroupsNames())
             ->setDisabled($this->disAllowed)
             ->setTranslator(null)
             ->setOption(IComponentMapper::FIELD_IGNORE, true)
@@ -155,18 +178,18 @@ class UserForm extends BaseForm
 
         $devices
             ->addCondition(Form::BLANK)
-            ->addConditionOn($this['devicesGroups'], Form::BLANK)
-            ->addRule(Form::FILLED, 'ruleDeviceOrGroup');
+            ->addConditionOn($form['devicesGroups'], Form::BLANK)
+            ->addRule(Form::FILLED, 'messages.forms.userForm.ruleDeviceOrGroup');
 
         $devicesGroups
             ->addCondition(Form::BLANK)
-            ->addConditionOn($this['devices'], Form::BLANK)
-            ->addRule(Form::FILLED, 'ruleDeviceOrGroup');
+            ->addConditionOn($form['devices'], Form::BLANK)
+            ->addRule(Form::FILLED, 'messages.forms.userForm.ruleDeviceOrGroup');
 
-        $form->addSubmit('addUserSubmit')
-            ->setAttribute('class', 'box-newTemplate__adding__new _js-addNewTemplateMedia')
-            ->setValidationScope(FALSE)
-            ->onClick[] = [$this, 'addUser'];
+//        $form->addSubmit('save')
+//            ->setAttribute('class', 'box-newTemplate__adding__new _js-addNewTemplateMedia')
+//            ->setValidationScope(FALSE)
+//            ->onClick[] = [$this, 'addUser'];
 
 
         $this->onSuccess[] = [$this, 'success'];
@@ -182,19 +205,25 @@ class UserForm extends BaseForm
         /** @var UserEntity $entity */
         $entity = $form->getEntity();
 
+        $this->save($entity, $values);
+    }
+
+
+    public function save(UserEntity $entity, $values)
+    {
         /** @var BasePresenter $presenter */
-        $presenter  = $this->getPresenter();
+//        $presenter  = $this->getPresenter();
         $translator = $this->getTranslator();
-        $title      = $presenter->translateMessage()->translate('userPage.management');
+        $title      = $translator->translate('userPage.management');
         $passwordSet = false;
 
         if (!$entity->getPassword()) {
-            $entity->setPassword($this->newPassword);
+            $entity->setPassword($newPsw = $this->newPassword);
             $passwordSet = true;
         }
 
         try {
-            $em = $form->getEntityMapper()->getEntityManager();
+            $em = $this->getEntityMapper()->getEntityManager();
 
             /** @var UserEntity $entity */
 //            $entity              = $form->getEntity();
@@ -206,48 +235,43 @@ class UserForm extends BaseForm
             $this->userFacade->updateDevices($entity, $devices, $selectDevices);
             $this->userFacade->updateDevicesGroups($entity, $devicesGroups, $selectDevicesGroups);
 
-            $em->persist($entity)->flush();
-
-            if ($passwordSet) {
-                $message = $translator->translate('user_password', null, ['password' => $this->newPassword]);
-                $presenter->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
-            }
-
             /*
              * messages
              */
             $newUser = $entity->getId() == null;
-            $message = $entity->getId()
-                ? $this->getTranslator()->translate("user_updated", null, ['user' => $entity->getUsername()])
-                : $this->getTranslator()->translate("user_added");
+            $saveMessage = $entity->getId()
+                ? $this->getTranslator()->translate("messages.forms.userForm.user_updated", null, ['user' => $entity->getUsername()])
+                : $this->getTranslator()->translate("messages.forms.userForm.user_added", null, ['user' => $entity->getFullName()]);
+
+            $em->persist($entity)->flush();
+
+            if ($passwordSet) {
+                $this->onResetPassword($this->newPassword, $entity, $this);
+            }
 
             if ($this->emailSending && $newUser) {
                 $this->sendMail($entity);
             }
 
-            $presenter->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+            $this->onSave($saveMessage, $entity, $this);
+
 
         } catch (NotNullConstraintViolationException $e) { // 1048
             $message = $translator->translate('user_form_error', $e->getErrorCode());
 
-            $presenter->flashMessage($message,
-                FlashMessageControl::TOAST_TYPE,
-                $title, FlashMessageControl::TOAST_DANGER);
             $this->logger->warning("user [{$entity->getRole()}] `{$entity->getName()}` has been inserted error [{$e->getMessage()}]", ['type' => LogEntity::ACTION_FORM, 'target' => $entity, 'action' => 'user inserted']);
+            $this->onSaveError($message, $this);
 
         } catch (UniqueConstraintViolationException $e) {
             $message = $translator->translate('user_form_duplicate_error', $e->getErrorCode());
 
-            $presenter->flashMessage($message,
-                FlashMessageControl::TOAST_TYPE,
-                $title, FlashMessageControl::TOAST_DANGER);
-
             $this->logger->warning("user [{$entity->getRole()}] `{$entity->getName()}` has been inserted error [{$e->getMessage()}]", ['type' => LogEntity::ACTION_FORM, 'target' => $entity, 'action' => 'user inserted']);
+            $this->onSaveError($message, $this);
+
 //            $em = $form->getEntityMapper()->getEntityManager();
 //            $em->detach($entity);
 //            $em->flush();
         }
-
 
     }
 
@@ -255,14 +279,13 @@ class UserForm extends BaseForm
     /**
      * send email
      *
-     * @param $entity
+     * @param UserEntity $entity
+     * @throws \Nette\Application\UI\InvalidLinkException
      */
     private function sendMail(UserEntity $entity)
     {
         /** @var BasePresenter $presenter */
         $presenter  = $this->getPresenter();
-        $translator = $this->getTranslator();
-        $title      = $presenter->translateMessage()->translate('userPage.management');
 
         $latte  = new \Latte\Engine;
         $params = [
@@ -278,8 +301,7 @@ class UserForm extends BaseForm
 
         $this->mailer->send($mail);
 
-        $message = $translator->translate('user_has_been_send_email', $entity->mail);
-        $presenter->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+        $this->onSendEmail($entity, $this);
     }
 
 
@@ -327,6 +349,10 @@ class UserForm extends BaseForm
 
     /**
      * @param DeviceEntity[] $devices
+//        dump($entity);
+//        dump($values);
+//        die;
+
      *
      * @return $this
      */

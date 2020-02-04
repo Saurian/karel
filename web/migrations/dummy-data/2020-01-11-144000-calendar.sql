@@ -65,8 +65,6 @@ DELETE FROM `device_group` WHERE `id` IN  (1, 2, 3, 4);
 INSERT INTO `device_group` (`id`, `root_id`, `parent_id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `name`, `active`, `un_place`, `inserted`, `updated`, `position`, `category`, `lft`, `lvl`, `rgt`, `keywords`, `tag`) VALUES
 (1,	2,	2,	NULL,	2,	NULL,	'Nezařazené',	0,	1,	'2019-08-13 07:43:21',	'2019-08-13 08:40:29',	1,	'',	2,	1,	3,	NULL,	NULL),
 (2,	2,	NULL,	2,	NULL,	NULL,	'Default',	0,	0,	'2019-08-13 07:43:21',	'2019-08-13 07:43:21',	1,	'',	1,	0,	36,	NULL,	NULL),
-(3,	4,	4,	NULL,	NULL,	NULL,	'Nezařazené',	0,	1,	'2019-08-13 07:44:03',	'2019-08-13 07:44:03',	2,	'',	2,	1,	3,	NULL,	NULL),
-(4,	4,	NULL,	3,	NULL,	NULL,	'Default',	0,	0,	'2019-08-13 07:44:03',	'2019-08-13 07:44:03',	2,	'',	1,	0,	4,	NULL,	NULL),
 (5,	2,	2,	2,	2,	NULL,	'Středočechy',	0,	0,	'2019-08-13 07:50:11',	'2019-08-13 07:50:11',	3,	'',	4,	1,	29,	NULL,	NULL),
 (6,	2,	5,	2,	2,	NULL,	'Příbramsko',	0,	0,	'2019-08-13 07:50:31',	'2019-08-13 08:40:28',	4,	'',	5,	2,	12,	NULL,	NULL),
 (7,	2,	8,	2,	2,	NULL,	'Rokycansko',	0,	0,	'2019-08-13 07:50:40',	'2019-08-13 07:51:00',	5,	'',	18,	3,	23,	NULL,	NULL),

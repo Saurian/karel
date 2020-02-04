@@ -79,4 +79,9 @@ class UserFacade
     }
 
 
+    public function createEmptyUser(UserEntity $userEntity)
+    {
+        $result = new UserEntity(null, null, null, null, null);
+        return $result->setGroup($userEntity->getGroup());
+    }
 }

@@ -8,13 +8,11 @@
  * @author  Saurian
  */
 
-namespace App\Security;
-
+namespace CmsModule\Security;
 
 use Nette\Security\IIdentity;
 use Nette\Security\IUserStorage;
 use Nette;
-use Tracy\Logger;
 
 class DummyUserStorage implements IUserStorage
 {
@@ -89,4 +87,11 @@ class DummyUserStorage implements IUserStorage
     {
         return NULL;
     }
+
+
+    public function setNamespace($element)
+    {
+
+    }
+
 }

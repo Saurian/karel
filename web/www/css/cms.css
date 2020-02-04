@@ -406,6 +406,10 @@ ul li [aria-expanded="false"] {
   font-size: 13px;
 }
 
+.datagrid-tree-item-left .col-checkbox {
+  margin-right: 5px;
+}
+
 @media (min-width: 1200px) {
   .row-flex {
     display: -webkit-box;

@@ -26,6 +26,7 @@ use CmsModule\Repositories\CampaignRepository;
 use CmsModule\Repositories\TargetGroupRepository;
 use Devrun\CmsModule\Controls\IDeviceTargetGroupsControlFactory;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Nette\Application\UI\Multiplier;
 use Nette\Utils\Html;
 use Nette\Utils\Validators;
 use Tracy\Debugger;
@@ -86,6 +87,28 @@ class DevicePresenter extends BasePresenter
     public $addDeviceGroupToParent;
 
 
+    /**
+     * handle z hlavní šablony, zavření panelu deviceGroup a device
+     *
+     * @param $id
+     * @throws \Nette\Application\UI\InvalidLinkException
+     */
+    public function handleClose($id)
+    {
+        if ($id == 'deviceGroupEdit') {
+            $this->editDeviceGroupTargetGroups = null;
+            $this->editDeviceGroup = null;
+
+        } elseif ($id == 'deviceEdit') {
+            $this->editDeviceTargetGroups = null;
+            $this->editDevice = null;
+        }
+
+        $this->payload->scrollTo = ".breadcrumb";
+        $this->payload->url = $this->link('this');
+        $this->ajaxRedirect('this', null, ['flash', 'deviceTargetGroups', 'deviceGroupTargetGroups', 'editDeviceGroupForm', 'editDeviceForm']);
+
+    }
 
     public function handleSetSelectDeviceInNewCampaign($id)
     {
@@ -427,115 +450,131 @@ class DevicePresenter extends BasePresenter
 
 
     /**
-     * modal add new device
+     * add/edit device
      *
-     * @return DeviceForm
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @param $name
+     * @return Multiplier
      */
     protected function createComponentDeviceForm($name)
     {
-        $form = $this->deviceFormFactory->create();
-        $form->setTranslator($this->translator->domain("messages.forms.deviceDetailForm"));
-        $form->setFormName($name);
+        return new Multiplier(function ($index) use ($name) {
 
-        /** @var DeviceGroupEntity $unPlaceGroupEntity */
-        $unPlaceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserUnPlaceDeviceGroup($this->getUser());
+            $form = $this->deviceFormFactory->create();
+            $form->setTranslator($this->translator->domain("messages.forms.deviceDetailForm"));
+            $form->setFormName($name);
 
-        $entity = new DeviceEntity();
-        $entity->setUsersGroups($this->userEntity->getGroup());
+            /** @var DeviceGroupEntity $unPlaceGroupEntity */
+            $unPlaceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserUnPlaceDeviceGroup($this->getUser());
 
-        $devicesGroups = $this->getDevicesGroups();
-        $form->setDevicesGroups($devicesGroups);
+            $entity = new DeviceEntity();
+            $entity->setUsersGroups($this->userEntity->getGroup());
 
-        if ($this->deviceFacade->isNewDevice()) {
-            $this->deviceFacade->cleanNewDevice();
-        }
+            $devicesGroups = $this->getDevicesGroups();
+            $form->setDevicesGroups($devicesGroups);
 
+            if ($this->deviceFacade->isNewDevice()) {
+                $this->deviceFacade->cleanNewDevice();
+            }
 
-        if ($this->editDevice) {
-            if (!$entity = $this->deviceFacade->getDeviceRepository()->find($this->editDevice)) {
-                $entity = (new DeviceEntity())->setUsersGroups($this->userEntity->getGroup());
+            if (is_numeric($index)) {
+                if (!$entity = $this->deviceFacade->getDeviceRepository()->find($index)) {
+                    $entity = (new DeviceEntity())->setUsersGroups($this->userEntity->getGroup());
+                    $unPlaceGroupEntity->addDevice($entity);
+                }
+
+            } else {
                 $unPlaceGroupEntity->addDevice($entity);
             }
 
-        } else {
-            $unPlaceGroupEntity->addDevice($entity);
-        }
 
 
+            $form->create();
+            $form->bootstrap3Render();
+            $form->bindEntity($entity);
+            $form->onSuccess[] = function (BaseForm $form, $values) use ($index) {
 
-        $form->create();
-        $form->bootstrap3Render();
-        $form->bindEntity($entity);
-        $form->onSuccess[] = function (BaseForm $form, $values) {
-
-            /** @var DeviceEntity $entity */
-            $entity = $form->getEntity();
+                /** @var DeviceEntity $entity */
+                $entity = $form->getEntity();
 
 
-            /*
-             * add new device to user
-             */
-            $userEntity = $this->userEntity;
-            $userEntity->addDevice($entity);
+                /*
+                 * add new device to user
+                 */
+                $userEntity = $this->userEntity;
+                $userEntity->addDevice($entity);
 
-            /**
-             * porovnáme value devices s entitou, nesouhlasné device smažeme
-             */
-            foreach ($values->devicesGroups as $did) {
-                $dg = $this->getDevicesGroups()[$did];
-                $dg->addDevice($entity);
-            }
-
-            foreach ($entity->getDevicesGroups() as $devicesGroup) {
-                if (! in_array($devicesGroup->getId(), (array) $values->devicesGroups)) {
-                    $devicesGroup->removeDevice($entity);
+                /**
+                 * porovnáme value devices s entitou, nesouhlasné device smažeme
+                 */
+                foreach ($values->devicesGroups as $did) {
+                    $dg = $this->getDevicesGroups()[$did];
+                    $dg->addDevice($entity);
                 }
-            }
 
-            $translator = $this->translateMessage();
+                foreach ($entity->getDevicesGroups() as $devicesGroup) {
+                    if (! in_array($devicesGroup->getId(), (array) $values->devicesGroups)) {
+                        $devicesGroup->removeDevice($entity);
+                    }
+                }
 
-            try {
-                $this->deviceFacade->getEntityManager()->persist($entity)->persist($userEntity)->flush();
+                $translator = $this->translateMessage();
 
-                $title   = $translator->translate('devicePage.management');
-                $message = $entity->getId()
-                    ? $translator->translate("devicePage.device_added", null, ['name' => $entity->getName()])
-                    : $translator->translate("devicePage.device_updated", null, ['name' => $entity->getName()]);
+                try {
+                    $this->deviceFacade->getEntityManager()->persist($entity)->persist($userEntity)->flush();
 
-                $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
-                $this->payload->_success = true;
-                $this->payload->_scroll_id = $entity->getId();
-                $this->ajaxRedirect('this', 'deviceGridControl', ['flash']);
-
-            } catch (UniqueConstraintViolationException $e) {
-                $title   = $translator->translate('devicePage.management');
-                $message = $translator->translate('devicePage.device_error', $e->getErrorCode(), ['name' => $entity->getSn()]);
-                $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_DANGER);
-                $this->ajaxRedirect('this', null, ['flash']);
-            }
+                    if ($index == 'new') {
+                        $form->setValues([
+                        ], true);
+                        $this->payload->_un_collapse = "#collapseDeviceForm";
+                    }
 
 
-        };
+                    $title   = $translator->translate('devicePage.management');
+                    $message = $entity->getId()
+                        ? $translator->translate("devicePage.device_added", null, ['name' => $entity->getName()])
+                        : $translator->translate("devicePage.device_updated", null, ['name' => $entity->getName()]);
 
-        return $form;
+                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+
+                    $this->editDevice = null;
+                    $this->editDeviceGroup = null;
+                    $this->addDeviceGroupToParent = null;
+                    $this->editDeviceGroupTargetGroups = null;
+
+                    $this->payload->scrollTo = "#base";
+                    $this->payload->url = $this->link('this');
+                    $this->ajaxRedirect('this', 'deviceGridControl', ['flash', 'addDeviceForm', 'editDeviceForm']);
+
+                } catch (UniqueConstraintViolationException $e) {
+                    $title   = $translator->translate('devicePage.management');
+                    $message = $translator->translate('devicePage.device_error', $e->getErrorCode(), ['name' => $entity->getSn()]);
+                    $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_DANGER);
+                    $this->ajaxRedirect('this', null, ['flash']);
+                }
+
+
+            };
+
+            return $form;
+        });
     }
 
 
     /**
+     * @deprecated use createComponentEditDeviceGroupForm instead
+     *
      * modal add / edit group
      *
      * @param $name
      * @return \CmsModule\Forms\DeviceGroupForm
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    protected function createComponentDeviceGroupForm($name)
+    protected function createComponentAddDeviceGroupForm($name)
     {
         $form = $this->deviceGroupFormFactory->create();
         $form->setTranslator($this->translator->domain("messages.forms.deviceGroupDetailForm"));
         $form->setFormName($name);
 
-//        $form->getElementPrototype()->id = 'Asd';
         $form->create();
         $form->bootstrap3Render();
 
@@ -602,8 +641,80 @@ class DevicePresenter extends BasePresenter
     }
 
 
+    /**
+     * @param $name
+     * @return Multiplier
+     */
+    protected function createComponentDeviceGroupForm($name)
+    {
+        $self = $this;
+
+        return new Multiplier(function ($index) use ($self, $name) {
+            $form = $this->deviceGroupFormFactory->create();
+            $form->setTranslator($this->translator->domain("messages.forms.deviceGroupDetailForm"));
+            $form->setFormName($name);
+
+            $form->create();
+            $form->bootstrap3Render();
 
 
+            $entity = (new DeviceGroupEntity('Výchozí'))
+                ->setUsersGroups($this->userEntity->getGroup());
+
+            $rootEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
+            $entity->setParent($rootEntity);
+
+            if (is_numeric($index)) {
+                if (!$entity = $this->deviceFacade->getDeviceGroupRepository()->find($index)) {
+                    $entity = (new DeviceGroupEntity('Výchozí'))
+                        ->setParent($rootEntity)
+                        ->setUsersGroups($this->userEntity->getGroup());
+                }
+
+            } else {
+                if ($this->addDeviceGroupToParent) {
+                    if ($parentGroup = $this->deviceFacade->getDeviceGroupRepository()->find($this->addDeviceGroupToParent)) {
+                        $entity->setParent($parentGroup);
+                    }
+                }
+            }
+
+
+            $form->bindEntity($entity);
+            $form->onSuccess[] = function (BaseForm $form) {
+
+                /** @var DeviceGroupEntity $entity */
+                $entity = $form->getEntity();
+
+                /*
+                 * add new device group to user
+                 */
+                $userEntity = $this->userEntity;
+                $userEntity->addDeviceGroup($entity);
+
+                $this->deviceFacade->getEntityManager()->persist($entity)->persist($userEntity)->flush();
+
+                $translator = $this->translateMessage();
+                $title      = $translator->translate('devicePage.management');
+                $message    = $translator->translate('devicePage.group_added', null, ['name' => $entity->getName()]);
+                $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_SUCCESS);
+
+//            $this['deviceGroupGridControl']->redrawItem($this->editDeviceGroup, 'e.id');
+
+                $this->editDeviceGroup = null;
+                $this->addDeviceGroupToParent = null;
+                $this->editDeviceGroupTargetGroups = null;
+
+                $this->payload->scrollTo = "#base";
+//                $this->payload->url = $this->link('this');
+
+                $this->ajaxRedirect('this', 'deviceGroupGridControl', ['flash', 'deviceTargetGroups', 'deviceGroupTargetGroups', 'editDeviceGroupForm']);
+            };
+
+            return $form;
+
+        });
+    }
 
 
     public function handleDeviceSort()
@@ -927,17 +1038,17 @@ class DevicePresenter extends BasePresenter
             ->setDataAttribute('toggle', 'ajax-modal')
             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.add_new_group'))
             ->setTitle('Přidat novou skupinu zařízení')
-            ->setClass('btn btn-xs btn-success')
+            ->setClass('hidden btn btn-xs btn-success')
             ;
 
         $grid->addAction('edit', '', 'editDeviceGroup!')
             ->setClass(function (DeviceGroupEntity $row) {
-                return $row->isUnPlace() ? 'm-l-50 btn btn-xs btn-info' : 'btn btn-xs btn-info';
+                return $row->isUnPlace() ? 'm-l-50 btn btn-xs btn-info ajax' : 'btn btn-xs btn-info ajax';
             })
             ->setIcon('pencil')
             ->setTitle('Editace skupiny zařízení')
-            ->setDataAttribute('target', '.addGroupModal')
-            ->setDataAttribute('toggle', 'ajax-modal')
+//            ->setDataAttribute('target', '.addGroupModal')
+//            ->setDataAttribute('toggle', 'ajax-modal')
             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.edit_device_group'));
 
 
@@ -983,45 +1094,46 @@ class DevicePresenter extends BasePresenter
      * zobrazení tree skupiny zařízení v modal okně správy zařízení
      *
      * @param $name
-     * @return DataGrid
+     * @return Multiplier|DataGrid
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Ublaboo\DataGrid\Exception\DataGridException
      */
     protected function createComponentDeviceGroupListGridControl($name)
     {
-        $grid = new DataGrid();
-        $grid->setTranslator($this->translator);
+        return new Multiplier(function ($index) use ($name) {
+
+            $grid = new DataGrid();
+            $grid->setTranslator($this->translator);
 
 
+            if ($this->user->isAllowed('Cms:Device', 'listAllDevices')) {
+                $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                            ->select('e')
+                                            ->andWhere('e.lvl = :level')->setParameter('level', 0)
+                                            ->addOrderBy('e.lvl')
+                                            ->addOrderBy('e.lft')
+                ;
 
-        if ($this->user->isAllowed('Cms:Device', 'listAllDevices')) {
-            $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
-                ->select('e')
-                ->andWhere('e.lvl = :level')->setParameter('level', 0)
-                ->addOrderBy('e.lvl')
-                ->addOrderBy('e.lft')
-            ;
+            } else {
+                $rootDeviceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
 
-        } else {
-            $rootDeviceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
-
-            $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
-                ->select('e')
-                ->andWhere('e.lft > :left')->setParameter('left', $rootDeviceGroupEntity->getLft())
-                ->andWhere('e.rgt < :right')->setParameter('right', $rootDeviceGroupEntity->getRgt())
-                ->andWhere('e.root = :root')->setParameter('root', $rootDeviceGroupEntity)
-                ->andWhere('e.lvl = :level')->setParameter('level', 1)
-                ->addOrderBy('e.lvl')
-                ->addOrderBy('e.lft')
-            ;
-        }
+                $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                            ->select('e')
+                                            ->andWhere('e.lft > :left')->setParameter('left', $rootDeviceGroupEntity->getLft())
+                                            ->andWhere('e.rgt < :right')->setParameter('right', $rootDeviceGroupEntity->getRgt())
+                                            ->andWhere('e.root = :root')->setParameter('root', $rootDeviceGroupEntity)
+                                            ->andWhere('e.lvl = :level')->setParameter('level', 1)
+                                            ->addOrderBy('e.lvl')
+                                            ->addOrderBy('e.lft')
+                ;
+            }
 
 
 
 //        Debugger::barDump($query->getQuery()->getResult()[0]);
 
-        /** @var DeviceGroupEntity[] $deviceGroups */
-        $deviceGroups = $query->getQuery()->getResult();
+            /** @var DeviceGroupEntity[] $deviceGroups */
+            $deviceGroups = $query->getQuery()->getResult();
 
 
 //        Debugger::barDump($deviceGroupEntity);
@@ -1035,20 +1147,20 @@ class DevicePresenter extends BasePresenter
 //        dump($query);
 //        die();
 
-        $grid->setDataSource($query);
-        $grid->setTreeView(function ($id) {
-            $dataSource = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
-                ->where('e.parent = :parent')->setParameter('parent', $id)
-                ->addOrderBy('e.lvl')
-                ->addOrderBy('e.lft')
-                ->getQuery()
-                ->getResult();
+            $grid->setDataSource($query);
+            $grid->setTreeView(function ($id) {
+                $dataSource = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
+                                                 ->where('e.parent = :parent')->setParameter('parent', $id)
+                                                 ->addOrderBy('e.lvl')
+                                                 ->addOrderBy('e.lft')
+                                                 ->getQuery()
+                                                 ->getResult();
 
-            return $dataSource;
+                return $dataSource;
 
-        }, function (DeviceGroupEntity $deviceGroupEntity) {
-            return $this->deviceFacade->getDeviceGroupRepository()->childCount($deviceGroupEntity) > 0;
-        });
+            }, function (DeviceGroupEntity $deviceGroupEntity) {
+                return $this->deviceFacade->getDeviceGroupRepository()->childCount($deviceGroupEntity) > 0;
+            });
 
 //        $grid->addColumnText('name', 'Název')
 //            ->setFilterText();
@@ -1058,32 +1170,27 @@ class DevicePresenter extends BasePresenter
 
 
 
-        $grid->addColumnText('name', 'Název')
-            ->addAttributes(['class' => 'btn btn-xs btn-default btn-block']);
+            $grid->addColumnText('name', 'Název')
+                 ->addAttributes(['class' => 'btn btn-xs btn-default btn-block']);
 
 
 //        $grid->addColumnText('active', 'Aktivní');
 
 
-        $group = $grid->addGroupAction('Aktivní');
+            $grid->addGroupAction('Aktivní')->onSelect[] = [$this, 'setActives'];
 
 
+            $grid->setTemplateFile(__DIR__ . "/templates/Device/#datagrid_treelist_template.latte");
 
+            $grid->onRender[] = function (DataGrid $grid) use ($index) {
 
+                $form = $this['deviceForm'][$index];
+                $grid->template->getLatte()->addProvider('formsStack', $form);
+                $grid->template->_form = $form;
+            };
 
-
-//        $grid->addGroupAction('Aktivní')->onSelect[]   = [$this, 'setActives'];
-        $group->onSelect[]   = [$this, 'setActives'];
-
-
-
-        $grid->setTemplateFile(__DIR__ . "/templates/Device/#datagrid_treelist_template.latte");
-
-        $grid->onRender[] = function (DataGrid $grid) {
-            $grid->template->form = $this['deviceForm'];
-        };
-
-        return $grid;
+            return $grid;
+        });
     }
 
 
@@ -1242,11 +1349,11 @@ class DevicePresenter extends BasePresenter
 
         $grid->addAction('edit', '', 'editDevice!')
             ->setIcon('pencil')
-            ->setDataAttribute('target', '.addDeviceModal')
-            ->setDataAttribute('toggle', 'ajax-modal')
+//            ->setDataAttribute('target', '.addDeviceModal')
+//            ->setDataAttribute('toggle', 'ajax-modal')
             ->setDataAttribute('title', $this->translateMessage()->translate('devicePage.editDevice'))
             ->setTitle($this->translateMessage()->translate('devicePage.editDevice'))
-            ->setClass('btn btn-xs btn-info');
+            ->setClass('ajax btn btn-xs btn-info');
 
 
         $grid->addAction('delete', '', 'deleteDevice!')
@@ -1382,6 +1489,7 @@ class DevicePresenter extends BasePresenter
      * readjust modal deviceGroupForm
      *
      * @param $id
+     * @throws \Nette\Application\UI\InvalidLinkException
      */
     public function handleEditDeviceGroup($id)
     {
@@ -1396,13 +1504,16 @@ class DevicePresenter extends BasePresenter
         }
 
         $this->editDeviceGroup = $id;
-        $this->ajaxRedirect('this', null, ['editDeviceGroupFormModal']);
+        $this->payload->scrollTo = "#snippet--editDeviceGroupForm";
+        $this->payload->url = $this->link('this');
+        $this->ajaxRedirect('this', null, ['editDeviceForm', 'editDeviceGroupForm', 'deviceGroupTargetGroups', 'deviceTargetGroups']);
     }
 
     /**
      * readjust modal deviceForm
      *
      * @param $id
+     * @throws \Nette\Application\UI\InvalidLinkException
      */
     public function handleEditDevice($id)
     {
@@ -1417,7 +1528,9 @@ class DevicePresenter extends BasePresenter
         }
 
         $this->editDevice = $id;
-        $this->ajaxRedirect('this', null, ['editDeviceFormModal']);
+        $this->payload->scrollTo = "#snippet--editDeviceForm";
+        $this->payload->url = $this->link('this');
+        $this->ajaxRedirect('this', null, ['editDeviceForm', 'editDeviceGroupForm', 'deviceGroupTargetGroups', 'deviceTargetGroups']);
     }
 
 

@@ -126,7 +126,7 @@ class DeviceForm extends BaseForm
 
         $this->addSubmit('sendSubmit', 'save')
             ->setDisabled($disAllowed)
-            ->setAttribute('class', 'btn btn-success btn-block js-settingsClose');
+            ->setAttribute('class', 'btn btn-success');
 //            ->setAttribute('data-dismiss', 'modal');
 //            ->onClick[] = [$this, 'success'];
 

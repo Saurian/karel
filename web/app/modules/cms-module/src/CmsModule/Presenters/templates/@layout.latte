@@ -28,7 +28,7 @@
 
 	{**}
 	{if $production}
-		<link rel="stylesheet" type="text/css" media="screen" href="{$basePath}/css/cms-screen.min.css?rel=1580487604068">
+		<link rel="stylesheet" type="text/css" media="screen" href="{$basePath}/css/cms-screen.min.css?rel=1580818762090">
 {*		{control css}*}
 
 	{else}
@@ -79,6 +79,9 @@
 		{* glightbox *}
 		<link href="{$basePath}/resources/cmsModule/glightbox/dist/css/glightbox.css" rel="stylesheet" type="text/css" />
 		{* glightbox *}
+
+		{* fancytree *}
+		<link href="{$basePath}/resources/cmsModule/jquery.fancytree/dist/skin-win8/ui.fancytree.css" rel="stylesheet" type="text/css" />
 
 		{* select2 *}
 		<link href="{$basePath}/resources/cmsModule/select2/dist/css/select2.css" rel="stylesheet" type="text/css" />
@@ -225,7 +228,7 @@
 {block scripts}
 	{*================== BEGIN BASE JS ==================*}
 	{if $production}
-		<script type="application/javascript" data-pf-placeholder="scripts" src="{$basePath}/js/index.min.js?rel=1580487604068"></script>
+		<script type="application/javascript" data-pf-placeholder="scripts" src="{$basePath}/js/index.min.js?rel=1580818762089"></script>
 		{*<script type="application/javascript" src="{$basePath}/js/nette.nprogress.js"></script>*}
 		{*<script type="application/javascript" src="{$basePath}/assets/nprogress/nprogress.js"></script>*}
 	{else}
@@ -295,9 +298,13 @@
 		<script type="application/javascript" src="{$basePath}/resources/cmsModule/blueimp-gallery/js/blueimp-gallery-youtube.js"></script>
 		<script type="application/javascript" src="{$basePath}/resources/cmsModule/blueimp-gallery/js/jquery.blueimp-gallery.js"></script>
 
-
-
 		<script type="application/javascript" src="{$basePath}/resources/cmsModule/select2/dist/js/select2.js"></script>
+		{* some script must be after select2, problem? *}
+
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/glightbox/dist/js/glightbox.js"></script>
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/jquery-mask-plugin/dist/jquery.mask.js"></script>
+
+		<script type="application/javascript" src="{$basePath}/resources/cmsModule/jquery.fancytree/dist/jquery.fancytree-all.js"></script>
 		<script type="application/javascript" src="{$basePath}/resources/cmsModule/jquery-smooth-scroll/jquery.smooth-scroll.js"></script>
 
 		<script type="application/javascript" src="{$basePath}/js/nette.nprogress.js"></script>
@@ -315,8 +322,6 @@
 		{*		<script type="application/javascript" src="{$basePath}/assets/blueimp-gallery/js/demo/demo.js"></script>*}
 
 		{* compile problem ? *}
-		<script type="application/javascript" src="{$basePath}/resources/cmsModule/glightbox/dist/js/glightbox.js"></script>
-		<script type="application/javascript" src="{$basePath}/resources/cmsModule/jquery-mask-plugin/dist/jquery.mask.js"></script>
 		{* compile problem ? *}
 
 		{*<script type="application/javascript" src="{$basePath}/assets/nette.ajax.js/extensions/spinner.ajax.js"></script>*}
@@ -331,6 +336,10 @@
 	(function($, undefined) {
         $(function () {
             $.nette.init();
+
+            LiveForm.setOptions({
+				messageErrorPrefix: '&nbsp;<i class="fa fa-exclamation" aria-hidden="true"></i>&nbsp;'
+			});
 
 			lightbox.option({
 				'resizeDuration': 200,

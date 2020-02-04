@@ -142,6 +142,7 @@ class CampaignEntity implements IDeviceEntity
     {
         $this->devices = new ArrayCollection();
         $this->devicesGroups = new ArrayCollection();
+        $this->targetGroups = new ArrayCollection();
         $this->defaultDevices = new ArrayCollection();
         $this->metrics = new ArrayCollection();
         $this->mediaData = new ArrayCollection();

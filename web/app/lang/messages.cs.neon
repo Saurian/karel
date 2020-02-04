@@ -149,7 +149,7 @@ forms:
 		email: E-mail
 		devices: Zařízení
 
-		user_added: Vytvořen nový uživatel
+		user_added: Vytvořen nový uživatel `%user%`.
 		user_updated: Uživatel %user% upraven
 		user_password: "Nový uživatel získal heslo `%password%`"
 		user_form_error: "Nepodařilo se vytvořit uživatele [error-code %count%]"
@@ -309,6 +309,9 @@ userPage:
 	navigation: Navigace
 	addUser: Přidat uživatele
 	editUser: Upravit uživatele
+	userNotFound: Uživatel `%name%` nenalezen.
+	userRemoved: Uživatel `%name%` smazán.
+
 
 reachPage:
 	title: Cílové skupiny - data z prodejen
@@ -364,12 +367,12 @@ campaignPage:
 	recommendation: Doporučení
 	select_template_ready: "Vyberte prosím správně nastavenou šablonu, nebo vytvořte novou."
 	server_uploading: Nahrávání dat
-	campaign_added: "Nová kampaň %name% vytvořena"
+	campaign_added: "Nová kampaň `%name%` vytvořena."
 	campaign_updated: "Kampaň `%name%` upravena"
-	campaign_removed: "Kampaň `%name%` smazána"
+	campaign_removed: "Kampaň `%name%` smazána."
 	campaign_active: kampaň `%name%` je nyní aktivní
 	campaign_non_active: kampaň `%name%` je nyní neaktivní
-	campaign_not_found: kampaň `%id%` nenalezena
+	campaign_not_found: Kampaň `%id%` nenalezena.
 	file_deleted: Soubor `%name%` odstraněn
 	upload_error: "Zdá se, že velikost všech nahrávaných souborů přesáhl limit pro přesun dat na server v jednom požadavku.<br>Nahrejte prosím soubory na server ve více požadavcích."
 	max_upload_limit_info: "Nahrejte prosím v jednom požadavku méně souborů najednou. Limit je stanoven na %count%"
@@ -378,14 +381,14 @@ campaignPage:
 	user_group_not_found: Váš uživatelský účet nemá přiřazenu skupinu uživatelů
 
 	medium:
-	    unsupported: "Médium `%media%` se nepodařilo nahrát, ověřte prosím typ souboru.|Média `%media%` se nepodařilo nahrát, ověřte prosím jejich typ."
-	    supported: "Nahráno médium %media%.|Nahrána média %media%."
-	    not_found: médium nenalezeno
-	    removed: médium %name% smazáno
-	    add.url: Přidat url adresu
-	    add.url-youtube: Youtube url `%url%` přidána
-	    add.url-other: url `%url%` Přidána
-
+		title: Assety kampaně
+		unsupported: "Médium `%media%` se nepodařilo nahrát, ověřte prosím typ souboru.|Média `%media%` se nepodařilo nahrát, ověřte prosím jejich typ."
+		supported: "Nahráno médium %media%.|Nahrána média %media%."
+		not_found: médium nenalezeno
+		removed: médium %name% smazáno
+		add.url: Přidat url adresu
+		add.url-youtube: Youtube url `%url%` přidána
+		add.url-other: url `%url%` Přidána
 
 	calendar:
 		title: Naplánované kampaně
@@ -421,9 +424,11 @@ devicePage:
 	management: Správa zařízení
 	navigation: Zařízení - skupiny zařízení
 	active: Aktivní
+	deviceGroups: Skupiny zařízení
 	addDevice: Přidat zařízení
 	addNewDevice: Přidat nové zařízení
 	editDevice: Upravit zařízení
+	editDeviceGroup: Upravit skupinu zařízení
 	add_group: Přidat skupinu zařízení
 	addNewGroup: Přidat novou skupinu zařízení
 	place: Umístění
@@ -431,7 +436,7 @@ devicePage:
 	edit_device_group: Úprava skupiny zařízení
 	add_new_campaign: Přidat novou kampaň
 	add_new_campaign_for_device: Přidat novou kampaň pro zařízení `%device%`
-	group_added: "Přidána nová skupina `%name%`"
+	group_added: "Přidána nová skupina zařízení `%name%`."
 	view: Zobrazit
 	plain_campaigns: Kampaně - naplánovány
 	heart_beat: HeartBeat
@@ -440,14 +445,14 @@ devicePage:
 	device_updated: "Zařízení %name% upraveno"
 	device_error: "Nepodařilo se vytvořit zařízení<br> `SN - %name%` [%count%]"
 	device_not_found: Zařízení id `%id%` nenalezeno
-	device_group_not_found: Skupina zařízení id `%id%` nenalezena
+	device_group_not_found: Skupina zařízení id `%id%` nenalezena.
 	device_update_error: "Nepodařilo se upravit zařízení<br> `SN - %name%` [%count%]<br>Zkontrolujte prosím sériové číslo zařízení, musí být jedinečné."
 
 	device_active: zařízení `%name%` je nyní aktivní
 	device_non_active: zařízení `%name%` je nyní neaktivní
 
 	device_removed: "Zařízení %name% smazáno"
-	device_group_removed: "Skupina zařízení %name% smazána"
+	device_group_removed: "Skupina zařízení `%name%` smazána."
 
 	group_moved: Skupina `%name%` přesunuta
 	group_move_denied: Skupina `%name%` nelze přesunout

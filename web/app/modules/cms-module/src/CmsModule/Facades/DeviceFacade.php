@@ -13,11 +13,13 @@ namespace CmsModule\Facades;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\UserEntity;
+use CmsModule\Facades\Device\FancyTree;
 use CmsModule\Forms\DeviceForm;
 use CmsModule\Repositories\DeviceGroupRepository;
 use CmsModule\Repositories\DeviceMetricRepository;
 use CmsModule\Repositories\DeviceRepository;
 use CmsModule\Repositories\UserRepository;
+use Devrun\CmsModule\Controls\IDeviceGroupsTreeControlFactory;
 use Kdyby\Doctrine\EntityManager;
 use Kdyby\Doctrine\EntityRepository;
 use Nette\Http\Session;
@@ -37,6 +39,9 @@ class DeviceFacade
     use SmartObject;
 
     use PositionableTrait;
+
+    /** @var IDeviceGroupsTreeControlFactory */
+    private $deviceGroupsTreeControlFactory;
 
     /** @var DeviceRepository */
     private $deviceRepository;
@@ -77,14 +82,21 @@ class DeviceFacade
      * @param Session $session
      */
     public function __construct(DeviceRepository $deviceRepository, DeviceGroupRepository $deviceGroupRepository, DeviceMetricRepository $deviceMetricRepository,
-                                UserRepository $userRepository, Session $session)
+                                UserRepository $userRepository, Session $session, IDeviceGroupsTreeControlFactory $deviceGroupsTreeControlFactory)
     {
+        $this->deviceGroupsTreeControlFactory = $deviceGroupsTreeControlFactory;
         $this->deviceRepository       = $deviceRepository;
         $this->deviceGroupRepository  = $deviceGroupRepository;
         $this->deviceMetricRepository = $deviceMetricRepository;
         $this->userRepository         = $userRepository;
         $this->session                = $session;
         $this->em                     = $deviceRepository->getEntityManager();
+    }
+
+
+    public function getFancyTree()
+    {
+        return new FancyTree();
     }
 
 
@@ -214,6 +226,17 @@ class DeviceFacade
     {
         return $this->deviceRepository;
     }
+
+    /**
+     * @return IDeviceGroupsTreeControlFactory
+     */
+    public function getDeviceGroupsTreeControlFactory(): IDeviceGroupsTreeControlFactory
+    {
+        return $this->deviceGroupsTreeControlFactory;
+    }
+
+
+
 
 
     /**

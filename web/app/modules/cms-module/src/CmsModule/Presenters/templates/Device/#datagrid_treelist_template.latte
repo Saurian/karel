@@ -92,8 +92,13 @@
 							</a>
 							<div n:if="$hasGroupActions" class="col-checkbox">
 								{if $row->hasGroupAction()}
+{*									{dump $form}*}
+
 {*									<input n:class="$control->useHappyComponents() ? 'happy gray-border' , primary" n:attr="checked => $item->hasDeviceById($editDeviceId)" type="checkbox" data-check="{$control->getName()}" data-check-all-{$control->getName()|noescape} name="{$control->getName()|lower}_group_action_item[{$row->getId()}]">*}
-									<input n:name="$form[devicesGroups]:$row->id" n:class="$control->useHappyComponents() ? 'happy gray-border' , primary">
+{*									<input n:name="devicesGroups:$row->id" n:class="$control->useHappyComponents() ? 'happy gray-border' , primary">*}
+
+									<input n:name="$_form[devicesGroups]:$row->id">
+{*									<input n:name="$_form[devicesGroups]:$row->id" n:class="$control->useHappyComponents() ? 'happy gray-border' , primary">*}
 								{/if}
 							</div>
 

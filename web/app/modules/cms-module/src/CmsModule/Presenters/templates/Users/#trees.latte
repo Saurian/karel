@@ -1,0 +1,10 @@
+{*{$debug|noescape}*}
+{var $c = isset($class) ? $class}
+<ul n:class="$c ? $c">
+    <li n:foreach="$trees as $tree" data-target='input[name="items_detail_form[4][devicesGroups][]"][value="{$tree[id]}"]' data-id="{$tree[id]}"{ifset $tree['selected']} data-selected="true"{/ifset}>
+        {$tree[name]}
+        {if $tree[__children]}
+            {include "#tree.latte", trees => $tree[__children], class => ''}
+        {/if}
+    </li>
+</ul>

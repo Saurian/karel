@@ -195,7 +195,7 @@
   height: 20px;
   padding: 5px; }
 
-.grido input.text, .grido select {
+.grido input.text, .grido th select {
   margin-bottom: 0;
   padding: 0;
   height: 23px;
@@ -209,6 +209,7 @@
   height: auto;
   margin-right: 4px; }
 
+/*
 .grido .form-control {
   height: auto;
   width: auto; }
@@ -217,6 +218,7 @@
   width: 100%;
   height: 23px;
   padding: 0 0 0 3px; }
+*/
 
 .grido tfoot .form-control {
   display: inline; }

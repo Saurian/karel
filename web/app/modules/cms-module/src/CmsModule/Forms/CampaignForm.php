@@ -68,9 +68,10 @@ class CampaignForm extends BaseForm
         $this->addHidden('active');
 
         $this->addSubmit('sendSubmit', 'save')
-            ->setAttribute('class', 'btn btn-success box-list__settings__close js-settingsClose')
-            ->setAttribute('data-dismiss', 'modal');
+            ->setAttribute('class', 'btn btn-success') // box-list__settings__close
+//            ->setAttribute('data-dismiss', 'modal');
 //            ->onClick[] = [$this, 'success'];
+        ;
 
 
         $this->addText('name', 'name')

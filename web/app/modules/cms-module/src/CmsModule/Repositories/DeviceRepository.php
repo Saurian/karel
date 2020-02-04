@@ -81,6 +81,24 @@ class DeviceRepository extends EntityRepository implements IFilter
 
 
     /**
+     * @param array $names
+     * @return array
+     */
+    public function getIdFromNames(array $names = [])
+    {
+        $result = [];
+        foreach ($names as $device) {
+            if ($entity = $this->findOneBy(['name' => $device])) {
+                $result[] = $entity->id;
+            }
+        }
+
+        return $result;
+    }
+
+
+
+    /**
      * return QueryBuilder
      *
      * @param User $user

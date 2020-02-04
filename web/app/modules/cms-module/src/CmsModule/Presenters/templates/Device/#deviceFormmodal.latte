@@ -1,0 +1,141 @@
+{snippetArea deviceFormModal}{include deviceFormModal}{/snippetArea}
+{snippetArea deviceGroupFormModal}
+    {include deviceGroupFormModal}
+{/snippetArea}
+
+
+<div n:block="deviceFormModal" class="modal fade addDeviceModal animated bounceInRight" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">{_devicePage.addDevice}</h4>
+            </div>
+
+            <div class="modal-body" n:snippet="editDeviceFormModal">
+                <div class="row">
+                    {form deviceForm}
+                        <div n:class="$editDevice ? col-md-6">
+                            <div n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" class="box-list__settings__one">
+                                {input sendSubmit}
+                            </div>
+                            <div class="box-list__settings__one">
+                                {label name}
+                                {input name}
+                            </div>
+
+                            <div class="box-list__settings__one">
+                                <div class="row">
+                                    <div n:class="$editDevice ? col-md-7 : col-md-8">
+                                        {label sn}
+                                        {input sn}
+                                    </div>
+                                    <div n:class="$editDevice ? col-md-5 : col-md-4">
+                                        {label snRotate}
+                                        {input snRotate}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="box-list__settings__one">
+                                {label tag}
+                                <div class="box-list__settings__one__colors clearfix">
+                                    {foreach $form['tag']->items as $key => $label}
+                                        <div class="input-control">
+                                            <input n:name="tag:$key">
+                                            <label n:name="tag:$key" class="{$label}">{*{$label}*}</label>
+                                        </div>
+                                    {/foreach}
+                                </div>
+                            </div>
+
+                            <div class="box-list__settings__one">
+                                {label keywords}
+                                {input keywords}
+                            </div>
+
+                            <div n:if="$editDevice" class="box-list__settings__one">
+                                <a n:href="editDeviceTargetGroups! $this->editDevice" class="ajax btn btn-md btn-block btn-info">Cílové skupiny</a>
+                            </div>
+
+                        </div>
+                        <div n:class="$editDevice ? 'col-md-6 grido' : 'grido'">
+                            {control deviceGroupListGridControl}
+                        </div>
+
+                        {*
+                                                <div class="box-list__settings__one">
+                                                    <div class="box-list__settings__one__templateSelectHead clearfix">
+                                                        {label deviceGroup}
+                                                    </div>
+                                                    {input deviceGroup}
+                                                </div>
+
+                                                <div class="box-list__settings__one">
+                                                    <div class="box-list__settings__one__templateSelectHead clearfix">
+                                                        {label defaultCampaign}
+                                                        {input defaultCampaign}
+                                                    </div>
+                                                </div>
+                                                <div class="box-list__settings__one">
+                                                    <div class="box-list__settings__one__templateSelectHead clearfix">
+                                                        {label loopCampaign}
+                                                        {input loopCampaign}
+                                                    </div>
+                                                </div>
+                        *}
+                    {/form}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div n:block="deviceGroupFormModal" class="modal fade addGroupModal animated bounceInLeft" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">{_devicePage.add_group}</h4>
+            </div>
+
+            {snippet editDeviceGroupFormModal}
+                {form deviceGroupForm}
+                    <div class="modal-body p-t-0 p-b-0">
+                        <div class="box-list__settings js-settings">
+                            {input sendSubmit}
+                            <div class="box-list__settings__one">
+                                {label name}
+                                {input name}
+                            </div>
+
+                            <div class="box-list__settings__one">
+                                {label tag}
+                                <div class="box-list__settings__one__colors clearfix">
+                                    {foreach $form['tag']->items as $key => $label}
+                                        <div class="input-control">
+                                            <input n:name="tag:$key">
+                                            <label n:name="tag:$key" class="{$label}">{*{$label}*}</label>
+                                        </div>
+                                    {/foreach}
+                                </div>
+                            </div>
+
+                            <div class="box-list__settings__one">
+                                {label keywords}
+                                {input keywords}
+                            </div>
+
+                            <div n:if="$editDeviceGroup" class="box-list__settings__one text-right">
+                                <a n:href="editDeviceGroupTargetGroups! $editDeviceGroup" class="ajax btn btn-md btn-info">Cílové skupiny</a>
+                            </div>
+
+                        </div>
+                    </div>
+                {/form}
+            {/snippet}
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>

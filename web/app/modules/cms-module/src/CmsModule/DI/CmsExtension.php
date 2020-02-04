@@ -32,6 +32,7 @@ use CmsModule\Repositories\MetricRepository;
 use CmsModule\Repositories\MetricStatisticRepository;
 use CmsModule\Repositories\ShopRepository;
 use CmsModule\Repositories\TargetGroupRepository;
+use Devrun\CmsModule\Controls\IDeviceGroupsTreeControlFactory;
 use Devrun\CmsModule\Controls\IDeviceTargetGroupsControlFactory;
 use Flame\Modules\Providers\IPresenterMappingProvider;
 use Flame\Modules\Providers\IRouterProvider;
@@ -205,6 +206,10 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
 
         $builder->addDefinition($this->prefix('control.deviceTargetGroupsControlFactory'))
             ->setImplement(IDeviceTargetGroupsControlFactory::class)
+            ->setInject(true);
+
+        $builder->addDefinition($this->prefix('control.deviceGroupsTreeControlFactory'))
+            ->setImplement(IDeviceGroupsTreeControlFactory::class)
             ->setInject(true);
 
 

@@ -100,6 +100,10 @@ class BasePresenter extends Nette\Application\UI\Presenter
         }
     }
 
+    /**
+     * @param $element
+     * @throws Nette\Application\ForbiddenRequestException
+     */
     public function checkRequirements($element)
     {
         $this->getUser()->getStorage()->setNamespace('carl');
@@ -189,7 +193,8 @@ class BasePresenter extends Nette\Application\UI\Presenter
     public function flashMessage($message, $type = 'info', $title = '', array $options = array())
     {
         $id = $this->getParameterId('flash');
-        $messages = $this->getPresenter()->getFlashSession()->$id;
+//        $messages = $this->getPresenter()->getFlashSession()->$id;
+        $messages = $this->getTemplate()->flashes;
         $messages[] = $flash = (object)array(
             'message' => $message,
             'title'   => $title,
@@ -363,6 +368,17 @@ class BasePresenter extends Nette\Application\UI\Presenter
 
         return new CssLoader($compiler, $this->getHttpRequest()->getUrl()->basePath . 'webtemp');
     }
+
+
+    /**
+     * @return UserEntity
+     */
+    public function getUserEntity(): UserEntity
+    {
+        return $this->userEntity;
+    }
+
+
 
 
 }

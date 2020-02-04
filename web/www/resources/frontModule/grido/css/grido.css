@@ -192,6 +192,7 @@
     margin-right: 4px;
 }
 
+/*
 .grido .form-control {
     height: auto;
     width: auto;
@@ -202,6 +203,7 @@
     height: 23px;
     padding: 0 0 0 3px;
 }
+*/
 
 .grido tfoot .form-control {
     display: inline;
