@@ -18,7 +18,6 @@ use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Facades\CampaignFacade;
 use CmsModule\Facades\DeviceFacade;
 use CmsModule\Forms\BaseForm;
-use CmsModule\Forms\DeviceForm;
 use CmsModule\Forms\IDeviceFormFactory;
 use CmsModule\Forms\IDeviceGroupFormFactory;
 use CmsModule\InvalidArgumentException;
@@ -1064,15 +1063,21 @@ class DevicePresenter extends BasePresenter
             });
 
 
-        $grid->addToolbarButton('addDeviceGroup!', 'Přidat skupinu')
-            ->addAttributes([
-                'data-target' => '.addGroupModal',
-                'data-toggle' => 'ajax-modal',
-                'data-title' => $this->translateMessage()->translate('devicePage.add_new_group'),
-            ])
-            ->setClass('btn btn-xs btn-success btn-secondary')
-            ->setIcon('plus');
+        if ($this->user->isAllowed('CmsModule\Forms\DeviceForm', 'new')) {
+            $grid->addToolbarButton('addDeviceGroup', 'Přidat skupinu') // trick href, javascript attribute!
+                 ->addAttributes([
+                     'href'      => 'javascript:void(0)',
+                     'title'      => $this->translateMessage()->translate('devicePage.add_new_group'),
+                     'data-title' => $this->translateMessage()->translate('devicePage.add_new_group'),
 
+                     'data-toggle'   => "collapse",
+                     'data-target'   => "#collapseDeviceGroupForm",
+                     'aria-expanded' => "true",
+                     'aria-controls' => "collapseDeviceGroupForm"
+                 ])
+                 ->setClass('btn btn-xs btn-success btn-secondary')
+                 ->setIcon('plus');
+        };
 
 
         $grid->setOuterFilterRendering(false);
@@ -1370,10 +1375,20 @@ class DevicePresenter extends BasePresenter
 
         $grid->addToolbarButton('addDevice!', 'Přidat zařízení')
             ->addAttributes([
+                'href'      => 'javascript:void(0)',
+                'title'      => $this->translateMessage()->translate('devicePage.addNewDevice'),
+                'data-title' => $this->translateMessage()->translate('devicePage.addNewDevice'),
+
+                'data-toggle'   => "collapse",
+                'data-target'   => "#collapseDeviceForm",
+                'aria-expanded' => "true",
+                'aria-controls' => "collapseDeviceForm"
+            ])
+            /*->addAttributes([
                 'data-target' => '.addDeviceModal',
                 'data-toggle' => 'ajax-modal',
                 'data-title' => $this->translateMessage()->translate('devicePage.addNewDevice'),
-            ])
+            ])*/
             ->setClass('btn btn-xs btn-success btn-secondary')
             ->setIcon('plus');
 
