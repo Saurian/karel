@@ -10,6 +10,7 @@
 namespace CmsModule\Facades;
 
 use CmsModule\Entities\UserEntity;
+use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Repositories\UserRepository;
 use Kdyby\Doctrine\EntityManager;
 use Kdyby\Doctrine\EntityRepository;
@@ -84,4 +85,14 @@ class UserFacade
         $result = new UserEntity(null, null, null, null, null);
         return $result->setGroup($userEntity->getGroup());
     }
+
+
+    public function createNewUserGroupForUser(UserEntity $userEntity, $name)
+    {
+        $usersGroupEntity = new UsersGroupEntity($name);
+        $this->getEntityManager()->persist($usersGroupEntity);
+        $userEntity->setGroup($usersGroupEntity);
+    }
+
+
 }

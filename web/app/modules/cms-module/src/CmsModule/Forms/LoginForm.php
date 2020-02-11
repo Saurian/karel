@@ -11,6 +11,8 @@ namespace CmsModule\Forms;
 
 use CmsModule\Entities\UserEntity;
 use Nette\Application\UI\Form;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 interface ILoginFormFactory
 {
@@ -94,7 +96,12 @@ class LoginForm extends BaseForm
             $this->onLoggedIn($this, $user);
 
         } catch (\Nette\Security\AuthenticationException $e) {
+            Debugger::log($e, ILogger::INFO);
             $form->addError($e->getMessage());
+
+        } catch (\Exception $e) {
+            Debugger::log($e, ILogger::EXCEPTION);
+            $form->addError("Nastala vnitřní chyba.");
         }
 
     }

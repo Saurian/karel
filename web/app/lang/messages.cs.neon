@@ -74,6 +74,7 @@ forms:
 		template: Vyberte šablonu
 		select: -- vyberte prosím --
 		targetGroups: Cílové skupiny
+		strategy: Strategie
 
 		ruleMaxLength: vyplňte nejvýše %d znaků
 		ruleRequired: vyplňte prosím toto pole
@@ -125,6 +126,7 @@ forms:
 		ruleMinLength: vyplňte alespoň %d znaky
 		noAnyDevices: žádné zařízení nebylo nalezeno
 		noAnyDeviceGroups: žádná skupina zařízení nenalezena
+		noAnyTargetGroups: žádná cílová skupina nenalezena
 
 
 	deviceGroupDetailForm:
@@ -147,7 +149,7 @@ forms:
 		first_name: Jméno
 		last_name: Příjmení
 		email: E-mail
-		devices: Zařízení
+		devices: Obrazovky
 
 		user_added: Vytvořen nový uživatel `%user%`.
 		user_updated: Uživatel %user% upraven
@@ -221,6 +223,7 @@ forms:
 			first_name: Zadejte jméno
 			last_name: Zadejte příjmení
 			email: Zadejte e-mail
+			group: "Zadejte uživatelskou skupinu [moje Alza...]"
 			password: Zadejte heslo...
 			confirm_password: Zadejte heslo pro kontrolu...
 		mail: mail
@@ -228,6 +231,7 @@ forms:
 		ruleFirstName: vyplňte prosím jméno
 		ruleLastName: vyplňte prosím příjmení
 		ruleEMail: vyplňte prosím e-mail
+		ruleGroup: vyplňte prosím název uživatelské skupiny
 		rulePassword: vyplňte prosím heslo
 		ruleConfirmPassword: vyplňte prosím heslo pro kontrolu
 		password_dont_match: hesla se neshodují
@@ -293,7 +297,7 @@ loginPage:
 	forgottenUserTitle: Zapomenuté heslo
 	forgottenUserWindowTitle: "CMS.pixatori.com: zapomenuté heslo"
 	user_added_title: Registrace uživatele
-	user_added: "Potvrďte prosím Vaši registraci z emailu"
+	user_added: "Potvrďte prosím Vaši registraci z emailu."
 	user_updated: "Uživatel %name% upraven"
 
 
@@ -374,7 +378,7 @@ campaignPage:
 	select_template_ready: "Vyberte prosím správně nastavenou šablonu, nebo vytvořte novou."
 	server_uploading: Nahrávání dat
 	campaign_added: "Nová kampaň `%name%` vytvořena."
-	campaign_updated: "Kampaň `%name%` upravena"
+	campaign_updated: "Kampaň `%name%` upravena."
 	campaign_removed: "Kampaň `%name%` smazána."
 	campaign_active: kampaň `%name%` je nyní aktivní
 	campaign_non_active: kampaň `%name%` je nyní neaktivní
@@ -443,21 +447,23 @@ devicePage:
 	add_new_campaign: Přidat novou kampaň
 	add_new_campaign_for_device: Přidat novou kampaň pro zařízení `%device%`
 	group_added: "Přidána nová skupina zařízení `%name%`."
+	group_updated: "Skupina zařízení `%name%` upravena."
+
 	view: Zobrazit
 	plain_campaigns: Kampaně - naplánovány
 	heart_beat: HeartBeat
 
-	device_added: "Nové zařízení %name% vytvořeno"
-	device_updated: "Zařízení %name% upraveno"
+	device_added: "Nové zařízení `%name%` vytvořeno."
+	device_updated: "Zařízení `%name%` upraveno."
 	device_error: "Nepodařilo se vytvořit zařízení<br> `SN - %name%` [%count%]"
-	device_not_found: Zařízení id `%id%` nenalezeno
+	device_not_found: Zařízení id `%id%` nenalezeno.
 	device_group_not_found: Skupina zařízení id `%id%` nenalezena.
 	device_update_error: "Nepodařilo se upravit zařízení<br> `SN - %name%` [%count%]<br>Zkontrolujte prosím sériové číslo zařízení, musí být jedinečné."
 
 	device_active: zařízení `%name%` je nyní aktivní
 	device_non_active: zařízení `%name%` je nyní neaktivní
 
-	device_removed: "Zařízení %name% smazáno"
+	device_removed: "Zařízení `%name%` smazáno."
 	device_group_removed: "Skupina zařízení `%name%` smazána."
 
 	group_moved: Skupina `%name%` přesunuta

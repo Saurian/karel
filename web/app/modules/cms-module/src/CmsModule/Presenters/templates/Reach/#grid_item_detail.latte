@@ -22,7 +22,7 @@
                     </div>
                 </div>
             </div>
-            <div class="panel-footer text-right">
+            <div n:if="$user->isAllowed('CmsModule\Forms\TargetGroupForm', 'edit')" class="panel-footer text-right">
                 {input save}
             </div>
             {/formContainer}

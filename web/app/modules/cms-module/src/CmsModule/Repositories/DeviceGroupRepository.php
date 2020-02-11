@@ -37,6 +37,11 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
     private $useResultCache = false;
 
 
+    /** @var DeviceGroupEntity[] */
+    private $assocDevicesGroups;
+
+
+
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
         parent::__construct($em, $class);
@@ -166,8 +171,6 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
 
 
     /**
-     * @todo prověřit po vzoru getUserUnPlaceDeviceGroup
-     *
      * return root device group for user
      *
      * @param User $user
@@ -177,8 +180,9 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
     {
         try {
             return $this->createQueryBuilder('e')
-                        ->join('e.devicesGroupsUsers', 'dgu')
-                        ->where('dgu.id = ?1')->setParameter(1, $user->getId())
+                        ->join('e.usersGroups', 'dgu')
+                        ->join('dgu.users', 'u')
+                        ->where('u.id = ?1')->setParameter(1, $user->getId())
                         ->andWhere('e.lvl = 0')
                         ->setMaxResults(1)
                         ->getQuery()
@@ -207,6 +211,73 @@ class DeviceGroupRepository extends EntityRepository implements IFilter
             ->getOneOrNullResult();
     }
 
+
+    /**
+     * vrátí QueryBuilder první vrstvy skupin zařízení podle oprávnění uživatele
+     *
+     * @param User $user
+     * @return QueryBuilder
+     */
+    public function getAllowedUserRootQueryBuilder(User $user)
+    {
+        $query = $this->getChildrenQueryBuilder($this->getUserRootDeviceGroup($user))
+                      ->andWhere('node.lvl = :level')->setParameter('level', 1);
+
+        if (!$user->isAllowed('Cms:Device', 'listAllDevices')) {
+            if ($user->isAllowed('Cms:Device', 'listUsersGroup')) {
+                $query->join('node.usersGroups', 'dug')
+                      ->join('dug.users', 'u')
+                      ->andWhere('u.id = :user')->setParameter('user', $user->getId());
+
+            } else {
+                $query->join('node.devicesGroupsUsers', 'dgu')
+                      ->andWhere('dgu.id = :user')->setParameter('user', $user->getId());
+            }
+        }
+
+        return $query;
+    }
+
+
+    /**
+     * vrátí QueryBuilder potomky skupin zařízení podle oprávnění uživatele
+     *
+     * @param int $id ds
+     * @param User $user
+     * @return QueryBuilder
+     */
+    public function getAllowedUserChildrenQueryBuilder($id, User $user)
+    {
+        $query = $this->createQueryBuilder('e')
+                      ->where('e.parent = :parent')->setParameter('parent', $id)
+                      ->addOrderBy('e.lvl')
+                      ->addOrderBy('e.lft');
+
+        if (!$user->isAllowed('Cms:Device', 'listAllDevices')) {
+            if ($user->isAllowed('Cms:Device', 'listUsersGroup')) {
+                $query->join('e.usersGroups', 'dug')
+                      ->join('dug.users', 'u')
+                      ->andWhere('u.id = :user')->setParameter('user', $user->getId());
+
+            } else {
+                $query->innerJoin('e.devicesGroupsUsers', 'dgu')
+                      ->andWhere('dgu.id = :user')->setParameter('user', $user->getId());
+            }
+        }
+
+        return $query;
+    }
+
+
+
+    public function getAssocDevicesGroupsByUser(User $user)
+    {
+        if (null === $this->assocDevicesGroups) {
+            $this->assocDevicesGroups = $this->getAssoc($this->fetch($this->getUserAllowedQuery($user))->getIterator());
+        }
+
+        return $this->assocDevicesGroups;
+    }
 
 
 }

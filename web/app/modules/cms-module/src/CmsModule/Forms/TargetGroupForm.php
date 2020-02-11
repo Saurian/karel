@@ -12,6 +12,7 @@ use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Controls\TextInput;
+use Nette\Security\User;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
 
@@ -32,6 +33,9 @@ class TargetGroupForm extends BaseForm
 
     protected $autoButtonClass = false;
 
+    /** @var User @inject */
+    public $user;
+
     /** @var ReachFacade @inject */
     public $reachFacade;
 
@@ -42,9 +46,12 @@ class TargetGroupForm extends BaseForm
     /** @return TargetGroupForm */
     public function create(Container $container = null)
     {
+        $disAllowed = $this->user->isAllowed(TargetGroupForm::class, 'edit') == false;
+
         $form = $container ? $container : $this;
 
         $form->addText('name', 'Název cílové skupiny')
+            ->setDisabled($disAllowed)
             ->setAttribute('placeholder', "placeholder.name")
             ->addRule(Form::FILLED, 'ruleUsername')
             ->addRule(Form::MIN_LENGTH, 'ruleMinLength', 4)
@@ -65,11 +72,13 @@ class TargetGroupForm extends BaseForm
         }
 
         $form->addMultiSelect('values', 'Parametry', $params, 20)
+            ->setDisabled($disAllowed)
 //            ->setOption(IComponentMapper::FIELD_IGNORE, true)
             ->setOption(IComponentMapper::ITEMS_TITLE, 'name');
 //            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
 
         $form->addSubmit('send', 'Odeslat')->setAttribute('class', 'btn btn-md btn-success')
+            ->setDisabled($disAllowed)
             ->onClick[] = [$this, 'formSuccess'];
 
 //        $this->onSuccess[] = array($this, 'success');

@@ -96,12 +96,26 @@ class UserQuery extends QueryObject
     }
 
 
+    /**
+     * by roles [admin, editor etc.]  key nesmí být associativní, proto array_values
+     *
+     * @param array $roles
+     * @return $this
+     */
+    public function byUserRoles(array $roles = [])
+    {
+        $this->filter[] = function (QueryBuilder $qb) use ($roles) {
+            $qb->andWhere('q.role IN (:roles)')->setParameter('roles', array_values($roles));
+        };
+        return $this;
+    }
+
+
     public function byTest($user)
     {
         if (!$user instanceof User) {
             throw new InvalidArgumentException;
         }
-
 
         $this->filter[] = function (QueryBuilder $qb) use ($user) {
             $qb
@@ -137,9 +151,6 @@ class UserQuery extends QueryObject
 
 
         $this->filter[] = function (QueryBuilder $qb) use ($user) {
-
-
-
 
             $em = $qb->getEntityManager();
 

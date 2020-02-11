@@ -5,6 +5,12 @@ parameters:
 		password: "aI#UzlQ49Jw91B"
 		dbname: cms2pixatori
 
+cms:
+	generator:
+		strategy:
+			fragment: false
+
+
 session:
 	expiration: 14 days
 

@@ -75,7 +75,7 @@ class ApiPresenter extends BasePresenter
     {
         if ($did && $p) {
             /** @var DeviceEntity $device */
-            if ($device = $this->deviceRepository->findDevice($did)) {
+            if ($device = $this->deviceRepository->findDeviceById($did)) {
                 $result = $device->getPsw() == $device->getHashDevicePassword($p)
                     ? ["result" => true]
                     : ["result" => false, "reason" => "password is not valid"];

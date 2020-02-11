@@ -244,8 +244,13 @@ class DeviceFacade
      */
     public function createNewDeviceGroupForUser(UserEntity $userEntity)
     {
-        $deviceGroupEntity = new DeviceGroupEntity('Default');
-        $unClassifyDeviceGroupEntity = new DeviceGroupEntity('Nezařazené');
+        $deviceGroupEntity = (new DeviceGroupEntity('Default', $userEntity->getGroup()))
+            ->setCreatedBy($userEntity)
+            ->setUpdatedBy($userEntity);
+
+        $unClassifyDeviceGroupEntity = (new DeviceGroupEntity('Nezařazené', $userEntity->getGroup()))
+            ->setCreatedBy($userEntity)
+            ->setUpdatedBy($userEntity);
 
         $userEntity->addDeviceGroup($deviceGroupEntity);
         $userEntity->addDeviceGroup($unClassifyDeviceGroupEntity);

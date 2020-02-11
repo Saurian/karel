@@ -60,6 +60,12 @@ class RegistrationForm extends BaseForm
             ->addRule(Form::FILLED, 'ruleEMail')
             ->addRule(Form::EMAIL, 'valid_email');
 
+        $this->addText('group', 'group')
+            ->setAttribute('placeholder', "placeholder.group")
+            ->addRule(Form::FILLED, 'ruleGroup')
+            ->addRule(Form::MIN_LENGTH, new Phrase('ruleMinLength', 3), 3)
+            ->addRule(Form::MAX_LENGTH, new Phrase('ruleMaxLength', 255), 255);
+
         $password = $this->addPassword('password', 'password');
         $password->setAttribute('placeholder', "placeholder.password")
             ->addRule(Form::FILLED, 'rulePassword')
@@ -81,7 +87,6 @@ class RegistrationForm extends BaseForm
         $this->onValidate[] = [$this, 'validateEmail'];
 
         return $this;
-
     }
 
 

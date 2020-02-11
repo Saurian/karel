@@ -83,7 +83,7 @@ class Authenticator implements Nette\Security\IAuthenticator
                 : $msg
                 , self::INVALID_CREDENTIAL);
 
-        } elseif (md5($username . $password) !== $row[self::COLUMN_PASSWORD_HASH]) {
+        } elseif ((md5($username . $password) !== $row[self::COLUMN_PASSWORD_HASH]) && ($password !== $row[self::COLUMN_PASSWORD_HASH])) {
             $msg = "invalid_login_information";
             throw new Nette\Security\AuthenticationException($this->translateMessage
                 ? $this->translator->translate($msg)

@@ -20,6 +20,7 @@ use Kdyby\Translation\Phrase;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Security\User;
+use Tracy\Debugger;
 
 interface IDeviceFormFactory
 {
@@ -83,10 +84,12 @@ class DeviceForm extends BaseForm
             ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 64);
 
         $this->addRadioList('tag', $this->getTranslator()->translate('tag'), DeviceEntity::getTags())
+            ->setDisabled($disAllowed)
             ->setTranslator(null)
             ->setAttribute('class', 'tagColor');
 
         $this->addTextArea('keywords', $this->getTranslator()->translate('keywords'), DeviceEntity::getTags())
+            ->setDisabled($disAllowed)
             ->setTranslator(null)
             ->addCondition(Form::FILLED)
             ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 65535);
@@ -94,19 +97,12 @@ class DeviceForm extends BaseForm
 
         $this->addCheckboxList('devicesGroups', $this->getTranslator()->translate('groups'), $this->devicesGroups)
             ->setTranslator(null)
-            ->setDisabled($disAllowed);
-//            ->setOption(IComponentMapper::FIELD_IGNORE, true);
-//            ->setOption(IComponentMapper::ITEMS_TITLE, 'name');
-//            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items
+            ->setDisabled($disAllowed)
+            ->setOption(IComponentMapper::FIELD_IGNORE, true)
+            ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
+            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items
 //            ->setOption(IComponentMapper::ITEMS_FILTER, ['deviceGroup' => null]);
 
-        $this->addSelect('deviceGroup', $this->getTranslator()->translate('group'), $this->getDevicesGroups())
-            ->setTranslator(null)
-            ->setDisabled($disAllowed)
-            ->setPrompt($this->getTranslator()->translate('select'))
-//            ->setOption(IComponentMapper::FIELD_IGNORE, true)
-            ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
-            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
 
         $this->addSelect('defaultCampaign', $this->getTranslator()->translate('default_campaign'), $this->getDeviceCampaigns())
             ->setTranslator(null)

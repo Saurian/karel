@@ -90,13 +90,13 @@ class UsersGroupEntity
     protected $devicesGroups;
 
 
-
-
     /**
      * UsersGroup constructor.
+     * @param string $name
      */
-    public function __construct()
+    public function __construct(string $name)
     {
+        $this->name         = $name;
         $this->users        = new ArrayCollection();
         $this->targets      = new ArrayCollection();
         $this->shops        = new ArrayCollection();
@@ -140,6 +140,14 @@ class UsersGroupEntity
     public function getTargetParams()
     {
         return $this->targetParams;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
 

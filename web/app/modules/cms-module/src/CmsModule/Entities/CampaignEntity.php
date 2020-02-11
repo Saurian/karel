@@ -88,6 +88,12 @@ class CampaignEntity implements IDeviceEntity
      */
     protected $usersGroups;
 
+    /**
+     * @var StrategyEntity
+     * @ORM\ManyToOne(targetEntity="StrategyEntity", inversedBy="campaigns")
+     */
+    protected $strategy;
+
 
 
     /**

@@ -178,7 +178,8 @@ class ReachPresenter extends BasePresenter
         $grid = new DataGrid();
         $grid->setTranslator($this->translator);
 
-        $query = $this->reachFacade->getTargetGroupRepository()->createQueryBuilder('e');
+        $query = $this->reachFacade->getTargetGroupRepository()->createQueryBuilder('e')
+            ->where('e.usersGroup = :usersGroup')->setParameter('usersGroup', $this->userEntity->getGroup());
 
 
         $grid->setDataSource($query);
@@ -194,24 +195,27 @@ class ReachPresenter extends BasePresenter
 
 
 
-        $grid->addAction('delete', 'messages.reachPage.targetGroup.delete', 'deleteTargetGroup!')
-            ->setIcon('trash')
-            ->setClass('ajax btn btn-xs btn-danger')
-            ->setConfirm(function ($item) {
-                return "Opravdu chcete smazat cílovou skupinu `{$item->name}`?";
-            });
+        if ($this->getUser()->isAllowed($this->name, 'delete')) {
+            $grid->addAction('delete', 'messages.reachPage.targetGroup.delete', 'deleteTargetGroup!')
+                ->setIcon('trash')
+                ->setClass('ajax btn btn-xs btn-danger')
+                ->setConfirm(function ($item) {
+                    return "Opravdu chcete smazat cílovou skupinu `{$item->name}`?";
+                });
+        }
 
 
-        $grid->addToolbarButton('addTargetGroup!', 'messages.reachPage.targetGroup.add')
-            ->addAttributes([
-                'href' => 'javascript:void(0)',
-                'data-target' => '#collapseTargetGroupForm',
-                'data-toggle' => 'collapse',
-                'data-title' => $this->translateMessage()->translate('reachPage.targetGroup.add'),
-            ])
-            ->setClass('btn btn-xs btn-success')
-            ->setIcon('plus');
-
+        if ($this->getUser()->isAllowed($this->name, 'new')) {
+            $grid->addToolbarButton('addTargetGroup!', 'messages.reachPage.targetGroup.add')
+                 ->addAttributes([
+                     'href'        => 'javascript:void(0)',
+                     'data-target' => '#collapseTargetGroupForm',
+                     'data-toggle' => 'collapse',
+                     'data-title'  => $this->translateMessage()->translate('reachPage.targetGroup.add'),
+                 ])
+                 ->setClass('btn btn-xs btn-success')
+                 ->setIcon('plus');
+        }
 
         $grid->setItemsDetail(__DIR__ . '/templates/Reach/#grid_item_detail.latte');
 

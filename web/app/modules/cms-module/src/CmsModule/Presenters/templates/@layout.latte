@@ -21,14 +21,14 @@
 	{*================== BEGIN BASE CSS STYLE ==================*}
 	<script type="application/javascript">var dataLayer = dataLayer || []; // Google Tag Manager</script>
 
-{*	{var $production = true}*}
+	{var $production = true}
 
 
 
 
 	{**}
 	{if $production}
-		<link rel="stylesheet" type="text/css" media="screen" href="{$basePath}/css/cms-screen.min.css?rel=1580818762090">
+		<link rel="stylesheet" type="text/css" media="screen" href="{$basePath}/css/cms-screen.min.css?rel=1581457082814">
 {*		{control css}*}
 
 	{else}
@@ -172,7 +172,7 @@
 {*				<li><a n:href="DeviceGroup:" n:class="$presenter->isLinkCurrent('DeviceGroup:*') ? active, 'ajax waves-effect'" data-ajax="false"><i class="fa fa-list"></i> <span class="hide-menu"> &nbsp;{_menu.devicesGroups}</span></a></li>*}
 {*				<li n:if="$user->isAllowed('Cms:Statistic')"><a n:href="Statistic:" n:class="$presenter->isLinkCurrent('Statistic:*') ? active, 'ajax waves-effect'" data-ajax="false"><i class="fa fa-bar-chart-o" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.statistics}</span></a></li>*}
 {*				<li n:if="$user->isAllowed('Cms:Api')"><a n:href=":Cms:Api:" n:class="$presenter->isLinkCurrent(':Cms:Api:*') ? active, 'waves-effect'" data-ajax="false"><i class="fa fa-wifi" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.api}</span></a></li>*}
-{*				<li><a n:href="Users:" n:class="$presenter->isLinkCurrent('Users:*') ? active, 'ajax waves-effect'" data-ajax="false"><i class="fa fa-users"></i> <span class="hide-menu"> &nbsp;{_menu.users}</span></a></li>*}
+				<li><a n:href="Users:" n:class="$presenter->isLinkCurrent('Users:*') ? active, 'ajax waves-effect'" data-ajax="false"><i class="fa fa-users"></i> <span class="hide-menu"> &nbsp;{_menu.users}</span></a></li>
 {*				<li n:if="$user->isAllowed('Cms:Settings')"><a n:href="Settings:" n:class="$presenter->isLinkCurrent('Settings:*') ? active, 'waves-effect'"><i class="fa fa-cogs" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.settings}</span></a></li>*}
 {*				<li n:if="$user->isAllowed('Cms:Template', 'edit')"><a n:href="Template:" n:class="$presenter->isLinkCurrent('Template:*') ? active, 'waves-effect'" data-ajax="false"><i class="fa fa-industry" data-ajax="false"></i> <span class="hide-menu"> &nbsp;{_menu.templates}</span></a></li>*}
 			</ul>
@@ -228,7 +228,7 @@
 {block scripts}
 	{*================== BEGIN BASE JS ==================*}
 	{if $production}
-		<script type="application/javascript" data-pf-placeholder="scripts" src="{$basePath}/js/index.min.js?rel=1580818762089"></script>
+		<script type="application/javascript" data-pf-placeholder="scripts" src="{$basePath}/js/index.min.js?rel=1581457082814"></script>
 		{*<script type="application/javascript" src="{$basePath}/js/nette.nprogress.js"></script>*}
 		{*<script type="application/javascript" src="{$basePath}/assets/nprogress/nprogress.js"></script>*}
 	{else}

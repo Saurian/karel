@@ -12,6 +12,8 @@ namespace CmsModule\Repositories;
 use CmsModule\Entities\UserEntity;
 use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Repositories\Queries\UserQuery;
+use CmsModule\Security\Authorizator;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query;
 use Kdyby\Doctrine\EntityRepository;
 use Nette\Security\User;
@@ -128,35 +130,44 @@ class UserRepository extends EntityRepository implements IFilter
     /**
      * @param $userName
      *
-     * @return mixed
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return array|null
      */
     public function findByLogin($userName)
     {
-        return $this->createQueryBuilder('e')
-            ->where("e.username = :username")
-            ->setParameter('username', $userName)
-            ->getQuery()
-            ->getOneOrNullResult(Query::HYDRATE_ARRAY);
+        try {
+            return $this->createQueryBuilder('e')
+                        ->where("e.username = :username")
+                        ->setParameter('username', $userName)
+                        ->setMaxResults(1)
+                        ->getQuery()
+                        ->getOneOrNullResult(Query::HYDRATE_ARRAY);
+
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
     }
 
 
     /**
      * @param $id
-     * @return mixed
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return UserEntity|null
      */
     public function findById($id)
     {
-        return $this->createQueryBuilder('e')
-            ->addSelect('g')
-            ->addSelect('metricParams')
-            ->where("e.id = :id")
-            ->join('e.group', 'g')
-            ->leftJoin('g.metricParams', 'metricParams')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getOneOrNullResult();
+        try {
+            return $this->createQueryBuilder('e')
+                        ->addSelect('g')
+                        ->addSelect('metricParams')
+                        ->where("e.id = :id")
+                        ->join('e.group', 'g')
+                        ->leftJoin('g.metricParams', 'metricParams')
+                        ->setParameter('id', $id)
+                        ->setMaxResults(1)
+                        ->getQuery()
+                        ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
     }
 
 
@@ -166,6 +177,23 @@ class UserRepository extends EntityRepository implements IFilter
         $roles = [];
         foreach ($authRoles as $authRole) {
             $roles[$authRole] = $authRole;
+        }
+
+        return $roles;
+    }
+
+    /**
+     * @param User $user
+     * @return array [watcher]=>watcher, [editor]=>editor ...
+     */
+    public function getEditedRoles(User $user)
+    {
+        $authRoles = $user->getAuthorizator()->roles;
+        $roles = [];
+        foreach ($authRoles as $authRole) {
+            if ($user->isAllowed(Authorizator::EDIT_ROLE_RESOURCE, $authRole)) {
+                $roles[$authRole] = $authRole;
+            }
         }
 
         return $roles;

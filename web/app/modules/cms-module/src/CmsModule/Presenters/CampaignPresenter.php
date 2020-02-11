@@ -15,7 +15,6 @@ use CmsModule\Controls\FlashMessageControl;
 use CmsModule\Controls\ICampaignFilterTagsControlFactory;
 use CmsModule\Controls\ICampaignsFilterControlFactory;
 use CmsModule\Entities\CampaignEntity;
-use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\MediumDataEntity;
 use CmsModule\Facades\CalendarFacade;
@@ -34,6 +33,7 @@ use Kdyby\Doctrine\QueryBuilder;
 use Kdyby\Translation\Phrase;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Multiplier;
+use Nette\Environment;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\FileUpload;
 use Nette\Utils\DateTime;
@@ -80,10 +80,6 @@ class CampaignPresenter extends BasePresenter
     /** @var int @persistent */
     public $campaign;
 
-
-    private $devices;
-
-    private $devicesGroups;
 
 
     private $editCampaign;
@@ -295,12 +291,12 @@ class CampaignPresenter extends BasePresenter
         $query   = $this->getUserAllowedDevicesQuery();
         $devices = $this->deviceRepository->fetch($query)->count();
 
-        if (($devices) == 0 ) {
-            $message    = $this->translator->domain('messages')->translate('campaignPage.device_not_found');
-            $title      = $this->translator->domain('messages')->translate('campaignPage.management');
-            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_WARNING);
-            //$this->ajaxRedirect('Device:', null, ['flash']);
-        }
+//        if (($devices) == 0 ) {
+//            $message    = $this->translator->domain('messages')->translate('campaignPage.device_not_found');
+//            $title      = $this->translator->domain('messages')->translate('campaignPage.management');
+//            $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_WARNING);
+//            //$this->ajaxRedirect('Device:', null, ['flash']);
+//        }
         $this->template->devices = $devices;
 
 //        $this->testCalendar();
@@ -462,23 +458,37 @@ class CampaignPresenter extends BasePresenter
         return new Multiplier(function ($index) use ($name) {
 
             $entity        = null;
-            $devices       = $this->getDevices();
-            $devicesGroups = $this->getDevicesGroups();
+            $devices       = $this->deviceRepository->getAssocDevicesByUser($this->getUser());
+            $devicesGroups = $this->deviceGroupRepository->getAssocDevicesGroupsByUser($this->getUser());
 
             if (is_numeric($index)) {
                 $entity = $this->campaignFacade->getRepository()->find($index);
             }
             if (!$entity) {
                 $entity = new CampaignEntity();
-                $entity->setUsersGroups($this->userEntity->getGroup());
+                $entity->setUsersGroups($this->getUserEntity()->getGroup());
             }
 
+            $selectDG = [];
+            foreach ($entity->getDevicesGroups() as $devicesGroup) {
+                if (isset($devicesGroups[$devicesGroup->getId()])) {
+                    $selectDG[] = $devicesGroup->getId();
+                }
+            }
+
+            $selectDevices = [];
+            foreach ($entity->getDevices() as $device) {
+                if (isset($devices[$device->getId()])) {
+                    $selectDevices[] = $device->getId();
+                }
+            }
 
             $form = $this->campaignFormFactory->create();
             $form
                 ->setTranslator($this->translator->domain("messages.forms.campaignsDetailForm"))
                 ->setFormName("campaignForm")
                 ->setUserEntity($this->userEntity)
+                ->setUsersGroups($this->getUserEntity()->getGroup())
                 ->setDevices($devices)
                 ->setDevicesGroups($devicesGroups);
 
@@ -487,23 +497,21 @@ class CampaignPresenter extends BasePresenter
             $form->bindEntity($entity);
 
             $defaults = [];
-            if ($this->campaignFacade->isNewCampaignSelectDevice()) {
-//            $defaults['devices'] = [$this->campaignFacade->getNewCampaignSelectDevice()];
-                $this->campaignFacade->cleanNewCampaignSelectDevice();
-            }
-
-//        $defaults['devices'] = $devicesSelect;
-//        $defaults['devicesGroups'] = $devicesGroupsSelect;
+            $defaults['devices'] = $selectDevices;
+            $defaults['devicesGroups'] = $selectDG;
 
             $form->setDefaults($defaults);
 
             $form->onError[] = function (BaseForm $form) {
+                if (Environment::isConsole()) {
+                    dump($form->getErrors());
+                }
 
                 $values = $form->getValues();
                 $this->ajaxRedirect('this', null, 'editCampaignForm');
             };
 
-            $form->onSuccess[] = function (BaseForm $form, $values) use ($index) {
+            $form->onSuccess[] = function (BaseForm $form, $values) use ($index, $devices, $devicesGroups) {
 
                 /** @var SubmitButton $sendSubmit */
                 $sendSubmit = $form['sendSubmit'];
@@ -511,22 +519,45 @@ class CampaignPresenter extends BasePresenter
                 if ($sendSubmit->isSubmittedBy()) {
 
                     /** @var CampaignEntity $entity */
-                    $entity = $form->getEntity();
+                    $entity    = $form->getEntity();
                     $newEntity = $entity->getId() == null;
+
+                    $devicesIds       = array_keys($devices);
+                    $devicesGroupsIds = array_keys($devicesGroups);
 
                     /**
                      * porovnáme value devices s entitou, nesouhlasné device smažeme
                      */
                     foreach ($entity->getDevices() as $device) {
                         if (! in_array($device->getId(), (array) $values->devices)) {
-                            $entity->removeDevice($device);
+
+                            /*
+                             * filter only user associate devices can by removed
+                             */
+                            if (in_array($device->getId(), $devicesIds)) {
+                                $entity->removeDevice($device);
+                            }
                         }
                     }
+
+                    /**
+                     * porovnáme value devices groups s entitou, nesouhlasné device groups smažeme
+                     */
                     foreach ($entity->getDevicesGroups() as $devicesGroup) {
                         if (! in_array($devicesGroup->getId(), (array) $values->devicesGroups)) {
-                            $entity->removeDeviceGroup($devicesGroup);
+
+                            /*
+                             * filter only user associate device groups can by removed
+                             */
+                            if (in_array($devicesGroup->getId(), $devicesGroupsIds)) {
+                                $entity->removeDeviceGroup($devicesGroup);
+                            }
                         }
                     }
+
+                    /**
+                     * porovnáme value target groups s entitou, nesouhlasné smažeme
+                     */
                     foreach ($entity->getTargetGroups() as $targetGroupEntity) {
                         if (! in_array($targetGroupEntity->getId(), (array) $values->targetGroups)) {
                             $entity->removeTargetGroup($targetGroupEntity);
@@ -536,8 +567,10 @@ class CampaignPresenter extends BasePresenter
                     $this->campaignFacade->getEntityManager()->persist($entity)->flush();
 
                     $translator = $this->translateMessage();
-                    $message    = $translator->translate('campaignPage.campaign_added', null, ['name' => $values->name]);
                     $title      = $translator->translate('campaignPage.management');
+                    $message    = $newEntity
+                        ? $translator->translate("campaignPage.campaign_added", null, ['name' => $entity->getName()])
+                        : $translator->translate("campaignPage.campaign_updated", null, ['name' => $entity->getName()]);
 
                     $this->flashMessage($message, FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
                     $form->setValues([], true);
@@ -548,7 +581,6 @@ class CampaignPresenter extends BasePresenter
                     } else {
                         $this['campaignGridControl']->redrawItem($entity->getId());
                     }
-
 
                     if ($index == 'new') {
                         $form->setValues([
@@ -649,11 +681,15 @@ class CampaignPresenter extends BasePresenter
 
         if ($this->getUser()->isAllowed('Cms:Campaign', 'listAllCampaigns')) {
             $model = $this->campaignFacade->getRepository()->createQueryBuilder('e')
-                ->select('e');
+                ->select('e')
+                ->addSelect('s')
+                ->leftJoin('e.strategy', 's');
 
         } else {
             $model = $this->campaignFacade->getRepository()->createQueryBuilder('e')
                 ->select('e')
+                ->addSelect('s')
+                ->leftJoin('e.strategy', 's')
                 ->leftJoin('e.devices', 'd')
                 ->leftJoin('e.devicesGroups', 'dg')
                 ->leftJoin('d.devicesUsers', 'du')
@@ -684,6 +720,18 @@ class CampaignPresenter extends BasePresenter
         $grid->addColumnText('name', 'Název')
             ->setSortable()
             ->setFilterText();
+
+        $grid->addColumnText('strategy', 'Strategie', 'strategy.name')
+            ->setSortable()
+            ->setSortableCallback(function (\Kdyby\Doctrine\QueryBuilder $queryBuilder, $sort) {
+                $queryBuilder->addOrderBy('s.id', $sort['strategy.name']);
+            })
+            ->setFitContent()
+            ->setFilterText()
+            ->setCondition(function (\Kdyby\Doctrine\QueryBuilder $queryBuilder, $value) {
+                $queryBuilder->andWhere('s.name LIKE :strategy')->setParameter('strategy', "%$value%");
+            });
+
 
         $grid->addColumnDateTime('realizedFrom', 'Plán od')
             ->setFormat('j. n. Y H:i')
@@ -727,28 +775,49 @@ class CampaignPresenter extends BasePresenter
 
         $statusList = array('' => 'Vše', '0' => 'Neaktivní', '1' => 'Aktivní');
 
-        $grid->addColumnStatus('active', 'Stav')
-            ->setSortable()
-            ->setFitContent()
-            ->addOption(0, 'Neaktivní')
-            ->setClass('btn-default')
-            ->endOption()
-            ->addOption(1, 'Aktivní')
-            ->setIcon('check')
-            ->setClass('btn-success')
-            ->endOption()
-            ->setFilterSelect($statusList);
 
-        $grid->getColumn('active')
-            ->onChange[] = function ($id, $new_value) {
+        if ($this->getUser()->isAllowed($this->name, 'toggleActive')) {
+            $grid->addColumnStatus('active', 'Stav')
+                 ->setSortable()
+                 ->setFitContent()
+                 ->addOption(0, 'Neaktivní')
+                 ->setClass('btn-default')
+                 ->endOption()
+                 ->addOption(1, 'Aktivní')
+                 ->setIcon('check')
+                 ->setClass('btn-success')
+                 ->endOption()
+                 ->setFilterSelect($statusList);
 
-            /** @var CampaignEntity $entity */
-            $entity = $this->campaignFacade->getRepository()->find($id);
-            $entity->active = $new_value;
-            $this->campaignFacade->getEntityManager()->persist($entity)->flush();
+            $grid->getColumn('active')
+                ->onChange[] = function ($id, $new_value) {
 
-            if ($this->isAjax()) $this['campaignGridControl']->redrawItem($id); else $this->redirect('this');
-        };
+                /** @var CampaignEntity $entity */
+                $entity = $this->campaignFacade->getRepository()->find($id);
+                $entity->active = $new_value;
+                $this->campaignFacade->getEntityManager()->persist($entity)->flush();
+
+                if ($this->isAjax()) $this['campaignGridControl']->redrawItem($id); else $this->redirect('this');
+            };
+
+        } else {
+            $grid->addColumnText('active', 'Stav')
+                 ->setAlign('center')
+                 ->setSortable()
+                 ->setFitContent()
+                 ->setRenderer(function (CampaignEntity $row) {
+                     $html = Html::el('span');
+                     $html
+                         ->setText($row->isActive() ? 'Aktivní ' : 'Neaktivní ')
+                         ->setAttribute('class', $row->isActive() ? 'btn-block label label-success' : 'btn-block label label-inverse');
+
+                     $icon = Html::el('i')->setAttribute('class', $row->isActive() ? 'fa fa-check' : 'fa fa-times');
+                     $html->addHtml($icon);
+
+                     return $html;
+                 })
+                 ->setFilterSelect($statusList);
+        }
 
 
         $grid->addFilterMultiSelect('devices', 'Zařízení', $devices, 'd.id')
@@ -790,12 +859,16 @@ class CampaignPresenter extends BasePresenter
             ->setClass('ajax btn btn-xs btn-info');
 
 
-        $grid->addAction('delete', '', 'deleteCampaign!')
-            ->setIcon('trash')
-            ->setClass('ajax btn btn-xs btn-danger')
-            ->setConfirm(function ($item) {
-                return "Opravdu chcete smazat kampaň `{$item->name}`?";
-            });
+        if ($this->getUser()->isAllowed($this->name, 'delete')) {
+            $grid->addAction('delete', '', 'deleteCampaign!')
+                ->setClass('ajax btn btn-xs btn-danger')
+                ->setIcon('trash')
+                ->setConfirm(function ($item) {
+                    return "Opravdu chcete smazat kampaň `{$item->name}`?";
+                });
+        };
+
+
 
 //        $grid->setTemplateFile(__DIR__ . '/templates/Campaign/#datagrid_campaign.latte');
 
@@ -820,44 +893,15 @@ class CampaignPresenter extends BasePresenter
             $grid->setRefreshUrl(false);
             $grid->setRememberState(false);
 
-
-            if ($this->user->isAllowed('Cms:Device', 'listAllDevices')) {
-                $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
-                                            ->select('e')
-                                            ->andWhere('e.lvl = :level')->setParameter('level', 0)
-                                            ->addOrderBy('e.lvl')
-                                            ->addOrderBy('e.lft')
-                ;
-
-            } else {
-                $rootDeviceGroupEntity = $this->deviceFacade->getDeviceGroupRepository()->getUserRootDeviceGroup($this->getUser());
-
-                $query = $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
-                                            ->select('e')
-                                            ->andWhere('e.lft > :left')->setParameter('left', $rootDeviceGroupEntity->getLft())
-                                            ->andWhere('e.rgt < :right')->setParameter('right', $rootDeviceGroupEntity->getRgt())
-                                            ->andWhere('e.root = :root')->setParameter('root', $rootDeviceGroupEntity)
-                                            ->andWhere('e.lvl = :level')->setParameter('level', 1)
-                                            ->addOrderBy('e.lvl')
-                                            ->addOrderBy('e.lft')
-                ;
-            }
-
+            $query = $this->deviceFacade->getDeviceGroupRepository()->getAllowedUserRootQueryBuilder($this->user);
 
             $grid->setDataSource($query);
             $grid->setTreeView(function ($id) {
-                return $this->deviceFacade->getDeviceGroupRepository()->createQueryBuilder('e')
-                                          ->where('e.parent = :parent')->setParameter('parent', $id)
-                                          ->addOrderBy('e.lvl')
-                                          ->addOrderBy('e.lft')
-                                          ->getQuery()
-                                          ->getResult();
+                return $this->deviceFacade->getDeviceGroupRepository()->getAllowedUserChildrenQueryBuilder($id, $this->user);
 
             }, function (DeviceGroupEntity $deviceGroupEntity) {
                 return $this->deviceFacade->getDeviceGroupRepository()->childCount($deviceGroupEntity) > 0;
             });
-
-
 
             $grid->addColumnText('name', 'Název')
                  ->addAttributes(['class' => 'btn btn-xs btn-default btn-block']);
@@ -952,9 +996,9 @@ class CampaignPresenter extends BasePresenter
         $grid->addColumnNumber($column = 'timeNumeric', 'čas')
             ->setFitContent(false)
             ->setEditableInputType('number', ['class' => 'form-control'])
-//            ->setEditableOnConditionCallback(function (MediumDataEntity $mediumDataEntity) {
-//                return $mediumDataEntity->getType() == 'image/jpeg';
-//            })
+            ->setEditableOnConditionCallback(function (MediumDataEntity $mediumDataEntity) {
+                return $this->getUser()->isAllowed('Cms:Campaign', 'editAssets');
+            })
             ->setEditableCallback(function($id, $value) use ($grid, $presenter, $column) {
                 if (Validators::is($value, $validate = 'numericint:0..65000')) {
 
@@ -985,9 +1029,9 @@ class CampaignPresenter extends BasePresenter
         $grid->addColumnText($column = 'timeType', '')
             ->setFitContent(true)
             ->setEditableInputTypeSelect(['seconds' => 'seconds', 'minutes' => 'minutes'], ['class' => 'form-control'])
-//            ->setEditableOnConditionCallback(function (MediumDataEntity $mediumDataEntity) {
-//                return $mediumDataEntity->getType() == 'image/jpeg';
-//            })
+            ->setEditableOnConditionCallback(function (MediumDataEntity $mediumDataEntity) {
+                return $this->getUser()->isAllowed('Cms:Campaign', 'editAssets');
+            })
             ->setEditableCallback(function($id, $value) use ($grid, $presenter, $column) {
                 if (Validators::is($value, $validate = 'string')) {
 
@@ -1018,9 +1062,9 @@ class CampaignPresenter extends BasePresenter
 
         $grid->addColumnDateTime($column = 'keywords', 'Klíčová slova')
             ->setEditableInputType('textarea', ['class' => 'form-control'])
-//            ->setEditableOnConditionCallback(function (MediumDataEntity $mediumDataEntity) {
-//                return $mediumDataEntity->getType() == 'image/jpeg';
-//            })
+            ->setEditableOnConditionCallback(function (MediumDataEntity $mediumDataEntity) {
+                return $this->getUser()->isAllowed('Cms:Campaign', 'editAssets');
+            })
             ->setEditableCallback(function($id, $value) use ($grid, $presenter, $column) {
                 if (Validators::is($value, $validate = 'string')) {
 
@@ -1062,12 +1106,14 @@ class CampaignPresenter extends BasePresenter
             ->setClass('btn btn-xs btn-info');*/
 
 
-        $grid->addAction('delete', '', 'deleteMedium!')
-            ->setIcon('trash')
-            ->setClass('ajax btn btn-xs btn-danger')
-            ->setConfirm(function ($item) {
-                return "Opravdu chcete smazat medium `{$item->id}`?";
-            });
+        if ($this->getUser()->isAllowed('Cms:Campaign', 'editAssets')) {
+            $grid->addAction('delete', '', 'deleteMedium!')
+                 ->setIcon('trash')
+                 ->setClass('ajax btn btn-xs btn-danger')
+                 ->setConfirm(function ($item) {
+                     return "Opravdu chcete smazat medium `{$item->id}`?";
+                 });
+        }
 
 
         /**
@@ -1084,7 +1130,7 @@ class CampaignPresenter extends BasePresenter
             ]);
 
 
-        if ($this->getUser()->isAllowed('Cms:Campaign', 'addMedium')) {
+        if ($this->getUser()->isAllowed('Cms:Campaign', 'editAssets')) {
             $grid->addToolbarButton('addMedium!', 'Přidat Url')
                  ->addAttributes([
                      'data-target' => '.addMediumModal',
@@ -1093,26 +1139,22 @@ class CampaignPresenter extends BasePresenter
                  ])
                  ->setClass('btn btn-xs btn-info')
                  ->setIcon('edge');
+
+            $grid->addToolbarButton('addMedia', 'Nahrát obsah')
+                ->addAttributes([
+                    'data-click' => '#frm-mediaForm-files',
+                    'data-title' => $this->translateMessage()->translate('devicePage.edit_device_group'),
+                ])
+                ->setClass('addMedia btn btn-xs btn-success')
+                ->setIcon('files-o');
+
+
+            $grid->addGroupAction('Smazat vybrané')->onSelect[] = [$this, 'removeMedia'];
         }
 
-
-
-
-        $grid->addToolbarButton('addMedia', 'Nahrát obsah')
-            ->addAttributes([
-                'data-click' => '#frm-mediaForm-files',
-                'data-title' => $this->translateMessage()->translate('devicePage.edit_device_group'),
-            ])
-            ->setClass('addMedia btn btn-xs btn-success')
-            ->setIcon('files-o');
-
-
-        $grid->addGroupAction('Smazat vybrané')->onSelect[] = [$this, 'removeMedia'];
-
-
-
-
-        $grid->setSortable();
+        if ($this->getUser()->isAllowed('Cms:Campaign', 'editAssets')) {
+            $grid->setSortable();
+        }
 
         return $grid;
     }
@@ -1443,33 +1485,5 @@ class CampaignPresenter extends BasePresenter
     }
 
 
-
-
-
-
-
-    /**
-     * @return DeviceEntity[]|null
-     */
-    public function getDevices()
-    {
-        if (null === $this->devices) {
-            $this->devices = $this->deviceRepository->getAssoc($this->deviceRepository->fetch($this->deviceRepository->getUserAllowedQuery($this->user))->getIterator());
-        }
-
-        return $this->devices;
-    }
-
-    /**
-     * @return DeviceGroupEntity[]|null
-     */
-    public function getDevicesGroups()
-    {
-        if (null === $this->devicesGroups) {
-            $this->devicesGroups = $this->deviceFacade->getAllowedDevicesGroups($this->user);
-        }
-
-        return $this->devicesGroups;
-    }
 
 }

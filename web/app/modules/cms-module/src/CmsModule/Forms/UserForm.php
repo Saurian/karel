@@ -9,13 +9,11 @@
 
 namespace CmsModule\Forms;
 
-use CmsModule\Controls\FlashMessageControl;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\LogEntity;
 use CmsModule\Entities\UserEntity;
 use CmsModule\Facades\UserFacade;
-use CmsModule\InvalidArgumentException;
 use CmsModule\Presenters\BasePresenter;
 use CmsModule\Repositories\DeviceGroupRepository;
 use CmsModule\Repositories\DeviceRepository;
@@ -25,13 +23,11 @@ use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Kdyby\Monolog\Logger;
 use Kdyby\Translation\Phrase;
-use Kdyby\Translation\PrefixedTranslator;
 use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
 use Nette\Security\User;
-use Tracy\Debugger;
 
 interface IUserFormFactory
 {
@@ -81,6 +77,9 @@ class UserForm extends BaseForm
     /** @var bool */
     private $editRole = true;
 
+    /** @var array */
+    private $roles = [];
+
     /** @var bool */
     private $editActive = false;
 
@@ -112,6 +111,8 @@ class UserForm extends BaseForm
     /** @var array callback */
     public $onSaveError = [];
 
+    /** @var string messages.forms.userForm. */
+    private $domainPrefix = '';
 
 
     public function create(Container $container = null)
@@ -121,47 +122,50 @@ class UserForm extends BaseForm
         $form->addSubmit('sendSubmit', 'sendUser')
             ->setAttribute('class', 'btn btn-success'); // box-list__settings__close
 
-        $form->addText('firstName', 'messages.forms.userForm.first_name')
+        $form->addText('firstName', "{$this->domainPrefix}first_name")
             ->setDisabled($this->disAllowed)
-            ->setAttribute('placeholder', "messages.forms.userForm.placeholder.first_name")
-            ->addRule(Form::FILLED, 'messages.forms.userForm.filled')
+            ->setAttribute('placeholder', "{$this->domainPrefix}placeholder.first_name")
+            ->addRule(Form::FILLED, "{$this->domainPrefix}filled")
             ->addRule(Form::MIN_LENGTH, new Phrase('min', 3), 3)
             ->addRule(Form::MAX_LENGTH, new Phrase('max', 255), 255);
 
-        $form->addText('lastName', 'messages.forms.userForm.last_name')
+        $form->addText('lastName', "{$this->domainPrefix}last_name")
             ->setDisabled($this->disAllowed)
-            ->setAttribute('placeholder', "messages.forms.userForm.placeholder.last_name")
-            ->addRule(Form::FILLED, 'messages.forms.userForm.filled')
+            ->setAttribute('placeholder', "{$this->domainPrefix}placeholder.last_name")
+            ->addRule(Form::FILLED, "{$this->domainPrefix}filled")
             ->addRule(Form::MIN_LENGTH, new Phrase('min', 3), 3)
             ->addRule(Form::MAX_LENGTH, new Phrase('max', 255), 255);
 
-        $form->addText('mail', 'messages.forms.userForm.email')
+        $form->addText('mail', "{$this->domainPrefix}email")
             ->setDisabled($this->disAllowed)
-            ->setAttribute('placeholder', "messages.forms.userForm.placeholder.email")
-            ->addRule(Form::FILLED, 'messages.forms.userForm.filled')
-            ->addRule(Form::EMAIL, 'messages.forms.userForm.valid_email');
+            ->setAttribute('placeholder', "{$this->domainPrefix}placeholder.email")
+            ->addRule(Form::FILLED, "{$this->domainPrefix}filled")
+            ->addRule(Form::EMAIL, "{$this->domainPrefix}valid_email");
 
         if ($this->editActive) {
-            $form->addCheckbox('active', 'messages.forms.userForm.active')
+            $form->addCheckbox('active', "{$this->domainPrefix}active")
                 ->setAttribute('placeholder', "active")
                 ->setAttribute('class', 'js-switch')
                 ->setAttribute('data-size', 'small');
         }
 
 
-        $form->addSelect('role', 'messages.forms.userForm.role.role', [
-            'watcher'    => 'messages.forms.userForm.role.watcher',
-            'editor'     => 'messages.forms.userForm.role.editor',
-            'master'     => 'messages.forms.userForm.role.master',
-            'admin'      => 'messages.forms.userForm.role.admin',
-            'supervisor' => 'messages.forms.userForm.role.supervisor',
-        ])
-            ->setDisabled($this->editRole)
-            ->setPrompt('messages.forms.userForm.select_please')
-            ->addRule(Form::FILLED, 'messages.forms.userForm.filled');
+        /*[
+            'watcher'    => "{$this->domainPrefix}role.watcher",
+            'editor'     => "{$this->domainPrefix}role.editor",
+            'master'     => "{$this->domainPrefix}role.master",
+            'admin'      => "{$this->domainPrefix}role.admin",
+            'supervisor' => "{$this->domainPrefix}role.supervisor",
+        ]*/
+
+        $form->addSelect('role', $this->getTranslator()->translate("{$this->domainPrefix}role.role"), $this->roles)
+            ->setTranslator(null)
+            ->setDisabled(!$this->editRole)
+            ->setPrompt($this->getTranslator()->translate("{$this->domainPrefix}select_please"))
+            ->addRule(Form::FILLED, "{$this->domainPrefix}filled");
 
 
-        $devices = $form->addCheckboxList('devices', 'messages.forms.userForm.devices', $this->getDeviceNames())
+        $devices = $form->addCheckboxList('devices', $this->getTranslator()->translate('devices'), $this->getDeviceNames())
             ->setDisabled($this->disAllowed)
             ->setTranslator(null)
             ->setOption(IComponentMapper::FIELD_IGNORE, true)
@@ -169,7 +173,7 @@ class UserForm extends BaseForm
             ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
 
 
-        $devicesGroups = $form->addCheckboxList('devicesGroups', 'messages.forms.userForm.devices_groups', $this->getDeviceGroupsNames())
+        $devicesGroups = $form->addCheckboxList('devicesGroups', "{$this->domainPrefix}devices_groups", $this->getDeviceGroupsNames())
             ->setDisabled($this->disAllowed)
             ->setTranslator(null)
             ->setOption(IComponentMapper::FIELD_IGNORE, true)
@@ -179,12 +183,12 @@ class UserForm extends BaseForm
         $devices
             ->addCondition(Form::BLANK)
             ->addConditionOn($form['devicesGroups'], Form::BLANK)
-            ->addRule(Form::FILLED, 'messages.forms.userForm.ruleDeviceOrGroup');
+            ->addRule(Form::FILLED, "{$this->domainPrefix}ruleDeviceOrGroup");
 
         $devicesGroups
             ->addCondition(Form::BLANK)
             ->addConditionOn($form['devices'], Form::BLANK)
-            ->addRule(Form::FILLED, 'messages.forms.userForm.ruleDeviceOrGroup');
+            ->addRule(Form::FILLED, "{$this->domainPrefix}ruleDeviceOrGroup");
 
 //        $form->addSubmit('save')
 //            ->setAttribute('class', 'box-newTemplate__adding__new _js-addNewTemplateMedia')
@@ -204,6 +208,12 @@ class UserForm extends BaseForm
     {
         /** @var UserEntity $entity */
         $entity = $form->getEntity();
+
+//        dump($_POST);
+//        dump($values);
+//        dump($this->getPresenter()->getParameters());
+//        die;
+
 
         $this->save($entity, $values);
     }
@@ -240,8 +250,8 @@ class UserForm extends BaseForm
              */
             $newUser = $entity->getId() == null;
             $saveMessage = $entity->getId()
-                ? $this->getTranslator()->translate("messages.forms.userForm.user_updated", null, ['user' => $entity->getUsername()])
-                : $this->getTranslator()->translate("messages.forms.userForm.user_added", null, ['user' => $entity->getFullName()]);
+                ? $this->getTranslator()->translate("{$this->domainPrefix}user_updated", null, ['user' => $entity->getUsername()])
+                : $this->getTranslator()->translate("{$this->domainPrefix}user_added", null, ['user' => $entity->getFullName()]);
 
             $em->persist($entity)->flush();
 
@@ -254,7 +264,6 @@ class UserForm extends BaseForm
             }
 
             $this->onSave($saveMessage, $entity, $this);
-
 
         } catch (NotNullConstraintViolationException $e) { // 1048
             $message = $translator->translate('user_form_error', $e->getErrorCode());
@@ -393,6 +402,16 @@ class UserForm extends BaseForm
     public function setEditRole($editRole)
     {
         $this->editRole = $editRole;
+        return $this;
+    }
+
+    /**
+     * @param array $roles
+     * @return UserForm
+     */
+    public function setRoles(array $roles): UserForm
+    {
+        $this->roles = $roles;
         return $this;
     }
 

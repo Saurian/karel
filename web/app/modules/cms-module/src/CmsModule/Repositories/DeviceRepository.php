@@ -9,7 +9,9 @@
 
 namespace CmsModule\Repositories;
 
+use CmsModule\Entities\DeviceEntity;
 use CmsModule\Repositories\Queries\DeviceQuery;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Kdyby\Doctrine\EntityRepository;
@@ -28,6 +30,10 @@ class DeviceRepository extends EntityRepository implements IFilter
 
     /** @var bool */
     private $useResultCache = false;
+
+
+    /** @var DeviceEntity[] @internal */
+    private $assocDevices;
 
 
     public function existFilterDevice()
@@ -131,15 +137,19 @@ class DeviceRepository extends EntityRepository implements IFilter
      *
      * @param QueryBuilder $queryBuilder
      * @param string $cacheId
-     * @return mixed
+     * @return mixed|null
      */
     public function getCachedOneOrNullResult(QueryBuilder $queryBuilder, $cacheId = 'device')
     {
-        $query = $queryBuilder->getQuery()
-                              ->setMaxResults(1);
+        $query = $queryBuilder->getQuery();
 
         $cacheQb = $query->useResultCache($this->useResultCache, $this->lifetime, $cacheId );
-        return $cacheQb->getOneOrNullResult();
+        try {
+            return $cacheQb->getOneOrNullResult();
+
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
     }
 
 
@@ -169,7 +179,7 @@ class DeviceRepository extends EntityRepository implements IFilter
      * @param $id
      * @return mixed
      */
-    public function findDevice($id)
+    public function findDeviceById($id)
     {
         $queryBuilder = $this->createQueryBuilder('e')
             ->where("e.sn = :deviceSN")->setParameter('deviceSN' , $id);
@@ -177,6 +187,30 @@ class DeviceRepository extends EntityRepository implements IFilter
         return $this->getCachedOneOrNullResult($queryBuilder, "deviceSN_$id");
     }
 
+
+    public function findByIdWithDevicesGroups($id)
+    {
+        $queryBuilder = $this->createQueryBuilder('e')
+            ->addSelect('dg')
+            ->leftJoin("e.devicesGroups", 'dg')
+            ->where("e.id = :id")->setParameter('id', $id);
+
+        return $this->getCachedOneOrNullResult($queryBuilder, "device_$id");
+    }
+
+
+    /**
+     * @param User $user
+     * @return array|DeviceEntity[]
+     */
+    public function getAssocDevicesByUser(User $user)
+    {
+        if (null === $this->assocDevices) {
+            $this->assocDevices = $this->getAssoc($this->fetch($this->getUserAllowedQuery($user))->getIterator());
+        }
+
+        return $this->assocDevices;
+    }
 
 
 

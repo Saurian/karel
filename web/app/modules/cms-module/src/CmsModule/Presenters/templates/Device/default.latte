@@ -158,7 +158,9 @@
 	</div>
 	<div class="panel-footer text-right">
 		<a n:if="$id!='new'" n:href="editDeviceGroupTargetGroups! $editDeviceGroup" class="ajax btn btn-md btn-info">Cílové skupiny</a>
-		{input sendSubmit}
+		{if $user->isAllowed('CmsModule\Forms\DeviceForm', 'new')}
+			{input sendSubmit}
+		{/if}
 	</div>
 {/form}
 {/define}
@@ -166,6 +168,13 @@
 {define deviceForm}
 	{form deviceForm-$id}
 		<div class="panel-body">
+			<div n:if="$form->hasErrors()" class="alert alert-danger alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<ul class="errors" n:if="$form->hasErrors()">
+					<li n:foreach="$form->errors as $error">{$error}</li>
+				</ul>
+			</div>
+
 			<div class="row">
 				<div class="col-md-6">
 					<div class="box-list__settings__one">
@@ -205,17 +214,16 @@
 				</div>
 				<div class="col-md-6 grido">
 					<label>Přiřazení do skupiny zařízení</label>
-
 {*					{input devicesGroups}*}
-
 					{control deviceGroupListGridControl-$id}
 				</div>
 			</div>
 		</div>
-		<div n:if="$user->isAllowed('CmsModule\Forms\DeviceForm', 'new')" class="panel-footer text-right">
-
+		<div class="panel-footer text-right">
 			<a n:if="$id!='new'" n:href="editDeviceTargetGroups! $this->editDevice" class="ajax btn btn-md btn-info">Cílové skupiny</a>
-			{input sendSubmit}
+			{if $user->isAllowed('CmsModule\Forms\DeviceForm', 'new')}
+				{input sendSubmit}
+			{/if}
 		</div>
 	{/form}
 {/define}

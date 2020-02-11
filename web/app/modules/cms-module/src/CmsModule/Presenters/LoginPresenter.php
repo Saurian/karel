@@ -12,21 +12,24 @@ namespace CmsModule\Presenters;
 use CmsModule\Controls\FlashMessageControl;
 use CmsModule\Entities\UserEntity;
 use CmsModule\Facades\DeviceFacade;
+use CmsModule\Facades\UserFacade;
 use CmsModule\Forms\ChangePasswordForm;
 use CmsModule\Forms\ForgottenPasswordForm;
-use CmsModule\Forms\IChangePasswordFormFactory;
 use CmsModule\Forms\IForgottenPasswordFormFactory;
 use CmsModule\Forms\ILoginFormFactory;
 use CmsModule\Forms\IRegistrationFormFactory;
 use CmsModule\Forms\LoginForm;
 use CmsModule\Forms\RegistrationForm;
-use Tracy\Debugger;
+use Nette\Environment;
 
 class LoginPresenter extends BasePresenter
 {
 
     /** @persistent */
     public $backlink = '';
+
+    /** @var UserFacade @inject */
+    public $userFacade;
 
     /** @var DeviceFacade @inject */
     public $deviceFacade;
@@ -91,6 +94,12 @@ class LoginPresenter extends BasePresenter
             }
         }
 
+        $form->onError[] = function (LoginForm $form) {
+            /*if (Environment::isConsole()) {
+                dump($form->getErrors());
+            }*/
+        };
+
         $form->onSuccess[] = function (LoginForm $form, $values) {
 
             $this->flashMessage("Přihlášen", 'success');
@@ -125,6 +134,8 @@ class LoginPresenter extends BasePresenter
                 ->setUsername($values->mail)
                 ->setPassword($values->password);
 
+            $this->userFacade->createNewUserGroupForUser($entity, $values->group);
+
             $rootDeviceGroupEntity = $this->deviceFacade->createNewDeviceGroupForUser($entity);
             $rootDeviceGroupEntity
                 ->setCreatedBy($entity)
@@ -134,10 +145,16 @@ class LoginPresenter extends BasePresenter
             $em->persist($entity)->flush();
 
             $title = $this->translator->translate("messages.loginPage.user_added_title");
-            $this->flashMessage("Přihlášen", 'success');
-
             $this->flashMessage($this->translator->translate("messages.loginPage.user_added", null, ['name' => $entity->getUsername()]), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);
             $this->ajaxRedirect('default');
+        };
+
+        $form->onError[] = function (RegistrationForm $form) {
+
+            if (Environment::isConsole()) {
+                dump($form->getErrors());
+            }
+
         };
 
         return $form;

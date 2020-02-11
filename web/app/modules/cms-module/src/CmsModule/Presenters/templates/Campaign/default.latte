@@ -8,9 +8,8 @@
 			<h1 class="page-title">{_campaignPage.title}</h1>
 			<div n:snippet="campaignLink" class="box-filter">
 				<div class="btn-group m-r-5">
-					<button n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices > 0" class="btn btn-md btn-success" type="button" data-toggle="collapse" data-target="#collapseCampaignForm" aria-expanded="true" aria-controls="collapseCampaignForm">{_campaignPage.addCampaign}</button>
+					<button n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices > -1" class="btn btn-md btn-success" type="button" data-toggle="collapse" data-target="#collapseCampaignForm" aria-expanded="true" aria-controls="collapseCampaignForm">{_campaignPage.addCampaign}</button>
 {*					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices > 0" n:href="addCampaign!" class="btn btn-md btn-success" data-toggle="ajax-modal" data-backdrop="static" data-target=".addCampaignModal">{_campaignPage.addCampaign}</a>*}
-					<a n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'new') && $devices == 0" n:href="Device:" class="btn btn-md btn-success">{_campaignPage.addDeviceFirst}</a>
 					<a n:href="calendarGenerate!" class="ajax btn btn-md btn-danger"><i class="fa fa-calendar-check-o"></i> {_campaignPage.calendar.generateLinkName}</a>
 					<a n:href="calendar" class="ajax btn btn-md btn-info"><i class="fa fa-calendar"></i> {_campaignPage.calendar.linkName}</a>
 {*					<a n:if="$presenter->campaign" n:href="resetSelectCampaign!" data-ajax="false" class="btn btn-md btn-warning">{_campaignPage.filter_delete} <i class="fa fa-close"></i></a>*}
@@ -122,12 +121,12 @@
 						{input keywords}
 					</div>
 
-					{*
+{*
 					<div class="box-list__settings__one">
 						{label strategy}
 						{input strategy}
 					</div>
-					*}
+*}
 
 					<div class="box-list__settings__one">
 						<div class="box-list__settings__one__devices__head clearfix">
@@ -143,8 +142,13 @@
 								{if count($form[targetGroups]->items) == 0}
 									<input n:name="targetGroups" class="hidden">
 									<div>
-										<label class="alert alert-danger disabled">
-											<span class="text-danger">{_forms.deviceDetailForm.noAnyDevices}</span>
+										<label class="alert alert-warning disabled">
+											<span class="text-danger">{_forms.deviceDetailForm.noAnyTargetGroups}</span>
+										</label>
+									</div>
+									<div>
+										<label class="alert alert-info m-b-0 bg-primary">
+											<a n:href="Reach:" class="ajax btn btn-info btn-md">Založit</a>
 										</label>
 									</div>
 								{/if}
@@ -176,7 +180,7 @@
                                     <a n:href="modalDeviceGroupFormInDevicePage!" class="btn btn-info btn-md">{_campaignPage.newDeviceGroup}</a>
                                 </label>
                             </div>
-                            *}
+							*}
 						</div>
 						<div role="tabpanel" class="tab-pane _box-list__settings__one__devices _m-0" id="devices_{$id}">
 							<div class="box-list__settings__one__devices__inner">
@@ -191,6 +195,11 @@
 											<span class="text-danger">{_forms.deviceDetailForm.noAnyDevices}</span>
 										</label>
 									</div>
+									<div>
+										<label class="alert alert-info m-b-0 bg-primary">
+											<a n:href="Device:" class="ajax btn btn-info btn-md">{_campaignPage.newDevice}</a>
+										</label>
+									</div>
 								{/if}
 							</div>
 						</div>
@@ -198,7 +207,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="panel-footer text-right">
+		<div n:if="$user->isAllowed('CmsModule\Forms\CampaignForm', 'edit')" class="panel-footer text-right">
 			{input sendSubmit}
 		</div>
 	{/form}

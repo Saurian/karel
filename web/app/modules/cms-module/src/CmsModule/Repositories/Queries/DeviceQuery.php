@@ -30,6 +30,24 @@ class DeviceQuery extends QueryObject
     private $select = [];
 
 
+    public function withDeviceGroups()
+    {
+        $this->select[] = function (QueryBuilder $qb) {
+            $qb->addSelect('dg')
+               ->leftJoin('q.devicesGroups', 'dg');
+        };
+        return $this;
+    }
+
+
+    public function find($id)
+    {
+        $this->filter[] = function (QueryBuilder $qb) use ($id) {
+            $qb->andWhere('q.id = :id')->setParameter('id', $id);
+        };
+        return $this;
+    }
+
     public function isActive()
     {
         $this->filter[] = function (QueryBuilder $qb) {

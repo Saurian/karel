@@ -9,13 +9,13 @@
 
 namespace CmsModule\Entities;
 
+use Devrun\Doctrine\Entities\BlameableTrait;
+use Devrun\Doctrine\Entities\DateTimeTrait;
 use Devrun\Doctrine\Entities\NestedEntityTrait;
 use Devrun\Doctrine\Entities\PositionTrait;
 use Doctrine\Common\Collections\ArrayCollection;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
-use Devrun\Doctrine\Entities\BlameableTrait;
-use Devrun\Doctrine\Entities\DateTimeTrait;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Kdyby\Doctrine\Entities\Attributes\Identifier;
 use Kdyby\Doctrine\Entities\MagicAccessors;
 
@@ -145,10 +145,11 @@ class DeviceGroupEntity
      *
      * @param string $name
      */
-    public function __construct(string $name, string $category = '')
+    public function __construct(string $name, UsersGroupEntity $usersGroupEntity, string $category = '')
     {
         $this->name               = $name;
         $this->category           = $category;
+        $this->usersGroups        = $usersGroupEntity;
         $this->devices            = new ArrayCollection();
         $this->campaigns          = new ArrayCollection();
         $this->devicesGroupsUsers = new ArrayCollection();

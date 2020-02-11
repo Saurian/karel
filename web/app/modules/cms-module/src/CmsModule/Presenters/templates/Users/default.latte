@@ -2,6 +2,7 @@
 {block content}
 	{*{include "#demoUsers.latte"}*}
 
+	{* header *}
 	<div class="row bg-title">
 		<div class="col-sm-10 col-xs-12">
 			<h1 class="page-title">{_userPage.management}</h1>
@@ -15,126 +16,67 @@
 			</ol>
 		</div>
 	</div>
+	{* header *}
 
+	{* collapse add*}
 	<div class="collapse" id="collapseUserForm">
-		<div n:snippet="userForm" class="well">
-			{form userForm}
-			<div class="panel panel-info">
+		<div class="well">
+			<div class="panel panel-default">
 				<div class="panel-heading">
-					Nový uživatel
+					<h4 class="panel-title">{_userPage.addUser}
+						<button class="ajax close" aria-label="Close" data-toggle="collapse" data-target="#collapseUserForm" aria-expanded="false" aria-controls="collapseUserForm">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</h4>
 				</div>
-				<div class="panel-body">
-
-					<div class="row">
-						<div class="col-md-6">
-							<div class="form-group">
-								{label firstName}
-								{input firstName}
-							</div>
-							<div class="form-group">
-								{label lastName}
-								{input lastName}
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								{label mail}
-								{input mail}
-							</div>
-							<div class="form-group">
-								{label role}
-								{input role}
-							</div>
-						</div>
-
-					</div>
-
-
-					<div class="row">
-						<div class="col-md-6">
-							<div class="box-list__settings__one">
-								<div class="box-list__settings__one__devices__head clearfix">
-									<strong>{_forms.campaignsDetailForm.devices}</strong>
-									<ul>
-										<li><input type="radio" name="typzarizeni" checked="checked" class="js-zarizeniControl" id="ff-zarizeni-new" data-target-id="new"><label
-													for="ff-zarizeni-new">{_forms.campaignsDetailForm.devices}</label></li>
-										<li><input type="radio" name="typzarizeni" class="js-skupinyControl" id="ff-skupiny-new" data-target-id="new"><label for="ff-skupiny-new">{_forms.campaignsDetailForm.groups}</label>
-										</li>
-									</ul>
-								</div>
-								<div class="box-list__settings__one__devices">
-									<div class="box-list__settings__one__devices__inner clearfix js-skupiny" data-source="js-skupiny-new">
-										<div n:if="$form[devicesGroups]->items" n:foreach="$form[devicesGroups]->items as $key => $label">
-											<input n:name="devicesGroups:$key">
-											<label n:name="devicesGroups:$key"><span>{$label}</span></label>
-										</div>
-										{if count($form[devicesGroups]->items) == 0}
-											<input n:name="devicesGroups" class="hidden">
-											<label class="alert alert-danger" style="margin-bottom: 0">
-												<strong>Warning!</strong>
-												<p>{_forms.deviceDetailForm.noAnyDeviceGroups}</p>
-											</label>
-										{/if}
-									</div>
-
-								</div>
-							</div>
-
-						</div>
-						<div class="col-md-6">
-							<div class="box-list__settings__one__devices__inner clearfix js-zarizeni" data-source="js-zarizeni-new">
-								<div n:if="$form[devices]->items" n:foreach="$form[devices]->items as $key => $label">
-									<input n:name="devices:$key">
-									<label n:name="devices:$key"><span>{$label}</span></label>
-								</div>
-								{if count($form[devices]->items) == 0}
-									<input n:name="devices" class="hidden">
-									<label class="alert alert-danger" style="margin-bottom: 0">
-										<strong>Warning!</strong>
-										<p>{_forms.deviceDetailForm.noAnyDevices}</p>
-									</label>
-								{/if}
-							</div>
-
-						</div>
-					</div>
-				</div>
-				<div class="panel-footer">
-					<div class="text-right">
-						{input sendSubmit}
-					</div>
-				</div>
+				{snippet addUserForm}
+					{include userForm, id => 'new'}
+				{/snippet}
 			</div>
-
-
-			{/form}
-
-
-			{*{control userForm}*}
-
 		</div>
 	</div>
+	{* collapse add*}
 
+	{* base edit *}
 	<div id="base" class="grido animated fadeIn">
 {*		<div class="tree">*}
 {*			{include "#trees.latte" items => $trees}*}
-
 {*		</div>*}
 		{control usersGridControl}
 	</div>
+	{* base edit *}
 
-{*
+	{* collapse edit *}
+	{snippet editUserForm}
+		<div n:if="$editUser" class="well page-header">
+			<div  class="panel panel-default animated zoomIn">
+				<div class="panel-heading">
+					<h4 class="panel-title">{_userPage.editUser} `<strong class="text-primary">{$editUserEntity->fullName}</strong>`
+						<a n:href="close! userEdit" class="ajax close" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</a>
+					</h4>
+				</div>
+				{include userForm, id => $editUser}
+			</div>
+		</div>
+	{/snippet}
+	{* collapse edit *}
 
-	<div class="row">
-		<!-- .col -->
-		<div class="col-md-7 col-sm-12 col-xs-12">
-			<div n:snippet="users" class="myadmin-dd-empty dd{if $user->isAllowed('Cms:Users', 'nestable')} nestable{/if}" style="padding-bottom: 50px;" data-animate-before="fadeOut" data-animate-after="fadeIn">
-				{snippetArea items}
-					<ol n:if="$rows" class="dd-list">
 
-						{foreach $rows as $row}
-							<li class="dd-item dd3-item" data-id="{$row->getId()}">
-								*}
+
+	{*
+
+        <div class="row">
+            <!-- .col -->
+            <div class="col-md-7 col-sm-12 col-xs-12">
+                <div n:snippet="users" class="myadmin-dd-empty dd{if $user->isAllowed('Cms:Users', 'nestable')} nestable{/if}" style="padding-bottom: 50px;" data-animate-before="fadeOut" data-animate-after="fadeIn">
+                    {snippetArea items}
+                        <ol n:if="$rows" class="dd-list">
+
+                            {foreach $rows as $row}
+                                <li class="dd-item dd3-item" data-id="{$row->getId()}">
+                                    *}
 {*<div class="dd-item-backgroundWrap"></div>*}{*
 
 								<div class="dd-handle dd3-handle tagColor2"></div>
@@ -303,3 +245,93 @@
 	{/snippetArea}
 *}
 {/block}
+
+
+{define userForm}
+	{form userForm-$id}
+	<div class="panel-body">
+
+		<div n:if="$form->hasErrors()" class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<ul class="errors" n:if="$form->hasErrors()">
+				<li n:foreach="$form->errors as $error">{$error}</li>
+			</ul>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6">
+				<div class="form-group">
+					{label firstName}
+					{input firstName}
+				</div>
+				<div class="form-group">
+					{label lastName}
+					{input lastName}
+				</div>
+				<div class="form-group">
+					{label mail}
+					{input mail}
+				</div>
+				<div class="form-group">
+					{label role}
+					{input role}
+				</div>
+			</div>
+			<div class="col-md-6 grido">
+
+				<div class="box-list__settings__one__devices__head clearfix">
+					{label devices}
+					<ul>
+						<li class="active">
+							<a href="#groups_{$id}" aria-controls="groups" role="tab" data-toggle="tab" aria-expanded="true">{_forms.campaignsDetailForm.groups}</a>
+						</li>
+						<li>
+							<a href="#devices_{$id}" aria-controls="devices" role="tab" data-toggle="tab" aria-expanded="false">{_forms.campaignsDetailForm.devices}</a>
+						</li>
+					</ul>
+				</div>
+
+				<div class="tab-content box-list__settings__one__devices m-t-0 m-b-10">
+					<div role="tabpanel" class="tab-pane active" id="groups_{$id}">
+						{control deviceGroupListGridControl-$id}
+
+{*						{input devicesGroups}*}
+
+						{*
+                        <div>
+                            <label class="alert alert-info m-b-0 bg-primary">
+                                <a n:href="modalDeviceGroupFormInDevicePage!" class="btn btn-info btn-md">{_campaignPage.newDeviceGroup}</a>
+                            </label>
+                        </div>
+                        *}
+					</div>
+					<div role="tabpanel" class="tab-pane _box-list__settings__one__devices _m-0" id="devices_{$id}">
+						<div class="box-list__settings__one__devices__inner">
+							<div n:if="$form[devices]->items" n:foreach="$form[devices]->items as $key => $label">
+								<input n:name="devices:$key">
+								<label n:name="devices:$key"><span>{$label}</span></label>
+							</div>
+							{if count($form[devices]->items) == 0}
+								<input n:name="devices" class="hidden">
+								<div>
+									<label class="alert alert-danger disabled">
+										<span class="text-danger">{_forms.deviceDetailForm.noAnyDevices}</span>
+									</label>
+								</div>
+								<div>
+									<label class="alert alert-info m-b-0 bg-primary">
+										<a n:href="Device:" class="ajax btn btn-info btn-md">{_campaignPage.newDevice}</a>
+									</label>
+								</div>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="panel-footer text-right">
+		{input sendSubmit}
+	</div>
+	{/form}
+{/define}

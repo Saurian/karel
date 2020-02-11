@@ -2,16 +2,10 @@
 
 namespace Devrun\Tests;
 
-use Devrun\FileNotFoundException;
-use Devrun\InvalidArgumentException;
 use Nette\DI\Container;
 use Nette\DI\MissingServiceException;
 use Nette\Environment;
-use Nette\Http\FileUpload;
 use Nette\Reflection\AnnotationsParser;
-use Nette\Utils\FileSystem;
-use Nette\Utils\Finder;
-use Nette\Utils\Image;
 use PHPUnit\Framework\DOMTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -101,12 +95,17 @@ class BaseTestCase extends TestCase {
 
     protected function setUp()
     {
-        $annotations = $this->getAnnotations();
+        $everyTestNewContainer = true;
 
-        /*
-         * hack!, if some test methods is depending (previous method return) create new Container
-         */
-        if (isset($annotations['method']['return']) ) {
+        if (!$everyTestNewContainer) {
+            $annotations = $this->getAnnotations();
+            $everyTestNewContainer = isset($annotations['method']['return']) || isset($annotations['method']['dataProvider']) || isset($annotations['method']['depends']);
+        }
+
+        if ($everyTestNewContainer) {
+            /*
+             * hack!, if some test methods is depending (previous method return) create new Container
+             */
             global $container;
             global $_container;
 

@@ -13,8 +13,12 @@ use CmsModule\Entities\CampaignEntity;
 use CmsModule\Entities\DeviceEntity;
 use CmsModule\Entities\DeviceGroupEntity;
 use CmsModule\Entities\MediumDataEntity;
+use CmsModule\Entities\StrategyEntity;
+use CmsModule\Entities\TargetGroupEntity;
 use CmsModule\Entities\UserEntity;
+use CmsModule\Entities\UsersGroupEntity;
 use CmsModule\Forms\Controls\BootstrapDateRangePicker;
+use CmsModule\InvalidArgumentException;
 use Devrun\Doctrine\DoctrineForms\IComponentMapper;
 use Kdyby\Translation\Phrase;
 use Nette\Application\UI\Form;
@@ -57,6 +61,9 @@ class CampaignForm extends BaseForm
 
     /** @var DeviceGroupEntity[] */
     private $devicesGroups = [];
+
+    /** @var UsersGroupEntity */
+    private $usersGroups;
 
 
     public function create()
@@ -103,9 +110,9 @@ class CampaignForm extends BaseForm
             ->setTranslator(null)
 //            ->setDefaultValue([29])  // any value turn off auto setting
             ->setDisabled($disAllowed)
-//            ->setOption(IComponentMapper::FIELD_IGNORE, true)
-            ->setOption(IComponentMapper::ITEMS_TITLE, 'name');
-//            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
+            ->setOption(IComponentMapper::FIELD_IGNORE, true)
+            ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
+            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
 //            ->setOption(IComponentMapper::ITEMS_FILTER, ['devices IN' => [29]]);
 //            ->setOption(IComponentMapper::ITEMS_FILTER, ['deviceGroup' => null]);
 
@@ -115,9 +122,9 @@ class CampaignForm extends BaseForm
             ->setTranslator(null)
 //            ->setDefaultValue([29])  // any value turn off auto setting
             ->setDisabled($disAllowed)
-//            ->setOption(IComponentMapper::FIELD_IGNORE, true)
-            ->setOption(IComponentMapper::ITEMS_TITLE, 'name');
-//            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items
+            ->setOption(IComponentMapper::FIELD_IGNORE, true)
+            ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
+            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items
 //            ->setOption(IComponentMapper::ITEMS_FILTER, ['deviceGroup' => null]);
 
         $devices
@@ -136,8 +143,7 @@ class CampaignForm extends BaseForm
         $this->addCheckboxList('targetGroups', $this->getTranslator()->translate('targetGroups'))
             ->setTranslator(null)
             ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
-            ->setOption(IComponentMapper::ITEMS_FILTER, ['usersGroup' => 1])
-//            ->setAttribute('class', 'tagColor')
+                ->setOption(IComponentMapper::ITEMS_FILTER, ['usersGroup' => $this->getUsersGroups()])
             ->setDisabled($disAllowed);
 
 
@@ -145,6 +151,13 @@ class CampaignForm extends BaseForm
         $this->addRadioList('tag', $this->getTranslator()->translate('tag'), CampaignEntity::getTags())
             ->setTranslator(null)
             ->setAttribute('class', 'tagColor')
+            ->setDisabled($disAllowed);
+            //->addRule(Form::FILLED, 'ruleTag');
+
+        $this->addSelect('strategy', $this->getTranslator()->translate('strategy'), StrategyEntity::getNames())
+            ->setPrompt('-- vyberte --')
+            ->setTranslator(null)
+            ->setAttribute('class', 'select2')
             ->setDisabled($disAllowed);
             //->addRule(Form::FILLED, 'ruleTag');
 
@@ -284,6 +297,30 @@ class CampaignForm extends BaseForm
         $this->devicesGroups = $_devicesGroups;
         return $this;
     }
+
+    /**
+     * @param UsersGroupEntity $usersGroups
+     * @return CampaignForm
+     */
+    public function setUsersGroups(UsersGroupEntity $usersGroups): CampaignForm
+    {
+        $this->usersGroups = $usersGroups;
+        return $this;
+    }
+
+    /**
+     * @return UsersGroupEntity
+     */
+    public function getUsersGroups(): UsersGroupEntity
+    {
+        if (!$this->usersGroups) {
+            throw new InvalidArgumentException("set UsersGroup first");
+        }
+        return $this->usersGroups;
+    }
+
+
+
 
     /**
      * @param UserEntity $userEntity

@@ -18,6 +18,8 @@ INSERT INTO `campaigns_devices` (`campaign_entity_id`, `device_entity_id`) VALUE
 (4,	5),
 (4,	6),
 (5,	6),
+(3,	2),
+(3,	4),
 (7,	6);
 
 INSERT INTO `campaigns_devices_groups` (`campaign_entity_id`, `device_group_entity_id`) VALUES
@@ -39,13 +41,13 @@ INSERT INTO `campaigns_target_groups` (`campaign_entity_id`, `target_group_entit
 (1,	2);
 
 
-INSERT INTO `device` (`id`, `default_campaign_id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `sn`, `sn_rotate`, `psw`, `name`, `active`, `keywords`, `inserted`, `updated`, `position`, `category`, `version`, `tag`) VALUES
-(1,	NULL,	2,	2,	NULL,	'KKH-01',	NULL,	NULL,	'Kaufland KH',	1,	NULL,	'2019-08-13 07:52:19',	'2019-08-15 20:46:27',	1,	'',	2,	NULL),
-(2,	NULL,	2,	2,	NULL,	'bb-01',	NULL,	NULL,	'Bilovice letáky 1',	0,	NULL,	'2019-08-13 08:03:36',	'2019-08-13 08:03:36',	2,	'',	1,	NULL),
-(3,	NULL,	2,	2,	NULL,	'KKol-01',	NULL,	NULL,	'Kaufland Kolín',	0,	NULL,	'2019-08-13 08:04:22',	'2019-08-13 08:04:22',	3,	'',	1,	NULL),
-(4,	NULL,	2,	2,	NULL,	'BIL-01',	NULL,	NULL,	'Billa Rokycanská',	1,	NULL,	'2019-08-13 08:04:50',	'2019-08-15 20:46:33',	4,	'',	2,	NULL),
-(5,	NULL,	2,	2,	NULL,	'SkLArny-110',	NULL,	NULL,	'Sklárny',	1,	NULL,	'2019-08-13 08:05:33',	'2019-08-15 20:46:08',	5,	'',	2,	NULL),
-(6,	NULL,	2,	2,	NULL,	'SLA-0100110',	NULL,	NULL,	'Na Slávii',	1,	NULL,	'2019-08-13 08:05:59',	'2019-08-15 20:46:23',	6,	'',	2,	NULL);
+INSERT INTO `device` (`id`, users_groups_id, `default_campaign_id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `sn`, `sn_rotate`, `psw`, `name`, `active`, `keywords`, `inserted`, `updated`, `position`, `category`, `tag`) VALUES
+(1, 1,	NULL,	2,	2,	NULL,	'KKH-01',	NULL,	NULL,	'Kaufland KH',	1,	NULL,	'2019-08-13 07:52:19',	'2019-08-15 20:46:27',	1,	'',	NULL),
+(2, 1,	NULL,	2,	2,	NULL,	'bb-01',	NULL,	NULL,	'Bilovice letáky 1',	0,	NULL,	'2019-08-13 08:03:36',	'2019-08-13 08:03:36',	2,	'',	NULL),
+(3, 1,	NULL,	2,	2,	NULL,	'KKol-01',	NULL,	NULL,	'Kaufland Kolín',	0,	NULL,	'2019-08-13 08:04:22',	'2019-08-13 08:04:22',	3,	'', NULL),
+(4, 1,	NULL,	2,	2,	NULL,	'BIL-01',	NULL,	NULL,	'Billa Rokycanská',	1,	NULL,	'2019-08-13 08:04:50',	'2019-08-15 20:46:33',	4,	'',	NULL),
+(5, 1,	NULL,	2,	2,	NULL,	'SkLArny-110',	NULL,	NULL,	'Sklárny',	1,	NULL,	'2019-08-13 08:05:33',	'2019-08-15 20:46:08',	5,	'',	NULL),
+(6, 1,	NULL,	2,	2,	NULL,	'SLA-0100110',	NULL,	NULL,	'Na Slávii',	1,	NULL,	'2019-08-13 08:05:59',	'2019-08-15 20:46:23',	6,	'',	NULL);
 
 INSERT INTO `devices_groups` (`device_group_entity_id`, `device_entity_id`) VALUES
 (1,	2),
@@ -62,25 +64,25 @@ INSERT INTO `devices_groups` (`device_group_entity_id`, `device_entity_id`) VALU
 (19,	1);
 
 DELETE FROM `device_group` WHERE `id` IN  (1, 2, 3, 4);
-INSERT INTO `device_group` (`id`, `root_id`, `parent_id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `name`, `active`, `un_place`, `inserted`, `updated`, `position`, `category`, `lft`, `lvl`, `rgt`, `keywords`, `tag`) VALUES
-(1,	2,	2,	NULL,	2,	NULL,	'Nezařazené',	0,	1,	'2019-08-13 07:43:21',	'2019-08-13 08:40:29',	1,	'',	2,	1,	3,	NULL,	NULL),
-(2,	2,	NULL,	2,	NULL,	NULL,	'Default',	0,	0,	'2019-08-13 07:43:21',	'2019-08-13 07:43:21',	1,	'',	1,	0,	36,	NULL,	NULL),
-(5,	2,	2,	2,	2,	NULL,	'Středočechy',	0,	0,	'2019-08-13 07:50:11',	'2019-08-13 07:50:11',	3,	'',	4,	1,	29,	NULL,	NULL),
-(6,	2,	5,	2,	2,	NULL,	'Příbramsko',	0,	0,	'2019-08-13 07:50:31',	'2019-08-13 08:40:28',	4,	'',	5,	2,	12,	NULL,	NULL),
-(7,	2,	8,	2,	2,	NULL,	'Rokycansko',	0,	0,	'2019-08-13 07:50:40',	'2019-08-13 07:51:00',	5,	'',	18,	3,	23,	NULL,	NULL),
-(8,	2,	5,	2,	2,	NULL,	'Plzeň',	0,	0,	'2019-08-13 07:50:51',	'2019-08-13 09:59:39',	6,	'',	17,	2,	28,	NULL,	NULL),
-(9,	2,	5,	2,	2,	NULL,	'Bolka',	0,	0,	'2019-08-13 07:54:50',	'2019-09-11 09:48:31',	7,	'',	13,	2,	14,	NULL,	NULL),
-(10,	2,	2,	2,	2,	NULL,	'Morava Naše',	0,	0,	'2019-08-13 07:55:43',	'2019-09-11 09:34:42',	8,	'',	30,	1,	35,	'',	'tagColor2'),
-(11,	2,	10,	3,	2,	NULL,	'Břeclavsko',	0,	0,	'2019-08-13 07:57:54',	'2019-08-13 08:22:01',	9,	'',	31,	2,	32,	NULL,	NULL),
-(12,	2,	10,	2,	2,	NULL,	'Mikulovsko',	0,	0,	'2019-08-13 07:59:02',	'2019-08-13 08:22:01',	10,	'',	33,	2,	34,	NULL,	NULL),
-(13,	2,	8,	2,	2,	NULL,	'Dobřív',	0,	0,	'2019-08-13 07:59:34',	'2019-08-13 07:59:34',	11,	'',	24,	3,	25,	NULL,	NULL),
-(14,	2,	8,	2,	2,	NULL,	'Stříbro',	0,	0,	'2019-08-13 08:00:20',	'2019-08-13 08:00:20',	12,	'',	26,	3,	27,	NULL,	NULL),
-(15,	2,	7,	2,	2,	NULL,	'Hrádek',	0,	0,	'2019-08-13 08:00:50',	'2019-08-13 08:00:50',	13,	'',	19,	4,	20,	NULL,	NULL),
-(16,	2,	7,	2,	2,	NULL,	'Mýto',	0,	0,	'2019-08-13 08:01:00',	'2019-08-13 08:01:00',	14,	'',	21,	4,	22,	NULL,	NULL),
-(17,	2,	5,	2,	2,	NULL,	'Kolínsko',	0,	0,	'2019-08-13 08:01:13',	'2019-08-13 08:06:38',	15,	'',	15,	2,	16,	NULL,	NULL),
-(18,	2,	6,	2,	2,	NULL,	'Ká-Háčko',	0,	0,	'2019-08-13 08:01:36',	'2019-08-13 16:49:36',	16,	'',	6,	3,	11,	NULL,	NULL),
-(19,	2,	18,	2,	2,	NULL,	'Čelákovice',	0,	0,	'2019-08-13 08:01:53',	'2019-08-13 08:39:45',	17,	'',	7,	4,	10,	NULL,	NULL),
-(20,	2,	19,	2,	2,	NULL,	'Ještě vnořenější :)',	0,	0,	'2019-08-13 10:04:00',	'2019-08-13 10:04:00',	18,	'',	8,	5,	9,	NULL,	NULL);
+INSERT INTO `device_group` (`id`, users_groups_id, `root_id`, `parent_id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `name`, `active`, `un_place`, `inserted`, `updated`, `position`, `category`, `lft`, `lvl`, `rgt`, `keywords`, `tag`) VALUES
+(1, 1,	2,	2,	NULL,	2,	NULL,	'Nezařazené',	0,	1,	'2019-08-13 07:43:21',	'2019-08-13 08:40:29',	1,	'',	2,	1,	3,	NULL,	NULL),
+(2, 1,	2,	NULL,	2,	NULL,	NULL,	'Default',	0,	0,	'2019-08-13 07:43:21',	'2019-08-13 07:43:21',	1,	'',	1,	0,	36,	NULL,	NULL),
+(5, 1,	2,	2,	2,	2,	NULL,	'Středočechy',	0,	0,	'2019-08-13 07:50:11',	'2019-08-13 07:50:11',	3,	'',	4,	1,	29,	NULL,	NULL),
+(6, 1,	2,	5,	2,	2,	NULL,	'Příbramsko',	0,	0,	'2019-08-13 07:50:31',	'2019-08-13 08:40:28',	4,	'',	5,	2,	12,	NULL,	NULL),
+(7, 1,	2,	8,	2,	2,	NULL,	'Rokycansko',	0,	0,	'2019-08-13 07:50:40',	'2019-08-13 07:51:00',	5,	'',	18,	3,	23,	NULL,	NULL),
+(8, 1,	2,	5,	2,	2,	NULL,	'Plzeň',	0,	0,	'2019-08-13 07:50:51',	'2019-08-13 09:59:39',	6,	'',	17,	2,	28,	NULL,	NULL),
+(9, 1,	2,	5,	2,	2,	NULL,	'Bolka',	0,	0,	'2019-08-13 07:54:50',	'2019-09-11 09:48:31',	7,	'',	13,	2,	14,	NULL,	NULL),
+(10, 1,	2,	2,	2,	2,	NULL,	'Morava Naše',	0,	0,	'2019-08-13 07:55:43',	'2019-09-11 09:34:42',	8,	'',	30,	1,	35,	'',	'tagColor2'),
+(11, 1,	2,	10,	3,	2,	NULL,	'Břeclavsko',	0,	0,	'2019-08-13 07:57:54',	'2019-08-13 08:22:01',	9,	'',	31,	2,	32,	NULL,	NULL),
+(12, 1,	2,	10,	2,	2,	NULL,	'Mikulovsko',	0,	0,	'2019-08-13 07:59:02',	'2019-08-13 08:22:01',	10,	'',	33,	2,	34,	NULL,	NULL),
+(13, 1,	2,	8,	2,	2,	NULL,	'Dobřív',	0,	0,	'2019-08-13 07:59:34',	'2019-08-13 07:59:34',	11,	'',	24,	3,	25,	NULL,	NULL),
+(14, 1,	2,	8,	2,	2,	NULL,	'Stříbro',	0,	0,	'2019-08-13 08:00:20',	'2019-08-13 08:00:20',	12,	'',	26,	3,	27,	NULL,	NULL),
+(15, 1,	2,	7,	2,	2,	NULL,	'Hrádek',	0,	0,	'2019-08-13 08:00:50',	'2019-08-13 08:00:50',	13,	'',	19,	4,	20,	NULL,	NULL),
+(16, 1,	2,	7,	2,	2,	NULL,	'Mýto',	0,	0,	'2019-08-13 08:01:00',	'2019-08-13 08:01:00',	14,	'',	21,	4,	22,	NULL,	NULL),
+(17, 1,	2,	5,	2,	2,	NULL,	'Kolínsko',	0,	0,	'2019-08-13 08:01:13',	'2019-08-13 08:06:38',	15,	'',	15,	2,	16,	NULL,	NULL),
+(18, 1,	2,	6,	2,	2,	NULL,	'Ká-Háčko',	0,	0,	'2019-08-13 08:01:36',	'2019-08-13 16:49:36',	16,	'',	6,	3,	11,	NULL,	NULL),
+(19, 1,	2,	18,	2,	2,	NULL,	'Čelákovice',	0,	0,	'2019-08-13 08:01:53',	'2019-08-13 08:39:45',	17,	'',	7,	4,	10,	NULL,	NULL),
+(20, 1,	2,	19,	2,	2,	NULL,	'Ještě vnořenější :)',	0,	0,	'2019-08-13 10:04:00',	'2019-08-13 10:04:00',	18,	'',	8,	5,	9,	NULL,	NULL);
 
 
 INSERT INTO `medium_data` (`id`, `medium_id`, `campaign_id`, `time`, `identifier`, `file_name`, `file_path`, `sound`, `url`, `type`, `keywords`, `position`, `category`) VALUES
@@ -355,13 +357,15 @@ INSERT INTO `target_group_value` (`id`, `param_id`, `created_by_id`, `updated_by
 (10,	2,	2,	2,	NULL,	'65-99 let',	'2019-09-12 14:08:57',	'2019-09-12 14:08:57'),
 (11,	2,	2,	2,	NULL,	'18-65 let',	'2019-09-12 14:19:45',	'2019-09-12 14:19:45');
 
--- INSERT INTO `users` (`id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `first_name`, `last_name`, `mail`, `username`, `password`, `new_password`, `active`, `role`, `inserted`, `updated`, `position`, `category`, `group_id`) VALUES
--- (1,	NULL,	1,	NULL,	'Supervisor',	'Prvníh',	'admin.supervisor@carl.cz',	'admin',	'24cd7cd1550e836272cd3265600988ee',	NULL,	1,	'supervisor',	'2018-06-06 11:42:41',	'2019-02-26 14:53:43',	1,	'',	NULL),
--- (2,	NULL,	2,	NULL,	'Admin',	'Tester',	'tester@email.cz',	'tester@email.cz',	'2616b248c2a079425d0a001b67f273e4',	NULL,	1,	'admin',	'2019-08-13 07:43:21',	'2019-08-13 10:04:00',	2,	'',	1),
--- (3,	NULL,	3,	NULL,	'Pavel',	'Paulík',	'pavel.paulik@seznam.cz',	'pavel.paulik@seznam.cz',	'da65b65170fff9bb7b605573208bca2c',	NULL,	1,	'admin',	'2019-08-13 07:44:03',	'2019-08-13 07:57:54',	3,	'',	NULL);
 
 INSERT INTO `users` (`id`, `created_by_id`, `updated_by_id`, `deleted_by_id`, `first_name`, `last_name`, `mail`, `username`, `password`, `new_password`, `active`, `role`, `inserted`, `updated`, `position`, `category`, `group_id`) VALUES
-(3,	NULL,	3,	NULL,	'Pavel',	'Tester 2',	'admin@tester2.cz',	'admin-tester',	'ffce09860ac68c2fdf0bbc8bf6d608d0',	NULL,	1,	'admin',	'2019-08-13 07:44:03',	'2019-08-13 07:57:54',	3,	'',	NULL);
+(3,	NULL,	3,	NULL,	'Pavel',	'Tester 2',	'admin@tester2.cz',	'admin-tester', md5('admin-tester123123'),	NULL,	1,	'admin',	'2019-08-13 07:44:03',	'2019-08-13 07:57:54',	3,	'',	1),
+(5,	2, 2, null,	'Pavel',	'Editor Tester',	'editor-g1@tester.cz',	'editor-g1@tester.cz',	md5('editor-g1@tester.cz123123'),	NULL,	1,	'editor',	'2020-02-05 07:44:03', '2020-02-05 07:44:03',  4,	'',	1),
+(6,	2, 2, null,	'Pavel',	'Master Tester',	'master-g1@tester.cz',	'master-g1@tester.cz',	md5('master-g1@tester.cz123123'),	NULL,	1,	'master',	'2020-02-05 07:44:03', '2020-02-05 07:44:03',  5,	'',	1),
+(7,	2, 2, null,	'Pavel',	'Admin 2 Tester',	'admin-g1@tester.cz',	'admin-g1@tester.cz',	md5('admin-g1@tester.cz123123'),	NULL,	1,	'admin',	'2020-02-05 07:44:03', '2020-02-05 07:44:03',  6,	'',	1),
+(8,	2, 2, null,	'Pavel',	'Watcher Tester',	'watcher-g1@tester.cz',	'watcher-g1@tester.cz',	md5('watcher-g1@tester.cz123123'),	NULL,	1,	'watcher',	'2020-02-05 07:44:03', '2020-02-05 07:44:03',  7,	'',	1),
+(9,	2, 2, null,	'Pavel',	'Editor 2 Tester',	'editor2-g1@tester.cz',	'editor2-g1@tester.cz',	md5('editor2-g1@tester.cz123123'),	NULL,	0,	'editor',	'2020-02-05 07:44:03', '2020-02-05 07:44:03',  8,	'',	1);
+
 
 INSERT INTO `users_devices` (`user_entity_id`, `device_entity_id`) VALUES
 (2,	1),
@@ -369,7 +373,18 @@ INSERT INTO `users_devices` (`user_entity_id`, `device_entity_id`) VALUES
 (2,	3),
 (2,	4),
 (2,	5),
-(2,	6);
+(2,	6),
+
+(5,	1),
+(5,	4),
+(6,	5),
+(6,	6),
+(7,	1),
+(7,	2),
+(8,	2),
+(8,	3),
+(9,	2),
+(9,	3);
 
 DELETE FROM `users_devices_groups` WHERE (`user_entity_id` = 2 AND `device_group_entity_id` IN (3, 4));
 INSERT INTO `users_devices_groups` (`user_entity_id`, `device_group_entity_id`) VALUES
@@ -390,5 +405,14 @@ INSERT INTO `users_devices_groups` (`user_entity_id`, `device_group_entity_id`) 
 (2,	20),
 (3,	3),
 (3,	4),
-(3,	11);
+(3,	11),
 
+(5,	1),
+(5,	5),
+(5,	6),
+(5,	7),
+(5,	17),
+(6,	5),
+(6,	6),
+(6,	7),
+(6,	17);

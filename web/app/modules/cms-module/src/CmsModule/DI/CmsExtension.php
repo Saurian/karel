@@ -54,7 +54,11 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
         'paths' => [
             'webTempDir'     => '%wwwDir%/webtemp',
         ],
-
+        'generator' => [
+            'strategy' => [
+                'calendarFragment' => false,
+            ]
+        ],
         'newPassword'  => 123123,
         'mediaDir'     => 'media',
         'dataPath'     => '%wwwDir%',
