@@ -89,10 +89,11 @@ class CalendarControl extends Control
             ->withDevices()
             ->withDevicesGroups()
             ->withCampaigns()
+            ->byUsersGroup($this->usersGroupEntity)
             ->orderByFromTo();
 
         /** @var CalendarEntity[] $records */
-        $records = $this->calendarRepository->fetch($query);
+        $records = $this->calendarRepository->fetch($query)->getIterator();
 
         $result = [];
         foreach ($records as $record) {

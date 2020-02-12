@@ -4,6 +4,7 @@
 namespace CmsModule\Repositories\Queries;
 
 use CmsModule\Entities\CalendarEntity;
+use CmsModule\Entities\UsersGroupEntity;
 use Kdyby;
 use Kdyby\Doctrine\QueryBuilder;
 use Kdyby\Doctrine\QueryObject;
@@ -106,6 +107,19 @@ class CalendarQuery extends QueryObject
     /*
      * filters
      */
+
+
+    /**
+     * @param int $usersGroup
+     * @return $this
+     */
+    public function byUsersGroup(UsersGroupEntity $usersGroup)
+    {
+        $this->filter[] = function (QueryBuilder $qb) use ($usersGroup) {
+            $qb->andWhere('q.usersGroups = :usersGroup')->setParameter('usersGroup', $usersGroup);
+        };
+        return $this;
+    }
 
 
     /**

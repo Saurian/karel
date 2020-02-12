@@ -191,8 +191,8 @@ class ReachFacade
      */
     public function createNewTargetGroupParamsValuesForUser(UserEntity $userEntity)
     {
-        $param1 = new TargetGroupParamEntity('pohlaví', $userEntity->getGroup());
-        $param2 = new TargetGroupParamEntity('věk', $userEntity->getGroup());
+        $param1 = new TargetGroupParamEntity('Pohlaví', $userEntity->getGroup());
+        $param2 = new TargetGroupParamEntity('Věk', $userEntity->getGroup());
 
         $param1Value1 = new TargetGroupParamValueEntity('muži', $param1);
         $param1Value2 = new TargetGroupParamValueEntity('ženy', $param1);
