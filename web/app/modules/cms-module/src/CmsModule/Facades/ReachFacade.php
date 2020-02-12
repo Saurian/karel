@@ -3,9 +3,9 @@
 
 namespace CmsModule\Facades;
 
-use CmsModule\Entities\TargetGroupEntity;
 use CmsModule\Entities\TargetGroupParamEntity;
 use CmsModule\Entities\TargetGroupParamValueEntity;
+use CmsModule\Entities\UserEntity;
 use CmsModule\Forms\IMetricParamFormFactory;
 use CmsModule\Forms\IReachFormFactory;
 use CmsModule\Forms\IShopFormFactory;
@@ -186,29 +186,26 @@ class ReachFacade
 
 
     /**
-     * create base TargetGroup entity
-     *
-     * @return TargetGroupEntity
+     * create default target group param values
+     * @return TargetGroupParamEntity[] for new admin user
      */
-    public function createTargetGroupEntity()
+    public function createNewTargetGroupParamsValuesForUser(UserEntity $userEntity)
     {
-        $entity = new TargetGroupEntity("výchozí");
-
-        $param1 = new TargetGroupParamEntity('pohlaví', $entity);
-        $param2 = new TargetGroupParamEntity('věk', $entity);
-
-        $entity->addParam($param1)->addParam($param2);
+        $param1 = new TargetGroupParamEntity('pohlaví', $userEntity->getGroup());
+        $param2 = new TargetGroupParamEntity('věk', $userEntity->getGroup());
 
         $param1Value1 = new TargetGroupParamValueEntity('muži', $param1);
         $param1Value2 = new TargetGroupParamValueEntity('ženy', $param1);
-
-        $param1->addValue($param1Value1)->addValue($param1Value2);
-
         $param2Value1 = new TargetGroupParamValueEntity('18-70 let', $param2);
 
-        $param2->addValue($param2Value1);
+        $param1->setCreatedBy($userEntity)->setUpdatedBy($userEntity);
+        $param2->setCreatedBy($userEntity)->setUpdatedBy($userEntity);
 
-        return $entity;
+        $param1Value1->setCreatedBy($userEntity)->setUpdatedBy($userEntity);
+        $param1Value2->setCreatedBy($userEntity)->setUpdatedBy($userEntity);
+        $param2Value1->setCreatedBy($userEntity)->setUpdatedBy($userEntity);
+
+        return [$param1, $param2];
     }
 
 

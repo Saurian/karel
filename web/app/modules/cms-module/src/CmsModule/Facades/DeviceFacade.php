@@ -240,7 +240,7 @@ class DeviceFacade
 
 
     /**
-     * @return DeviceGroupEntity root deviceGroup for admin user
+     * @return DeviceGroupEntity[] root deviceGroup for admin user
      */
     public function createNewDeviceGroupForUser(UserEntity $userEntity)
     {
@@ -256,9 +256,8 @@ class DeviceFacade
         $userEntity->addDeviceGroup($unClassifyDeviceGroupEntity);
 
         $unClassifyDeviceGroupEntity->setParent($deviceGroupEntity)->setUnPlace(true);
-        $this->getEntityManager()->persist($unClassifyDeviceGroupEntity)->persist($deviceGroupEntity);
 
-        return $deviceGroupEntity;
+        return [$deviceGroupEntity, $unClassifyDeviceGroupEntity];
     }
 
 

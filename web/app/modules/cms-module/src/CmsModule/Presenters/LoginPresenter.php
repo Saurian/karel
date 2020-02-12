@@ -12,6 +12,7 @@ namespace CmsModule\Presenters;
 use CmsModule\Controls\FlashMessageControl;
 use CmsModule\Entities\UserEntity;
 use CmsModule\Facades\DeviceFacade;
+use CmsModule\Facades\ReachFacade;
 use CmsModule\Facades\UserFacade;
 use CmsModule\Forms\ChangePasswordForm;
 use CmsModule\Forms\ForgottenPasswordForm;
@@ -33,6 +34,9 @@ class LoginPresenter extends BasePresenter
 
     /** @var DeviceFacade @inject */
     public $deviceFacade;
+
+    /** @var ReachFacade @inject */
+    public $reachFacade;
 
     /** @var ILoginFormFactory @inject */
     public $loginFormFactory;
@@ -137,12 +141,10 @@ class LoginPresenter extends BasePresenter
             $this->userFacade->createNewUserGroupForUser($entity, $values->group);
 
             $rootDeviceGroupEntity = $this->deviceFacade->createNewDeviceGroupForUser($entity);
-            $rootDeviceGroupEntity
-                ->setCreatedBy($entity)
-                ->setUpdatedBy($entity);
+            $targetGroupParams     = $this->reachFacade->createNewTargetGroupParamsValuesForUser($entity);
 
             $em = $form->getEntityMapper()->getEntityManager();
-            $em->persist($entity)->flush();
+            $em->persist($entity)->persist($rootDeviceGroupEntity)->persist($targetGroupParams)->flush();
 
             $title = $this->translator->translate("messages.loginPage.user_added_title");
             $this->flashMessage($this->translator->translate("messages.loginPage.user_added", null, ['name' => $entity->getUsername()]), FlashMessageControl::TOAST_TYPE, $title, FlashMessageControl::TOAST_INFO);

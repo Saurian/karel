@@ -57,11 +57,12 @@ class TargetGroupParamValueEntity
      * @param string $name
      * @param TargetGroupParamEntity $param
      */
-    public function __construct(string $name = null, TargetGroupParamEntity $param = null)
+    public function __construct(string $name, TargetGroupParamEntity $param)
     {
-        $this->name = $name;
-//        $this->param = $param;
         $this->groups = new ArrayCollection();
+        $this->name = $name;
+        $this->param = $param;
+        $this->param->addValue($this);
     }
 
     /**

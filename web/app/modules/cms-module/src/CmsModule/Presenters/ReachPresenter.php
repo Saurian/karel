@@ -179,7 +179,7 @@ class ReachPresenter extends BasePresenter
         $grid->setTranslator($this->translator);
 
         $query = $this->reachFacade->getTargetGroupRepository()->createQueryBuilder('e')
-            ->where('e.usersGroup = :usersGroup')->setParameter('usersGroup', $this->userEntity->getGroup());
+            ->where('e.usersGroup = :usersGroup')->setParameter('usersGroup', $this->getUserEntity()->getGroup());
 
 
         $grid->setDataSource($query);

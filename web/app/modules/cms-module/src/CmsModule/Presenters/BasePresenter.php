@@ -58,6 +58,10 @@ class BasePresenter extends Nette\Application\UI\Presenter
     public $signaled = false;
 
 
+    /**
+     * @throws Nette\Application\AbortException
+     * @throws Nette\Application\UI\InvalidLinkException
+     */
     protected function startup()
     {
         parent::startup();
@@ -88,7 +92,10 @@ class BasePresenter extends Nette\Application\UI\Presenter
         }
 
         if ($this->getUser()->isLoggedIn()) {
-            $this->userEntity = $this->userRepository->findById($this->getUser()->getId());
+            if (!$this->userEntity = $this->userRepository->findById($this->getUser()->getId())) {
+                $this->getUser()->logout();
+                $this->redirect(':Cms:Login:');
+            }
         }
 
         $action  = ($this->action != 'default') ? ' ' . $this->action : null;

@@ -35,17 +35,11 @@ class TargetGroupParamEntity
     protected $name;
 
 
-
     /**
      * @var TargetGroupParamValueEntity[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="TargetGroupParamValueEntity", mappedBy="param", cascade={"persist"})
      */
     protected $values;
-
-
-
-
-
 
 
     /**
@@ -58,13 +52,14 @@ class TargetGroupParamEntity
 
     /**
      * TargetGroupParamEntity constructor.
-     * @param string|null $name
-     * @param TargetGroupEntity|null $targetGroupEntity
+     * @param string $name
+     * @param UsersGroupEntity $usersGroup
      */
-    public function __construct(string $name = null, TargetGroupEntity $targetGroupEntity = null)
+    public function __construct(string $name, UsersGroupEntity $usersGroup)
     {
-        $this->name = $name;
-        $this->values = new ArrayCollection();
+        $this->name       = $name;
+        $this->usersGroup = $usersGroup;
+        $this->values     = new ArrayCollection();
     }
 
 

@@ -11,10 +11,7 @@ use Devrun\Doctrine\DoctrineForms\IComponentMapper;
 use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
-use Nette\Forms\Controls\TextInput;
 use Nette\Security\User;
-use Nette\Utils\Strings;
-use Tracy\Debugger;
 
 interface ITargetGroupFormFactory
 {
@@ -57,25 +54,11 @@ class TargetGroupForm extends BaseForm
             ->addRule(Form::MIN_LENGTH, 'ruleMinLength', 4)
             ->addRule(Form::MAX_LENGTH, 'ruleMaxLength', 32);
 
-        /** @var TargetGroupParamValueEntity[] $paramResults */
-        $paramResults = $this->reachFacade->getEntityManager()->createQueryBuilder()
-            ->select('e')
-            ->addSelect('param')
-            ->from(TargetGroupParamValueEntity::class, 'e')
-            ->join('e.param', 'param')
-            ->getQuery()
-            ->getResult();
-
-        $params = [];
-        foreach ($paramResults as $paramResult) {
-            $params[$paramResult->getParam()->getName()][$paramResult->getId()] = $paramResult->getName();
-        }
-
-        $form->addMultiSelect('values', 'Parametry', $params, 20)
+        $form->addMultiSelect('values', 'Parametry', $this->getParams(), 20)
             ->setDisabled($disAllowed)
-//            ->setOption(IComponentMapper::FIELD_IGNORE, true)
-            ->setOption(IComponentMapper::ITEMS_TITLE, 'name');
-//            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
+            ->setOption(IComponentMapper::FIELD_IGNORE, true)
+            ->setOption(IComponentMapper::ITEMS_TITLE, 'name')
+            ->setOption(IComponentMapper::ITEMS_FILTER, ['id' => null]);  // trick, we dont want autoload items;
 
         $form->addSubmit('send', 'Odeslat')->setAttribute('class', 'btn btn-md btn-success')
             ->setDisabled($disAllowed)
@@ -167,6 +150,37 @@ class TargetGroupForm extends BaseForm
     }
 
 
+    /**
+     * return array of array items
+     *
+     * @return array
+     *
+     * "Pohlaví" =>
+     *      12 => "muži" (5)
+     *      13 => "ženy" (5)
+     * "Věk" =>
+     *      14 => "0-75 let" (8)
+     */
+    protected function getParams()
+    {
+        /** @var TargetGroupParamValueEntity[] $paramResults */
+        $paramResults = $this->reachFacade->getEntityManager()->createQueryBuilder()
+                                          ->select('e')
+                                          ->addSelect('param')
+                                          ->from(TargetGroupParamValueEntity::class, 'e')
+                                          ->join('e.param', 'param')
+                                          ->join('param.usersGroup', 'ug')
+                                          ->join('ug.users', 'u')
+                                          ->where('u.id = :usersGroup')->setParameter('usersGroup', $this->user->getId())
+                                          ->getQuery()
+                                          ->getResult();
 
+        $params = [];
+        foreach ($paramResults as $paramResult) {
+            $params[$paramResult->getParam()->getName()][$paramResult->getId()] = $paramResult->getName();
+        }
+
+        return $params;
+    }
 
 }
