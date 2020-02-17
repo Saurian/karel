@@ -157,40 +157,49 @@ class PlayList
             $from = $rangeList->getFromTime();
             $to   = $rangeList->getToTime();
 
+            $indexOfPlan    = 0;
+            $calendarPlans  = $this->createCalendarRangePlan($rangeList);
+            $calendarEntity = $rangeList->getCalendars()[$calendarPlans[$indexOfPlan]];
+
             $current = clone $from;
 
             while ($current < $to) {
                 $someMedium = false;
 
-                foreach ($rangeList->getCalendars() as $calendarEntity) {
+                foreach ($calendarEntity->getCampaign()->getMediaData() as $mediumDataEntity) {
+                    $someMedium = true;
 
-                    foreach ($calendarEntity->getCampaign()->getMediaData() as $mediumDataEntity) {
-                        $someMedium = true;
+                    $time = $mediumDataEntity->getTime()
+                        ? $mediumDataEntity->getTime()
+                        : '0 second';
 
-                        $time = $mediumDataEntity->getTime()
-                            ? $mediumDataEntity->getTime()
-                            : '0 second';
+                    $toTime = clone $current;
+                    $toTime->modify($time);
 
-                        $toTime = clone $current;
-                        $toTime->modify($time);
-
-                        if ($toTime > $to) {
-                            $toTime = $to;
-                        }
-
-                        if ($current >= $from && $current < $to) {
-
-//                        if (self::DEBUG_MODE && count($lists) < 300)
-                            $lists[] = new MediumTime($mediumDataEntity, $current, $toTime);
-
-                        } else break;
-
-                        $current->modify($time);
+                    if ($toTime > $to) {
+                        $toTime = $to;
                     }
 
+                    if ($current >= $from && $current < $to) {
+
+//                        if (self::DEBUG_MODE && count($lists) < 300)
+                        $lists[] = new MediumTime($mediumDataEntity, $current, $toTime);
+
+                    } else break;
+
+                    $current->modify($time);
                 }
 
-                if (!$someMedium) break;
+                $indexOfPlan++;
+                if ($indexOfPlan >= count($calendarPlans)) {
+                    $indexOfPlan = 0;
+                }
+
+                $calendarEntity = $rangeList->getCalendars()[$calendarPlans[$indexOfPlan]];
+
+                if (!$someMedium) {
+                    break;
+                }
             }
         }
 
@@ -202,6 +211,58 @@ class PlayList
         return $lists;
     }
 
+
+    protected function createCalendarRangePlan(RangeList $rangeList)
+    {
+
+        /*
+         * délka kampaní
+         */
+        $campaignTimes= [];
+
+        $rangeDelka = $rangeList->getToTime()->getTimestamp() - $rangeList->getFromTime()->getTimestamp();
+        $sumProcenta = 0;
+        $pocetPrehrani = [];
+        $celkemKroku = 0;
+
+        foreach ($rangeList->getCalendars() as $calendarEntity) {
+            $sumProcenta += $calendarEntity->getPercentage();
+        }
+
+
+        foreach ($rangeList->getCalendars() as $index => $calendarEntity) {
+            $skutecProcenta = $calendarEntity->getPercentage() / $sumProcenta;
+            $skutecDelka = $rangeDelka  * $skutecProcenta;
+
+            $pocetPrehrani[$index] = $calendarEntity->getCampaign()->getLength()
+                ? intval(round($skutecDelka / $calendarEntity->getCampaign()->getLength()))
+                : 0;
+
+            $celkemKroku += $pocetPrehrani[$index];
+        }
+
+        $useCalendar = array_fill(0, count($pocetPrehrani), 0);
+        $result = array_fill(0, $celkemKroku, 0);
+
+        for ($i=0; $i< $celkemKroku; $i++) {
+
+            foreach ($pocetPrehrani as $index => $pocet) {
+                if ($useCalendar[$index] < $pocet) {
+
+                    $delitel = min(max(round($celkemKroku / $pocet), 1), $celkemKroku - 1);
+                    if ($i % $delitel == 0 ) {
+
+                        $useCalendar[$index]++;
+                        $result[$i] = $index + 0;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $result[] = 0;
+        return $result;
+    }
 
 
     private function filter(&$lists)

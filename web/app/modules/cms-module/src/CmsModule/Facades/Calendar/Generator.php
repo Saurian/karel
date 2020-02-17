@@ -39,6 +39,8 @@ class Generator
     /** @var array */
     public $onGenerated = [];
 
+    /** @var bool create fragment */
+    private $strategyFragment = false;
 
     /**
      * Generator constructor.
@@ -58,6 +60,16 @@ class Generator
     public function setCampaigns(array $campaigns): Generator
     {
         $this->campaigns = $campaigns;
+        return $this;
+    }
+
+    /**
+     * @param bool $strategyFragment
+     * @return Generator
+     */
+    public function setStrategyFragment(bool $strategyFragment): Generator
+    {
+        $this->strategyFragment = $strategyFragment;
         return $this;
     }
 

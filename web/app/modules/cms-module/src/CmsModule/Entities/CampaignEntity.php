@@ -89,7 +89,7 @@ class CampaignEntity implements IDeviceEntity
     protected $usersGroups;
 
     /**
-     * @var StrategyEntity
+     * @var StrategyEntity|null
      * @ORM\ManyToOne(targetEntity="StrategyEntity", inversedBy="campaigns")
      */
     protected $strategy;
@@ -139,6 +139,10 @@ class CampaignEntity implements IDeviceEntity
      * @ORM\Column(type="text", length=65536, nullable=true, options={"comment":"fullSearch keyword"})
      */
     protected $keywords;
+
+
+    /** @var int campaign medium length */
+    private $lengthInSecs;
 
 
     /**
@@ -266,6 +270,25 @@ class CampaignEntity implements IDeviceEntity
         if ($keywords) $this->keywords = $keywords;
         return $this;
     }
+
+    /**
+     * @return StrategyEntity|null
+     */
+    public function getStrategy()
+    {
+        return $this->strategy;
+    }
+
+    /**
+     * @param StrategyEntity $strategy
+     * @return CampaignEntity
+     */
+    public function setStrategy(StrategyEntity $strategy): CampaignEntity
+    {
+        $this->strategy = $strategy;
+        return $this;
+    }
+
 
 
 
@@ -506,6 +529,7 @@ class CampaignEntity implements IDeviceEntity
     public function setUsersGroups(UsersGroupEntity $usersGroups): CampaignEntity
     {
         $this->usersGroups = $usersGroups;
+        $this->setCategory($usersGroups->getId());
         return $this;
     }
 
@@ -517,6 +541,26 @@ class CampaignEntity implements IDeviceEntity
     }
 
 
+    /**
+     * @return int
+     */
+    public function getLength()
+    {
+        if (null === $this->lengthInSecs) {
+
+            try {
+                $this->lengthInSecs = (new DateTime())->setTimestamp(0);
+                foreach ($this->mediaData as $mediumDataEntity) {
+                    $this->lengthInSecs->modify($mediumDataEntity->getTime());
+                }
+
+            } catch (\Exception $exception) {
+                return 0;
+            }
+        }
+
+        return $this->lengthInSecs->getTimestamp();
+    }
 
 
 

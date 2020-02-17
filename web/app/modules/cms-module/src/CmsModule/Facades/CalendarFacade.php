@@ -50,10 +50,13 @@ class CalendarFacade
     /** @var Translator */
     private $translator;
 
+    /** @var array */
+    private $generatorOptions = [];
 
     /**
      * CalendarFacade constructor.
      *
+     * @param array $generatorOptions
      * @param EntityManager $entityManager
      * @param CalendarRepository $calendarRepository
      * @param ShopRepository $shopRepository
@@ -61,9 +64,10 @@ class CalendarFacade
      * @param ICalendarControlFactory $calendarControl
      * @param Translator $translator
      */
-    public function __construct(EntityManager $entityManager, CalendarRepository $calendarRepository, ShopRepository $shopRepository,
+    public function __construct(array $generatorOptions, EntityManager $entityManager, CalendarRepository $calendarRepository, ShopRepository $shopRepository,
                                 CampaignRepository $campaignRepository, ICalendarControlFactory $calendarControl, Translator $translator)
     {
+        $this->generatorOptions   = $generatorOptions;
         $this->entityManager      = $entityManager;
         $this->shopRepository     = $shopRepository;
         $this->campaignRepository = $campaignRepository;
@@ -109,86 +113,7 @@ class CalendarFacade
      */
     public function generator()
     {
-        return new Generator($this->entityManager, $this->translator);
-    }
-
-
-    /**
-     * @deprecated use Generator instead
-     *
-     * @param UsersGroupEntity $usersGroupEntity
-     * @param bool $compressedResult
-     * @return CalendarEntity[]
-     * @throws Exception
-     */
-    public function generateByUsersGroup(UsersGroupEntity $usersGroupEntity, $compressedResult = true)
-    {
-        $this->clearCalendar($usersGroupEntity);
-
-        /** @var CampaignEntity[] $campaigns */
-        $campaigns = $this->entityManager->getRepository(CampaignEntity::class)->findBy(['usersGroups' => $usersGroupEntity, 'active' => true]);
-
-        return $this->generateByCampaigns($usersGroupEntity, $campaigns, $compressedResult);
-    }
-
-
-    /**
-     * @deprecated use Generator instead
-     *
-     * @param UsersGroupEntity $usersGroupEntity
-     * @param CampaignEntity[] $campaigns
-     * @param bool $compressedResult
-     *
-     * @return CalendarEntity[]
-     * @throws Exception
-     */
-    public function generateByCampaigns(UsersGroupEntity $usersGroupEntity, array $campaigns, $compressedResult = true)
-    {
-        /** @var ShopEntity $shop */
-        $shop = $this->entityManager->getRepository(ShopEntity::class)->find(1);
-
-        $calendarList = new CalendarList();
-
-        foreach ($campaigns as $campaign) {
-
-            $time = $campaign->getRealizedFrom();
-            $time->setTime($time->format('H'), 0, 0);
-            while ($time <= $campaign->getRealizedTo()) {
-
-                if ($this->campaignRepository->isTimeInMetricsTimeRange($time, $campaign)) {
-
-                    $percentage = $this->campaignRepository->getPercentageUse($time, $campaign);
-
-                    $toTime = clone $time;
-                    $toTime->modify('+1 hour');
-
-                    try {
-                        $calendarList->addRecord($this->getRecord($campaign, $usersGroupEntity, DateTime::from($time), DateTime::from($toTime), $percentage));
-
-                    } catch (OutOfRangeException $e) {
-
-                    }
-                }
-                /*
-                if ($this->shopRepository->isTimeInShopTimeRange($time, $shop)) {
-
-                }*/
-
-                $time->modify('+1 hour');
-            }
-        }
-
-        $result = [];
-        if ($calendarList->hasCalendar()) {
-            $result = $compressedResult
-                ? $calendarList->getCompressedCalendar()
-                : $calendarList->getCalendar();
-
-            $this->onGenerated($result);
-            $this->entityManager->persist($result)->flush();
-        }
-
-        return $result;
+        return (new Generator($this->entityManager, $this->translator))->setStrategyFragment($this->generatorOptions['strategy']['calendarFragment']);
     }
 
 

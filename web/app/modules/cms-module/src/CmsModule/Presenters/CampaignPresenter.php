@@ -681,9 +681,18 @@ class CampaignPresenter extends BasePresenter
 
         if ($this->getUser()->isAllowed('Cms:Campaign', 'listAllCampaigns')) {
             $model = $this->campaignFacade->getRepository()->createQueryBuilder('e')
-                ->select('e')
-                ->addSelect('s')
-                ->leftJoin('e.strategy', 's');
+              ->select('e')
+              ->addSelect('s')
+              ->leftJoin('e.strategy', 's');
+
+        } elseif ($this->getUser()->isAllowed('Cms:Campaign', 'listUsersGroup')) {
+            $model = $this->campaignFacade->getRepository()->createQueryBuilder('e')
+              ->select('e')
+              ->addSelect('s')
+              ->leftJoin('e.strategy', 's')
+              ->join('e.usersGroups', 'ug')
+              ->join('ug.users', 'u')
+              ->andWhere('u.id = :user')->setParameter('user', $this->getUser()->getId());
 
         } else {
             $model = $this->campaignFacade->getRepository()->createQueryBuilder('e')

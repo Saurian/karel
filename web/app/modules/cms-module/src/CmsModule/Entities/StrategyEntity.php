@@ -89,6 +89,31 @@ class StrategyEntity
         return self::$names;
     }
 
+    /**
+     * @return array
+     */
+    public function getParams(): array
+    {
+        return $this->params;
+    }
 
+    /**
+     * @param array $params
+     * @return StrategyEntity
+     */
+    public function setParams(array $params): StrategyEntity
+    {
+        $this->params = $params;
+        return $this;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getTiming()
+    {
+        return isset($this->params['timing']) ? $this->params['timing'] : [];
+    }
 
 }

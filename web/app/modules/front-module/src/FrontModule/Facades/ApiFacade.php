@@ -163,11 +163,12 @@ class ApiFacade
                             $medium = $item->getMediumDataEntity();
 
                             $out = [
-                                'id'   => $medium->getId(),
-                                'from' => $item->getFrom(),
-                                'fromString' => $item->getFrom()->format('Y-m-d H:i'),
-                                'to'   => $item->getTo(),
-                                'toString' => $item->getTo()->format('Y-m-d H:i'),
+                                'mediumId'   => $medium->getId(),
+                                'campaignId'   => $medium->getCampaign()->getId(),
+//                                'from' => $item->getFrom(),
+                                'fromString' => $item->getFrom()->format('Y-m-d H:i:s'),
+//                                'to'   => $item->getTo(),
+                                'toString' => $item->getTo()->format('Y-m-d H:i:s'),
                                 //                                'mediaKeywords'     => implode(' ', $this->getMediaDataKeywords($campaign)),
 
                                 //                    'name'              => $campaign->getName(),
@@ -199,6 +200,19 @@ class ApiFacade
                                     'length'      => $item->getLength(),
                                     'path'        => $absoluteUrl,
                                     'previewPath' => $absolutePreviewUrl,
+                                ];
+                            } elseif ($item->getMediumDataEntity()->getMedium()->getType() == MediumEntity::TYPE_VIDEO) {
+                                $absoluteUrl = $this->url->getUrl()->baseUrl . $medium->getFilePath();
+
+                                if (!file_exists($medium->getFilePath())) {
+                                    $absoluteUrl        = false;
+                                }
+
+                                $out += [
+                                    'type'        => 'video',
+                                    'mimeType'    => $medium->getType(),
+                                    'length'      => $item->getLength(),
+                                    'path'        => $absoluteUrl,
                                 ];
                             }
 

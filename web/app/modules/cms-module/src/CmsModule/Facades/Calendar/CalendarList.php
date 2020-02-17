@@ -5,7 +5,6 @@ namespace CmsModule\Facades\Calendar;
 
 use CmsModule\Entities\CalendarEntity;
 use CmsModule\Entities\CampaignEntity;
-use Tracy\Debugger;
 
 /**
  *
@@ -28,7 +27,8 @@ class CalendarList
      */
     public function addRecord(CalendarEntity $calendarEntity)
     {
-        $unique = $this->getUniqueId($calendarEntity->getCampaign(), $calendarEntity->getFrom(), $calendarEntity->getTo());
+//        $unique = $this->getUniqueId($calendarEntity->getCampaign(), $calendarEntity->getFrom(), $calendarEntity->getTo());
+        $unique = $this->getTimeKey($calendarEntity);
 
         $this->calendar[$unique] = $calendarEntity;
         return $this;
@@ -43,9 +43,55 @@ class CalendarList
     }
 
 
-    private function getUniqueId(CampaignEntity $calendarEntity, \DateTime $from, \DateTime $to)
+
+
+
+    protected function setPercentage()
     {
-        return $calendarEntity->getId() . $from->getTimestamp() . $to->getTimestamp();
+        foreach ($this->calendar as $index => $calendarEntity) {
+            $key = $calendarEntity->getFrom()->getTimestamp() . $calendarEntity->getTo()->getTimestamp();
+            $calendarTimeBlocks[$key][$index] = $calendarEntity->getCampaign();
+        }
+
+        $campaignTimes = [];
+        foreach ($this->calendar as $index => $calendarEntity) {
+            $campaignTimes[$calendarEntity->getCampaign()->getId()][] = $index;
+        }
+
+        foreach ($campaignTimes as $id => $campaignTime) {
+            $campaignTimes[$id] = array_flip($campaignTime);
+        }
+
+        foreach ($calendarTimeBlocks as $calendarTimeBlock) {
+            $maxPercentage = 100 / count($calendarTimeBlock);
+            $sumPercentage = 0;
+
+            /** @var CampaignEntity[] $calendarTimeBlock */
+            foreach ($calendarTimeBlock as $key => $campaignEntity) {
+
+                $percentage = 100;
+                if ($campaignEntity->getStrategy()) {
+                    $timing = $campaignEntity->getStrategy()->getTiming();
+                    $timingCount = count($timing);
+
+                    /** @var integer $campaignCounter campaign counter in calendar */
+                    $campaignCounter = $campaignTimes[$campaignEntity->getId()][$key];
+
+                    $campaignCount = count($campaignTimes[$campaignEntity->getId()]);
+
+                    $timingIdx = intval(floor(($campaignCounter / $campaignCount) * $timingCount));
+                    $percentage = $maxPercentage * ($timing[$timingIdx] / 100);
+                }
+                $sumPercentage += $percentage;
+                $this->calendar[$key]->setPercentage($percentage);
+            }
+
+            /** @var CampaignEntity[] $calendarTimeBlock */
+            foreach ($calendarTimeBlock as $key => $campaignEntity) {
+                $percentage = ($this->calendar[$key]->getPercentage() / $sumPercentage) * 100;
+                $this->calendar[$key]->setPercentage($percentage);
+            }
+        }
     }
 
 
@@ -70,15 +116,8 @@ class CalendarList
      */
     protected function setCompressedCalendar(): CalendarList
     {
-        $sortedCalendars = [];
-        foreach ($this->calendar as $calendarEntity) {
-            $key = $this->getTimeKey($calendarEntity);
-            $sortedCalendars[$key] = $calendarEntity;
-        }
-
-        ksort($sortedCalendars);
-
         $separatedCalendars = [];
+        $sortedCalendars    = $this->getCalendar();
 
         foreach ($sortedCalendars as $calendarEntity) {
             $separatedCalendars[$this->getKey($calendarEntity)][] = $calendarEntity;
@@ -123,6 +162,8 @@ class CalendarList
      */
     public function getCalendar(): array
     {
+        ksort($this->calendar);
+        $this->setPercentage();
         return $this->calendar;
     }
 
@@ -164,12 +205,23 @@ class CalendarList
 
     /**
      * @param CalendarEntity $calendarEntity
-     * @return string FromToId @example 20191230150000201912311600001
+     * @return string FromToPosition @example 20191230150000201912311600001
      */
     private function getTimeKey(CalendarEntity $calendarEntity)
     {
-        return $calendarEntity->getFrom()->getTimestamp() . $calendarEntity->getTo()->getTimestamp() . $calendarEntity->getCampaign()->getId();
+        return $calendarEntity->getFrom()->getTimestamp() . $calendarEntity->getTo()->getTimestamp() . $calendarEntity->getCampaign()->getPosition();
     }
 
+
+    /**
+     * @param CampaignEntity $campaignEntity
+     * @param \DateTime $from
+     * @param \DateTime $to
+     * @return string
+     */
+    private function getUniqueId(CampaignEntity $campaignEntity, \DateTime $from, \DateTime $to)
+    {
+        return $from->getTimestamp() . $to->getTimestamp() . $campaignEntity->getPosition();
+    }
 
 }

@@ -171,9 +171,19 @@ class CalendarEntity
 
 
     /**
+     * @param int $percentage
+     * @return CalendarEntity
+     */
+    public function setPercentage($percentage): CalendarEntity
+    {
+        $this->percentage = $percentage;
+        return $this;
+    }
+
+    /**
      * @return int
      */
-    public function getPercentage(): int
+    public function getPercentage()
     {
         return $this->percentage;
     }

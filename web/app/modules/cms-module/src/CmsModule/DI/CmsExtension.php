@@ -64,7 +64,7 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
         'dataPath'     => '%wwwDir%',
         'mediaPath'    => '%wwwDir%/media',
         'emailSending' => true,
-        'emailFrom'    => 'Karl von Bahnhof <info@cms.pixatori.com>',
+        'emailFrom'    => 'Karel CMS Pixatori <info@cms.pixatori.com>',
     );
 
 
@@ -169,7 +169,7 @@ class CmsExtension extends CompilerExtension implements IPresenterMappingProvide
             ->setInject(true);
 
         $builder->addDefinition($this->prefix('facade.calendar'))
-            ->setType(CalendarFacade::class);
+            ->setFactory(CalendarFacade::class, [$config['generator']]);
 
 
 //        $builder->addDefinition($this->prefix('control.environment'))

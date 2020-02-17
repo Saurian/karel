@@ -133,7 +133,7 @@ class Authorizator extends Permission
         $this->deny('admin', 'Cms:DeviceGroup', ['listAllDevices']);
         $this->deny('admin', 'Cms:Users', 'listAllUsers');
         $this->allow('admin', 'Cms:Device', ['listUsersGroup']);
-        $this->allow('admin', 'Cms:Campaign', ['nestable', 'editAssets', 'delete', 'toggleActive']);
+        $this->allow('admin', 'Cms:Campaign', ['nestable', 'listUsersGroup', 'editAssets', 'delete', 'toggleActive']);
         $this->allow('admin', 'Cms:Users', ['nestable', 'listUsersGroup', 'listByDevicesUser' ]);
         $this->allow('admin', 'Cms:Reach', Permission::ALL);
         $this->allow('admin', 'Cms:Template', Permission::ALL);
@@ -151,7 +151,7 @@ class Authorizator extends Permission
         $this->allow('supervisor', Permission::ALL, Permission::ALL);
         $this->allow('supervisor', $campaignFormResource, ['editAllDevices']);
         $this->allow('supervisor', $deviceFormResource, ['editAllDevices']);
-        $this->allow('supervisor', 'Cms:Campaign', ['listAllCampaigns', 'listAllTemplates']);
+        $this->allow('supervisor', 'Cms:Campaign', ['listAllCampaigns']);
         $this->allow('supervisor', 'Cms:Users', ['listAllUsers', 'itemsDetail', 'login']);
         $this->deny('supervisor', 'Cms:Users', 'listCreatedByUser');
         $this->allow('supervisor', 'Cms:Device', 'listAllDevices');

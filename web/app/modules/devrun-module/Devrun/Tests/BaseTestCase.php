@@ -95,7 +95,7 @@ class BaseTestCase extends TestCase {
 
     protected function setUp()
     {
-        $everyTestNewContainer = true;
+        $everyTestNewContainer = false;
 
         if (!$everyTestNewContainer) {
             $annotations = $this->getAnnotations();
